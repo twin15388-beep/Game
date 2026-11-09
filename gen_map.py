@@ -165,10 +165,15 @@ def endfolder():
 # ----------------------------------------------------------------------------
 # Базовые примитивы
 # ----------------------------------------------------------------------------
+PLANNING = False
+
+
 def part(name, size, pos, yaw=0.0, pitch=0.0, roll=0.0, color=(163, 162, 165),
          material="Plastic", transparency=0.0, cancollide=True, anchored=True,
          shape=None, cls="Part", reflectance=None, light=None, fire=None):
     """light = dict(brightness, range, color, shadows); fire = dict(size, heat, color, secondary)"""
+    if PLANNING:
+        return
     begin_item(cls, name)
     p_bool("Anchored", anchored)
     p_bool("CanCollide", cancollide)
@@ -284,6 +289,7 @@ def arena_trigger(boss_id, x, z, y, r=75):
 # Префабы декора
 # ----------------------------------------------------------------------------
 def tree_gloom(x, z, y, s=1.0):
+    y = sy(x, z, y)
     th = rng.uniform(9, 14) * s
     part("Tree", (2 * s, th, 2 * s), (x, y + th / 2, z),
          yaw=rng.uniform(0, 360), color=(44, 36, 40), material="Wood")
@@ -296,6 +302,7 @@ def tree_gloom(x, z, y, s=1.0):
 
 
 def pine(x, z, y, s=1.0):
+    y = sy(x, z, y)
     th = 7 * s
     part("Pine", (1.6 * s, th, 1.6 * s), (x, y + th / 2, z),
          color=(60, 48, 40), material="Wood")
@@ -312,6 +319,7 @@ def pine(x, z, y, s=1.0):
 
 
 def dead_tree(x, z, y, s=1.0):
+    y = sy(x, z, y)
     th = rng.uniform(8, 12) * s
     part("DeadTree", (1.8 * s, th, 1.8 * s), (x, y + th / 2, z),
          yaw=rng.uniform(0, 360), pitch=rng.uniform(-6, 6), color=(52, 44, 36),
@@ -327,6 +335,7 @@ def dead_tree(x, z, y, s=1.0):
 
 
 def palm_dead(x, z, y, s=1.0):
+    y = sy(x, z, y)
     th = 10 * s
     tilt = rng.uniform(8, 18)
     tyaw = rng.uniform(0, 360)
@@ -343,6 +352,7 @@ def palm_dead(x, z, y, s=1.0):
 
 
 def rock(x, z, y, s=1.0, mat="Rock", col=(70, 72, 78)):
+    y = sy(x, z, y)
     r = rng.uniform(2.5, 6.5) * s
     part("Rock", (r, r, r), (x, y + r * 0.22, z), yaw=rng.uniform(0, 360),
          pitch=rng.uniform(-10, 10), roll=rng.uniform(-10, 10),
@@ -350,6 +360,7 @@ def rock(x, z, y, s=1.0, mat="Rock", col=(70, 72, 78)):
 
 
 def mushroom(x, z, y, s=1.0):
+    y = sy(x, z, y)
     h = rng.uniform(2.5, 4.5) * s
     part("Mushroom_Stem", (h, 1.4 * s, 1.4 * s), (x, y + h / 2, z), roll=90,
          shape="Cylinder", color=(200, 195, 175), material="SmoothPlastic")
@@ -358,12 +369,14 @@ def mushroom(x, z, y, s=1.0):
 
 
 def reed(x, z, y):
+    y = sy(x, z, y)
     part("Reed", (0.7, rng.uniform(3, 5), 0.7), (x, y + 2, z),
          yaw=rng.uniform(0, 360), pitch=rng.uniform(-8, 8), color=(64, 70, 44),
          material="Grass", cancollide=False)
 
 
 def crystal(x, z, y, s=1.0, hue="cyan"):
+    y = sy(x, z, y)
     col = (110, 220, 255) if hue == "cyan" else (190, 110, 255)
     for i in range(3):
         h = rng.uniform(3, 7) * s
@@ -379,6 +392,7 @@ def crystal(x, z, y, s=1.0, hue="cyan"):
 
 
 def brazier(x, z, y):
+    y = sy(x, z, y)
     disc("Brazier_Bowl", x, z, y + 1.4, 2.2, 1.4, (45, 45, 50), "Metal")
     part("Brazier_Flame", (1.4, 1.8, 1.4), (x, y + 2.5, z), color=(255, 120, 30),
          material="Neon", cancollide=False, transparency=0.15,
@@ -387,6 +401,7 @@ def brazier(x, z, y):
 
 
 def lamppost(x, z, y):
+    y = sy(x, z, y)
     part("LampPost", (0.5, 9, 0.5), (x, y + 4.5, z), color=(50, 50, 54),
          material="Metal")
     part("LampPost_Head", (1.3, 1.5, 1.3), (x, y + 9.5, z), color=(255, 190, 110),
@@ -395,6 +410,7 @@ def lamppost(x, z, y):
 
 
 def tombstone(x, z, y):
+    y = sy(x, z, y)
     yaw = rng.uniform(0, 360)
     col = rng.choice([(130, 128, 122), (110, 108, 102), (120, 116, 108)])
     if rng.random() < 0.25:
@@ -409,11 +425,13 @@ def tombstone(x, z, y):
 
 
 def water_pool(x, z, y, r, col=(44, 66, 48)):
+    y = sy(x, z, y)
     disc("WaterPool", x, z, y + 0.75, r, 0.7, col, "Water",
          transparency=0.35, cancollide=False)
 
 
 def lava_pool(x, z, y, r):
+    y = sy(x, z, y)
     disc("Hazard_Lava", x, z, y + 0.55, r, 1.0, (255, 96, 18), "Neon",
          light=dict(brightness=1.3, range=20, color=(255, 110, 30))
          if rng.random() < 0.3 else None)
@@ -426,6 +444,7 @@ def house(name, cx, cz, gy, w, d, h, yaw=0.0,
           wall=(176, 168, 150), roof=(70, 50, 38),
           wall_mat="WoodPlanks", roof_mat="WoodPlanks",
           windows=True, chimney=True):
+    gy = sy(cx, cz, gy)
     part(name + "_Body", (w, h, d), (cx, gy + h / 2.0, cz), yaw=yaw,
          color=wall, material=wall_mat)
     rh = d * 0.42
@@ -452,6 +471,7 @@ def house(name, cx, cz, gy, w, d, h, yaw=0.0,
 
 
 def tavern(cx, cz, gy, yaw=0.0):
+    gy = sy(cx, cz, gy)
     house("Tavern", cx, cz, gy, 24, 18, 11, yaw=yaw, wall=(94, 74, 54),
           roof=(66, 46, 34))
     px, pz = l2w(cx, cz, yaw, 0, 12.5)
@@ -468,6 +488,7 @@ def tavern(cx, cz, gy, yaw=0.0):
 
 
 def chapel(cx, cz, gy, yaw=0.0):
+    gy = sy(cx, cz, gy)
     part("Chapel_Body", (20, 16, 34), (cx, gy + 8, cz), yaw=yaw,
          color=(150, 146, 138), material="Cobblestone")
     rh = 10
@@ -494,6 +515,7 @@ def chapel(cx, cz, gy, yaw=0.0):
 
 
 def smithy(cx, cz, gy, yaw=0.0):
+    gy = sy(cx, cz, gy)
     house("Smithy", cx, cz, gy, 16, 13, 9, yaw=yaw, wall=(82, 78, 74),
           roof=(52, 40, 36), windows=False)
     chx, chz = l2w(cx, cz, yaw, 0, -4)
@@ -510,6 +532,7 @@ def smithy(cx, cz, gy, yaw=0.0):
 
 
 def well(cx, cz, gy):
+    gy = sy(cx, cz, gy)
     disc("Well", cx, cz, gy + 2.2, 3.5, 2.2, (110, 106, 100), "Cobblestone")
     part("Well_PostA", (0.8, 5, 0.8), (cx - 2.8, gy + 2.5, cz), color=(70, 54, 40),
          material="Wood")
@@ -522,6 +545,7 @@ def well(cx, cz, gy):
 
 
 def stall(cx, cz, gy, yaw=0.0):
+    gy = sy(cx, cz, gy)
     for sx in (-2.5, 2.5):
         px, pz = l2w(cx, cz, yaw, sx, 0)
         part("Stall_Post", (0.6, 6, 0.6), (px, gy + 3, pz), yaw=yaw,
@@ -536,6 +560,7 @@ def stall(cx, cz, gy, yaw=0.0):
 
 
 def witch_hut(cx, cz, gy):
+    gy = sy(cx, cz, gy)
     house("WitchHut", cx, cz, gy, 10, 9, 7, yaw=15, wall=(60, 50, 44),
           roof=(40, 36, 42), windows=False, chimney=False)
     part("WitchHut_Window", (1.4, 1.4, 0.3),
@@ -549,6 +574,7 @@ def witch_hut(cx, cz, gy):
 
 
 def heart_tree(cx, cz, gy):
+    gy = sy(cx, cz, gy)
     v_cyl("HeartTree_Trunk", cx, cz, gy, 64, 16, (72, 48, 84), "Wood")
     layers = [(40, 14, 66, 0), (34, 12, 78, 45), (26, 10, 88, 12), (16, 8, 96, 70)]
     for w, h, yy, yw in layers:
@@ -566,6 +592,7 @@ def heart_tree(cx, cz, gy):
 
 
 def lighthouse(cx, cz, gy):
+    gy = sy(cx, cz, gy)
     v_cyl("Lighthouse_Base", cx, cz, gy, 14, 20, (200, 192, 175), "Concrete")
     v_cyl("Lighthouse_Mid", cx, cz, gy + 14, 12, 17, (140, 60, 50), "Brick")
     v_cyl("Lighthouse_Top", cx, cz, gy + 26, 10, 15, (200, 192, 175), "Concrete")
@@ -576,6 +603,7 @@ def lighthouse(cx, cz, gy):
 
 
 def shipwreck(cx, cz, gy):
+    gy = sy(cx, cz, gy)
     part("Ship_Hull", (40, 6, 12), (cx, gy + 2.5, cz), yaw=32, pitch=7,
          color=(80, 58, 40), material="Wood")
     part("Ship_Deck", (34, 1.2, 10), (cx, gy + 6, cz), yaw=32, pitch=7,
@@ -592,6 +620,7 @@ def shipwreck(cx, cz, gy):
 
 
 def ruin_columns(cx, cz, gy, n=8, spread=60):
+    gy = sy(cx, cz, gy)
     for i in range(n):
         a = rng.uniform(0, math.pi * 2)
         rr = rng.uniform(8, spread)
@@ -604,6 +633,7 @@ def ruin_columns(cx, cz, gy, n=8, spread=60):
 
 
 def fortress_ruins(cx, cz, gy):
+    gy = sy(cx, cz, gy)
     # стены с проломами
     wall_defs = [
         (-80, 0, 0, 60), (-20, 0, 0, 40), (40, 0, 0, 50),
@@ -632,6 +662,7 @@ def fortress_ruins(cx, cz, gy):
 
 
 def crypt(cx, cz, gy):
+    gy = sy(cx, cz, gy)
     """Крипта-данж: можно войти — саркофаги, факелы, босс Крипт-Призрак, сундук."""
     W, D, H = 22, 28, 12
     stone = (108, 104, 98)
@@ -670,6 +701,7 @@ def crypt(cx, cz, gy):
 
 
 def bone_pit(cx, cz, gy):
+    gy = sy(cx, cz, gy)
     disc("BonePit", cx, cz, gy + 0.35, 22, 0.8, (30, 28, 30), "Rock")
     for i in range(12):
         a = rng.uniform(0, math.pi * 2)
@@ -686,6 +718,7 @@ def bone_pit(cx, cz, gy):
 
 
 def frost_shrine(cx, cz, gy):
+    gy = sy(cx, cz, gy)
     part("Shrine_Base", (14, 1.5, 14), (cx, gy + 0.75, cz), color=(170, 200, 230),
          material="Glacier")
     for sx, sz in [(-5, -5), (5, -5), (-5, 5), (5, 5)]:
@@ -742,6 +775,7 @@ def p_udim2(n, xs, xsc, ys, ysc):
 
 
 def campfire(x, z, gy):
+    gy = sy(x, z, gy)
     for i in range(7):
         a = math.pi * 2 * i / 7
         rock(x + math.sin(a) * 1.9, z + math.cos(a) * 1.9, gy, 0.35, "Rock",
@@ -757,6 +791,7 @@ def campfire(x, z, gy):
 
 
 def tent(x, z, gy, yaw=0.0, w=7, d=8, h=4.6, color=(96, 74, 58)):
+    gy = sy(x, z, gy)
     s = d / 2.0
     ang = math.degrees(math.atan2(h, s))
     panel_len = math.hypot(h, s) + 1.5
@@ -829,6 +864,7 @@ def bandit_camp(x, z, gy, yaw=0.0, tent_cols=((96, 74, 58), (88, 66, 52)),
 
 
 def wooden_bridge(x, z, gy, yaw=0.0, span=36, width=8):
+    gy = sy(x, z, gy)
     deck_y = gy + 1.0
     n = 5
     seg = span / n
@@ -858,6 +894,7 @@ def wooden_bridge(x, z, gy, yaw=0.0, span=36, width=8):
 
 
 def stone_footbridge(x, z, gy, yaw=0.0, span=40, width=5):
+    gy = sy(x, z, gy)
     n = 5
     seg = span / n
     for i in range(n):
@@ -938,6 +975,7 @@ def river_build(points, gy, width=18, color=(30, 64, 80)):
 
 
 def signpost(x, z, gy, yaw=0.0, lines=""):
+    gy = sy(x, z, gy)
     """Деревянный указатель с надписью (SurfaceGui)."""
     for sx in (-2.1, 2.1):
         px, pz = l2w(x, z, yaw, sx, 0)
@@ -978,10 +1016,13 @@ def truss(name, size, pos, color=(96, 76, 56)):
     end_item()
 
 
-def mega_mesa(x, z, gy, base_w=140, h=110, snow=60):
-    """ГОРА: толстые ступени по 6.5 студа (можно запрыгивать), плавный конус."""
-    n = max(8, int(h / 6.5))
+def mega_mesa(x, z, gy, base_w=140, h=110, snow=60, cell=85.0):
+    """ГОРА с проходимыми ступенями: перепад между кольцами <= 2.6 студа,
+    поэтому подъём берётся пешком (и запрыгивается), а не «стопка карт»."""
+    add_flat(x, z, base_w * 0.62, gy, 70.0)   # подножие — ровная площадка
+    n = max(6, int(round(h / 2.6)))
     tier_h = h / float(n)
+    step_out = max(3.0, tier_h * 2.75)   # горизонтальный отступ кольца
     w = base_w
     for i in range(n):
         y = gy + i * tier_h
@@ -989,22 +1030,84 @@ def mega_mesa(x, z, gy, base_w=140, h=110, snow=60):
         if y > snow:
             col, mat = (228, 233, 241), "Snow"
         else:
-            g = int(108 + t * 46)
-            col, mat = (g, g + 4, g + 12), "Rock"
-        part("Peak_Tier%d" % i, (w, tier_h + 0.5, w),
-             (x + rng.uniform(-3, 3), y + tier_h / 2, z + rng.uniform(-3, 3)),
-             yaw=(i * 7) % 45, color=col, material=mat)
-        w = max(9.0, w - (base_w - 12) / n * (0.85 + 0.5 * t))
-    part("Peak_Snowcap", (w * 1.6, w * 1.1, w * 1.6),
-         (x, gy + h + w * 0.25, z), shape="Ball",
+            g = int(104 + t * 52)
+            col, mat = (g, g + 3, g + 11), "Rock"
+        # кольцо из блоков: получается неровная, но проходимая гора
+        cnt = max(6, int(w * 2.06 / max(11.0, step_out * 1.6)))
+        for k in range(cnt):
+            a = math.pi * 2 * k / cnt + i * 0.11
+            px = x + math.sin(a) * (w / 2.0)
+            pz = z + math.cos(a) * (w / 2.0)
+            part("Peak_Ring%d_%d" % (i, k),
+                 (max(11.0, step_out * 2.4), tier_h + 0.45, max(11.0, step_out * 2.4)),
+                 (px, y + tier_h / 2.0, pz), yaw=math.degrees(a) + rng.uniform(-12, 12),
+                 color=col, material=mat)
+        # верхняя площадка каждого яруса
+        if i % 2 == 1:
+            part("Peak_Ledged%d" % i, (w * 0.55, tier_h * 0.9, 6.0),
+                 (x, y + tier_h * 0.45, z), yaw=(i * 23) % 180,
+                 color=col, material=mat, cancollide=False)
+        w = max(11.0, w - step_out * 1.75)
+    # вершина
+    part("Peak_Snowcap", (w * 1.5, tier_h * 1.6, w * 1.5),
+         (x, gy + h + tier_h * 0.6, z), shape="Ball",
          color=(234, 240, 248), material="Snow", cancollide=False)
-    for _ in range(5):
-        rock(x + rng.uniform(-base_w / 2, base_w / 2),
-             z + rng.uniform(-base_w / 2, base_w / 2), gy,
-             rng.uniform(0.9, 1.5), "Rock", (110, 112, 118))
+    for _ in range(7):
+        rr = base_w * 0.52
+        rock(x + rng.uniform(-rr, rr), z + rng.uniform(-rr, rr), sy(x, z, gy),
+             rng.uniform(0.9, 1.6), "Rock", (110, 112, 118))
+    # тропа-серпантин: плоские ступени от подножия к вершине
+    for i in range(int(n * 0.75)):
+        t = i / float(max(1, int(n * 0.75)))
+        a = t * math.pi * 3.4
+        rr = base_w * 0.62 * (1.0 - t * 0.72)
+        px, pz = x + math.sin(a) * rr, z + math.cos(a) * rr
+        py = gy + t * (h * 0.78)
+        part("Peak_Path%d" % i, (round(step_out * 2.2), tier_h + 0.2, round(step_out * 2.2)),
+             (px, py, pz), yaw=math.degrees(a) + 90,
+             color=(120, 118, 112), material="Rock")
+    return gy + h
+
+
+
+def small_village(name, x, z, gy, n_houses=5, radius=48, pal=None,
+                  wall_mat="WoodPlanks", roof_mat="WoodPlanks", palisade=False,
+                  sign_text=None, well_pos=None):
+    """Быстрая деревня: дома по кругу, колодец, забор, указатель, фонари."""
+    pal = pal or {}
+    wall = pal.get("wall", (150, 132, 106))
+    roof = pal.get("roof", (78, 60, 44))
+    add_flat(x, z, radius + 34, gy, 85.0)
+    for i in range(n_houses):
+        a = math.pi * 2 * i / max(1, n_houses) + 0.35
+        hx = x + math.sin(a) * radius * rng.uniform(0.55, 0.95)
+        hz = z + math.cos(a) * radius * rng.uniform(0.55, 0.95)
+        house("%s_House%d" % (name, i), hx, hz, gy, rng.uniform(11, 14),
+              rng.uniform(9, 11), rng.uniform(7, 9), yaw=math.degrees(a) + 90,
+              wall=wall, roof=roof, wall_mat=wall_mat, roof_mat=roof_mat)
+    wpos = well_pos or (x, z)
+    well(wpos[0], wpos[1], gy)
+    campfire(x + rng.uniform(-16, 16), z + rng.uniform(-16, 16), gy)
+    for i in range(3):
+        a = math.pi * 2 * i / 3 + 1.1
+        lamppost(x + math.sin(a) * radius * 0.45, z + math.cos(a) * radius * 0.45, gy)
+    if palisade:
+        n = 26
+        for i in range(n):
+            a = math.pi * 2 * i / n
+            if angle_gap(a, 0.6) < 0.3:
+                continue
+            px, pz = x + math.sin(a) * (radius + 18), z + math.cos(a) * (radius + 18)
+            part("%s_Palisade" % name, (1.2, 6.6, 1.2), (px, gy + 3.0, pz),
+                 yaw=math.degrees(a), color=(92, 74, 56), material="Wood")
+    if sign_text:
+        signpost(x + radius * 0.8, z, gy, 90, sign_text)
+    return gy
+
 
 
 def hill_mound(x, z, gy, r=24, h=12, col=(96, 116, 66)):
+    gy = sy(x, z, gy)
     """Холм: толстые ступени по 4.2 студа — заскакивается."""
     n = max(3, int(h / 4.2))
     for i in range(n):
@@ -1018,6 +1121,7 @@ def hill_mound(x, z, gy, r=24, h=12, col=(96, 116, 66)):
 
 
 def watch_tower(x, z, gy, tag=""):
+    gy = sy(x, z, gy)
     """Сторожевая башня: лезь по ферме — наверху сундук."""
     rock(x - 3, z - 3, gy, 0.9, "Rock", (96, 96, 100))
     rock(x + 3, z + 2, gy, 0.8, "Rock", (96, 96, 100))
@@ -1038,6 +1142,7 @@ def watch_tower(x, z, gy, tag=""):
 
 
 def standing_stones(x, z, gy):
+    gy = sy(x, z, gy)
     for i in range(7):
         a = math.pi * 2 * i / 7
         sx, sz = x + math.sin(a) * 11, z + math.cos(a) * 11
@@ -1050,6 +1155,7 @@ def standing_stones(x, z, gy):
 
 
 def farm_field(x, z, gy, w=18, d=12, yaw=0.0):
+    gy = sy(x, z, gy)
     part("Farm_Soil", (w, 0.6, d), (x, gy + 0.3, z), yaw=yaw, color=(96, 72, 50),
          material="Ground")
     rows = max(3, int(d / 2))
@@ -1061,6 +1167,7 @@ def farm_field(x, z, gy, w=18, d=12, yaw=0.0):
 
 
 def scarecrow(x, z, gy):
+    gy = sy(x, z, gy)
     part("Scare_Pole", (0.5, 5, 0.5), (x, gy + 2.5, z), color=(90, 70, 50),
          material="Wood")
     part("Scare_Arms", (3.2, 0.4, 0.4), (x, gy + 3.6, z), color=(90, 70, 50),
@@ -1072,11 +1179,13 @@ def scarecrow(x, z, gy):
 
 
 def haystack(x, z, gy):
+    gy = sy(x, z, gy)
     part("Haystack", (3.2, 2.6, 3.2), (x, gy + 1.3, z), yaw=rng.uniform(0, 90),
          color=(214, 178, 86), material="Grass")
 
 
 def cart_wagon(x, z, gy, yaw=0.0):
+    gy = sy(x, z, gy)
     part("Wagon_Bed", (6.5, 1.2, 3.4), (x, gy + 1.9, z), yaw=yaw,
          color=(96, 74, 52), material="WoodPlanks")
     fx, fz = l2w(x, z, yaw, 3.0, 0)
@@ -1094,6 +1203,7 @@ def cart_wagon(x, z, gy, yaw=0.0):
 
 
 def fence_line(x0, z0, x1, z1, gy, off=8.0, step=24):
+    gy = sy(x0, z0, gy)
     """Вереница столбиков с перекладинами вдоль дороги."""
     dx, dz = x1 - x0, z1 - z0
     dist = math.hypot(dx, dz)
@@ -1143,6 +1253,7 @@ def banner(x, z, y, yaw=0.0, col=(158, 44, 44)):
 
 
 def statue_guardian(x, z, gy, yaw=0.0):
+    gy = sy(x, z, gy)
     """Гигантская статуя стража (как у великих врат)."""
     stone = (138, 136, 130)
     part("Statue_Base", (8, 2.4, 8), (x, gy + 1.2, z), yaw=yaw, color=(124, 122, 116),
@@ -1164,6 +1275,7 @@ def statue_guardian(x, z, gy, yaw=0.0):
 
 
 def citadel(cx, cz, gy):
+    gy = sy(cx, cz, gy)
     """ЦИТАДЕЛЬ ЛОРД-МАГИСТРА: 5 ярусов, башни, леса, знамёна, ~95 студов."""
     stone = (146, 144, 138)
     dark = (120, 118, 112)
@@ -1230,6 +1342,7 @@ def citadel(cx, cz, gy):
 
 
 def great_gate(cx, cz, gy):
+    gy = sy(cx, cz, gy)
     """ВЕЛИКИЕ ЮЖНЫЕ ВРАТА: колоссальная арка со статуями-стражами."""
     stone = (140, 138, 130)
     dark = (118, 116, 110)
@@ -1313,6 +1426,7 @@ def sky_ladder(points):
 
 
 def bastion_cannon(x, z, gy, yaw=-90):
+    gy = sy(x, z, gy)
     """Береговая батарея: полукруглый бастион и ОГРОМНАЯ пушка."""
     stone = (150, 148, 140)
     disc("Bastion_Floor", x, z, gy + 1, 16, 2, stone, "Cobblestone")
@@ -1348,22 +1462,22 @@ def bastion_cannon(x, z, gy, yaw=-90):
 # v2: единый материк, растительность, порт, корабли, данжи, паркур, море
 # ----------------------------------------------------------------------------
 CONTINENT_POLY = [
-    (-2700, -900), (-2600, -1900), (-2200, -2500), (-1500, -2800),
-    (-500, -2850), (500, -2750), (1400, -2600), (2200, -2300),
-    (2700, -1700), (2850, -900), (2800, -100), (2900, 700),
-    (2750, 1500), (2500, 2200), (1900, 2700), (1000, 2900),
-    (0, 2950), (-900, 2800), (-1800, 2500), (-2400, 1900),
-    (-2800, 1100), (-2900, 200),
+    (-3550, -1100), (-3500, -2300), (-2950, -3180), (-2050, -3600),
+    (-800, -3700), (700, -3620), (2000, -3300), (3000, -2780),
+    (3600, -1950), (3760, -950), (3660, -50), (3800, 900),
+    (3620, 1900), (3280, 2800), (2500, 3380), (1450, 3620),
+    (150, 3700), (-1150, 3520), (-2200, 3120), (-3000, 2500),
+    (-3450, 1700), (-3720, 700), (-3800, -150),
 ]
 
 ZONE_GROUND = [
     # (x0, z0, x1, z1, цвет, материал) — цвета смешиваются к краям зон
-    (-2400, -2400, -800, -1000, (226, 233, 242), "Snow"),    # Морозные Пики
-    (-850, -2500, 1050, -1100, (130, 98, 84), "Basalt"),     # Пустоши
-    (650, -950, 2350, 1050, (130, 110, 64), "Mud"),          # Топи
-    (650, 750, 2450, 2350, (210, 192, 144), "Sand"),         # Берег
-    (-950, 750, 950, 2350, (140, 144, 94), "Ground"),        # Костяные поля
-    (-2350, -950, -650, 850, (72, 104, 62), "Ground"),       # Глумвуд
+    (-3100, -3100, -800, -1000, (226, 233, 242), "Snow"),    # Морозные Пики
+    (-860, -3300, 1400, -1100, (130, 98, 84), "Basalt"),     # Пустоши
+    (650, -950, 3000, 1350, (130, 110, 64), "Mud"),          # Топи
+    (650, 750, 3150, 3000, (210, 192, 144), "Sand"),         # Берег
+    (-950, 750, 950, 3000, (140, 144, 94), "Ground"),        # Костяные поля
+    (-3100, -950, -650, 1100, (72, 104, 62), "Ground"),      # Глумвуд
 ]
 
 
@@ -1437,9 +1551,377 @@ def scatter(n, x0, z0, x1, z1, fn, excl=(), gy=8.0):
         out += 1
 
 
+# ============================================================================
+# v9: РЕЛЬЕФ — шумовая высотная карта, холмы, склоны, террасы
+# ============================================================================
+# Плоские «пятна» (деревни, лагеря, арены, дороги): внутри радиуса высота
+# ровно y, дальше плавно (feather) переходит в природный рельеф.
+FLATS = []
+# Профили зон: (x0, z0, x1, z1, base, amp, freq)
+ZONE_PROFILE = [
+    ((-340, -240, 340, 440), 12.0, 1.1, 1 / 900.0),    # Пепельная Пристань
+    ((-2380, -780, -660, 880), 14.0, 15.0, 1 / 620.0),  # Глумвуд
+    ((-2400, -760, -60, -20), 15.0, 4.0, 1 / 700.0),   # перешеек
+    ((-2560, -2560, -640, -760), 20.0, 20.0, 1 / 520.0),  # Морозные Пики
+    ((-900, -2560, 1100, -1040), 16.0, 16.0, 1 / 560.0),  # Пепельные Пустоши
+    ((620, -1020, 2400, 1080), 12.0, 3.4, 1 / 760.0),  # Топи Мирефен
+    ((620, 760, 2520, 2400), 8.4, 5.0, 1 / 700.0),     # Затонувший Берег
+    ((-1000, 760, 1000, 2400), 12.0, 11.0, 1 / 640.0),  # Костяные Поля
+    ((-2600, 1500, -1900, 2100), 8.45, 6.0, 1 / 500.0),  # Полая Бездна
+]
+PLAINS_BASE = 9.0
+PLAINS_AMP = 12.0
+
+
+def add_flat(x, z, r, y, feather=55.0):
+    if not PLANNING:
+        return
+    FLATS.append((float(x), float(z), float(r), float(y), float(feather)))
+
+
+def add_flat_rect(x0, z0, x1, z1, y, feather=60.0):
+    """Ровная площадка-прямоугольник: забиваем пятнами по сетке."""
+    step = 70.0
+    x = x0
+    while x <= x1 + 0.1:
+        z = z0
+        while z <= z1 + 0.1:
+            add_flat(x, z, 62.0, y, feather)
+            z += step
+        x += step
+
+
+def _h2(i, j, seed):
+    n = (i * 374761393 + j * 668265263 + seed * 11400714819323199488) & 0xFFFFFFFF
+    n = ((n ^ (n >> 13)) * 1274126177) & 0xFFFFFFFF
+    n = (n ^ (n >> 16)) & 0xFFFFFFFF
+    return n / 4294967295.0
+
+
+def _sm(t):
+    return t * t * (3.0 - 2.0 * t)
+
+
+def vnoise(x, z, freq, seed=0):
+    fx, fz = x * freq, z * freq
+    i, j = math.floor(fx), math.floor(fz)
+    tx, tz = _sm(fx - i), _sm(fz - j)
+    a, b = _h2(i, j, seed), _h2(i + 1, j, seed)
+    c, d = _h2(i, j + 1, seed), _h2(i + 1, j + 1, seed)
+    return (a * (1 - tx) + b * tx) * (1 - tz) + (c * (1 - tx) + d * tx) * tz
+
+
+def fbm(x, z, freq, octaves=4, seed=7, gain=0.5):
+    total, amp, norm, f = 0.0, 1.0, 0.0, freq
+    for o in range(octaves):
+        total += vnoise(x, z, f, seed + o * 37) * amp
+        norm += amp
+        amp *= gain
+        f *= 2.07
+    return total / norm
+
+
+def zone_profile(x, z):
+    base, amp, freq = PLAINS_BASE, PLAINS_AMP, 1 / 720.0
+    # предгорья на юго-западе и северо-востоке: там холмисто и высоко
+    if x < -2200 and z > 900:
+        return 26.0, 22.0, 1 / 480.0
+    if x > 2200 and z < -1600:
+        return 24.0, 20.0, 1 / 500.0
+    best = None
+    for (box, b, a, f) in ZONE_PROFILE:
+        x0, z0, x1, z1 = box
+        dx = max(x0 - x, 0, x - x1)
+        dz = max(z0 - z, 0, z - z1)
+        d = math.hypot(dx, dz)
+        if d == 0:
+            return b, a, f
+        if best is None or d < best[0]:
+            best = (d, b, a, f)
+    if best:
+        d, b, a, f = best
+        t = min(1.0, d / 420.0)
+        return (b * (1 - t) + PLAINS_BASE * t,
+                a * (1 - t) + PLAINS_AMP * t, f)
+    return base, amp, freq
+
+
+def raw_height(x, z):
+    base, amp, freq = zone_profile(x, z)
+    n = fbm(x, z, freq, 4, 11) - 0.5
+    ridge = abs(fbm(x, z, freq * 0.55, 3, 29) - 0.5) * 2.0
+    h = base + n * amp * 2.0 + (ridge - 0.62) * amp * 1.1
+    # у самой воды рельеф сползает в пляж
+    ed = poly_edge_dist(x, z)
+    if ed < 430.0:
+        t = max(0.0, ed / 430.0) ** 0.75
+        h = -1.3 * (1.0 - t) + h * t
+    return h
+
+
+def flat_pull(x, z, h):
+    for (fx, fz, r, y, fe) in FLATS:
+        d = math.hypot(x - fx, z - fz)
+        if d < r + fe:
+            t = 1.0 if d <= r else 1.0 - (d - r) / fe
+            t = _sm(t)
+            h = h * (1.0 - t) + y * t
+    return h
+
+
+PLATEAUS = []
+
+
+def add_plateau_rect(x0, z0, x1, z1, top):
+    PLATEAUS.append(("rect", x0, z0, x1, z1, float(top)))
+
+
+def add_plateau_circle(x, z, r, top):
+    PLATEAUS.append(("circle", x, z, r, 0.0, float(top)))
+
+
+def plateau_top(x, z):
+    best = None
+    for entry in PLATEAUS:
+        if entry[0] == "rect":
+            _, x0, z0, x1, z1, top = entry
+            if x0 <= x <= x1 and z0 <= z <= z1:
+                if best is None or top > best:
+                    best = top
+        else:
+            _, cx, cz, r, _, top = entry
+            if math.hypot(x - cx, z - cz) <= r:
+                if best is None or top > best:
+                    best = top
+    return best
+
+
+def height_at(x, z):
+    """Итоговая высота поверхности (используется декором и постройками)."""
+    h = flat_pull(x, z, raw_height(x, z))
+    top = plateau_top(x, z)
+    if top is not None and top > h:
+        return top
+    return h
+
+
+# ---------------- сетка земли ----------------
+
+def sy(x, z, y):
+    """Высота земли под декором (если вызывающий явно не задал высокую точку)."""
+    try:
+        h = height_at(x, z)
+    except Exception:
+        return y
+    if abs(h - y) <= 15.0:
+        return h
+    return y
+
+
+
+def terrace_steps(name, x0, z0, x1, z1, y_top, y_bottom, color, material,
+                  tread=11.0, step=2.4, ring_color=None):
+    """Терраса-пирамида: каждое кольцо выше предыдущего на `step` (<=2.6),
+    поэтому наверх можно зайти пешком с любой стороны."""
+    if y_top <= y_bottom:
+        return
+    n = max(1, int(math.ceil((y_top - y_bottom) / step)))
+    cx, cz = (x0 + x1) / 2.0, (z0 + z1) / 2.0
+    ring_color = ring_color or color
+    for i in range(n):
+        y = y_bottom + (i + 1) * (y_top - y_bottom) / float(n)
+        inset = i * tread
+        ax, bx = x0 + inset, x1 - inset
+        az, bz = z0 + inset, z1 - inset
+        if bx - ax < tread * 1.2 or bz - az < tread * 1.2:
+            break
+        t = i / float(max(1, n - 1))
+        col = tuple(int(ring_color[k] * (0.86 + 0.16 * t)) for k in range(3))
+        slab(name + "_Ring%d" % i, ax, az, bx, bz, y, y - 9.0, col, material)
+    # внутренняя площадка
+    inset = n * tread
+    if (x1 - inset) - (x0 + inset) > 6 and (z1 - inset) - (z0 + inset) > 6:
+        slab(name + "_Top", x0 + inset, z0 + inset, x1 - inset, z1 - inset,
+             y_top, y_top - 9.0, color, material)
+
+
+def terrain_grid(name, x0, z0, x1, z1, cell=85.0, max_step=2.6,
+                 color_override=None, mat_override=None, seed_jitter=6,
+                 skip_boxes=(), road_flat=None):
+    """Тайлы земли. Высоты сглаживаются так, чтобы соседние тайлы
+    отличались не больше чем на max_step — тогда везде можно зайти пешком."""
+    nx = max(2, int((x1 - x0) / cell))
+    nz = max(2, int((z1 - z0) / cell))
+    cw = (x1 - x0) / float(nx)
+    cd = (z1 - z0) / float(nz)
+
+    H = []
+    for i in range(nx):
+        col = []
+        cx = x0 + (i + 0.5) * cw
+        for j in range(nz):
+            cz = z0 + (j + 0.5) * cd
+            col.append(flat_pull(cx, cz, raw_height(cx, cz)))
+        H.append(col)
+
+    # эрозия: срезаем слишком высокие тайлы, чтобы перепад был <= max_step
+    for _ in range(4):
+        newH = [[0.0] * nz for _ in range(nx)]
+        for i in range(nx):
+            for j in range(nz):
+                cap = H[i][j]
+                if i > 0:
+                    cap = min(cap, H[i - 1][j] + max_step)
+                if i + 1 < nx:
+                    cap = min(cap, H[i + 1][j] + max_step)
+                if j > 0:
+                    cap = min(cap, H[i][j - 1] + max_step)
+                if j + 1 < nz:
+                    cap = min(cap, H[i][j + 1] + max_step)
+                newH[i][j] = cap
+        H = newH
+
+    count = 0
+    for i in range(nx):
+        cx = x0 + (i + 0.5) * cw
+        for j in range(nz):
+            cz = z0 + (j + 0.5) * cd
+            if not point_in_poly(cx, cz):
+                continue
+            skipped = False
+            for (sx0, sz0, sx1, sz1) in skip_boxes:
+                if sx0 <= cx <= sx1 and sz0 <= cz <= sz1:
+                    skipped = True
+                    break
+            if skipped:
+                continue
+            h = H[i][j]
+            # уклон для материала
+            dh = 0.0
+            if i > 0:
+                dh = max(dh, abs(H[i][j] - H[i - 1][j]))
+            if j > 0:
+                dh = max(dh, abs(H[i][j] - H[i][j - 1]))
+            col, mat = ground_style(cx, cz)
+            if color_override:
+                col = color_override
+            if mat_override:
+                mat = mat_override
+            if dh > 1.6:
+                # крутые места — камень
+                col = (int(col[0] * 0.78 + 42), int(col[1] * 0.78 + 40),
+                       int(col[2] * 0.8 + 40))
+                mat = "Rock"
+            jj = rng.randint(-seed_jitter, seed_jitter)
+            col = (max(0, min(255, col[0] + jj)), max(0, min(255, col[1] + jj)),
+                   max(0, min(255, col[2] + jj)))
+            part(name, (cw + 0.6, 30.0, cd + 0.6),
+                 (cx, h - 15.0, cz), color=col, material=mat)
+            count += 1
+    return count
+
+
+def terrain_check(x0, z0, x1, z1, cell=85.0):
+    """Проверка: максимальный перепад между соседними тайлами."""
+    nx = max(2, int((x1 - x0) / cell))
+    nz = max(2, int((z1 - z0) / cell))
+    cw = (x1 - x0) / float(nx)
+    cd = (z1 - z0) / float(nz)
+    H = []
+    for i in range(nx):
+        col = []
+        cx = x0 + (i + 0.5) * cw
+        for j in range(nz):
+            cz = z0 + (j + 0.5) * cd
+            col.append(flat_pull(cx, cz, raw_height(cx, cz)))
+        H.append(col)
+    for _ in range(10):
+        newH = [[0.0] * nz for _ in range(nx)]
+        for i in range(nx):
+            for j in range(nz):
+                cap = H[i][j]
+                if i > 0:
+                    cap = min(cap, H[i - 1][j] + 2.6)
+                if i + 1 < nx:
+                    cap = min(cap, H[i + 1][j] + 2.6)
+                if j > 0:
+                    cap = min(cap, H[i][j - 1] + 2.6)
+                if j + 1 < nz:
+                    cap = min(cap, H[i][j + 1] + 2.6)
+                newH[i][j] = cap
+        H = newH
+    worst = 0.0
+    for i in range(nx):
+        for j in range(nz):
+            if i + 1 < nx:
+                worst = max(worst, abs(H[i][j] - H[i + 1][j]))
+            if j + 1 < nz:
+                worst = max(worst, abs(H[i][j] - H[i][j + 1]))
+    return worst, min(H[i][j] for i in range(nx) for j in range(nz)), \
+        max(H[i][j] for i in range(nx) for j in range(nz))
+
+
+# ------------------------- поверхностные слои -------------------------------
+def _field(name, x0, z0, x1, z1, color, material, cell=95.0, lift=0.06,
+           chance=1.0, transparency=0.0, collide=True):
+    """Тонкий слой поверх рельефа (лавы/болота/песка) по сетке."""
+    x = x0
+    while x <= x1:
+        z = z0
+        while z <= z1:
+            if point_in_poly(x, z) and rng.random() < chance:
+                h = height_at(x, z)
+                part(name, (cell + 1.0, 1.2, cell + 1.0), (x, h + lift - 0.6, z),
+                     color=color, material=material, transparency=transparency,
+                     cancollide=collide)
+            z += cell
+        x += cell
+
+
+def lava_field(x0, z0, x1, z1):
+    """Лава в трещинах Пустошей (светится, жжёт)."""
+    for _ in range(190):
+        x = rng.uniform(x0, x1)
+        z = rng.uniform(z0, z1)
+        if not point_in_poly(x, z):
+            continue
+        r = rng.uniform(7, 26)
+        h = height_at(x, z)
+        disc("LavaCrack", x, z, h + 0.12, r, 0.8, (255, 96, 18), "Neon",
+             light=dict(brightness=0.7, range=r * 2.2, color=(255, 130, 40))
+             if r > 16 else None)
+    _field("AshDust", x0, z0, x1, z1, (104, 82, 70), "CrackedLava",
+           cell=110.0, lift=-0.2, chance=0.35)
+
+
+def swamp_field(x0, z0, x1, z1):
+    """Болотные окна воды и мшистые кочки."""
+    for _ in range(150):
+        x = rng.uniform(x0, x1)
+        z = rng.uniform(z0, z1)
+        if not point_in_poly(x, z):
+            continue
+        r = rng.uniform(9, 30)
+        h = height_at(x, z)
+        disc("SwampPool", x, z, h + 0.05, r, 0.6, (54, 86, 62), "Water",
+             transparency=0.25, cancollide=False)
+        if rng.random() < 0.6:
+            for _ in range(rng.randint(1, 3)):
+                reed(x + rng.uniform(-r * 0.7, r * 0.7),
+                     z + rng.uniform(-r * 0.7, r * 0.7), h)
+    _field("MossPatch", x0, z0, x1, z1, (118, 126, 70), "Mud",
+           cell=120.0, lift=-0.1, chance=0.4)
+
+
+def sand_field(x0, z0, x1, z1):
+    _field("CoastSand", x0, z0, x1, z1, (200, 184, 142), "Sand",
+           cell=120.0, lift=-0.05, chance=0.75)
+
+
 # ------------------------- растительность ----------------------------------
 def tree_nice(x, z, y, s=1.0):
     """Пышное дерево-«помпон»: ствол + 4 сочных шара кроны (как в референсах)."""
+    y = sy(x, z, y)
     th = rng.uniform(9, 13) * s
     part("Tree_Trunk", (2.8 * s, th, 2.8 * s), (x, y + th / 2, z),
          yaw=rng.uniform(0, 360), color=(88, 66, 48), material="Wood")
@@ -1461,6 +1943,7 @@ def tree_nice(x, z, y, s=1.0):
 
 
 def bush(x, z, y, s=1.0):
+    y = sy(x, z, y)
     w = rng.uniform(2.6, 4.2) * s
     part("Bush", (w, w * 0.7, w), (x, y + w * 0.3, z), yaw=rng.uniform(0, 90),
          color=rng.choice([(50, 76, 44), (58, 84, 48), (44, 68, 40)]),
@@ -1474,18 +1957,21 @@ def bush(x, z, y, s=1.0):
 
 
 def grass_tuft(x, z, y, col=None):
+    y = sy(x, z, y)
     part("GrassTuft", (1.4, 1.0, 0.18), (x, y + 0.45, z), yaw=rng.uniform(0, 180),
          color=col or rng.choice([(74, 104, 52), (66, 96, 48), (84, 112, 58)]),
          material="Grass", cancollide=False)
 
 
 def fern(x, z, y):
+    y = sy(x, z, y)
     for k in (0, 90):
         part("Fern", (2.0, 1.1, 0.14), (x, y + 0.5, z), yaw=k + rng.uniform(-20, 20),
              pitch=-12, color=(52, 82, 44), material="Grass", cancollide=False)
 
 
 def flower(x, z, y):
+    y = sy(x, z, y)
     col = rng.choice([(210, 80, 160), (230, 90, 70), (240, 240, 200), (110, 160, 255)])
     part("Flower_Stem", (0.14, 1.1, 0.14), (x, y + 0.55, z), color=(60, 90, 50),
          material="Grass", cancollide=False)
@@ -1494,6 +1980,7 @@ def flower(x, z, y):
 
 
 def fallen_log(x, z, y):
+    y = sy(x, z, y)
     ln = rng.uniform(6, 10)
     yaw = rng.uniform(0, 360)
     part("Log", (ln, 1.3, 1.3), (x, y + 0.6, z), yaw=yaw, color=(78, 60, 44),
@@ -1507,12 +1994,14 @@ def fallen_log(x, z, y):
 
 
 def stone_pile(x, z, y):
+    y = sy(x, z, y)
     rock(x, z, y, 0.6, "Rock", (96, 96, 100))
     rock(x + rng.uniform(-2, 2), z + rng.uniform(-2, 2), y, 0.4, "Rock",
          (110, 110, 114))
 
 
 def ruin_fragment(x, z, y):
+    y = sy(x, z, y)
     if rng.random() < 0.5:
         v_cyl("RuinFrag_Column", x, z, y, rng.uniform(2, 5), 2.6, (172, 170, 160),
               "Marble", tilt_pitch=rng.uniform(-14, 14), tilt_roll=rng.uniform(-14, 14))
@@ -1723,47 +2212,136 @@ def crate_stack(x, z, y):
 
 # ------------------------- вулкан ------------------------------------------
 def volcano(cx, cz, gy):
-    """Вулкан с жерлом, лавовым водопадом и паркуром на платформах."""
-    w = 210
-    y = gy
-    hts = [30, 27, 24, 21, 18]
-    cols = [(54, 48, 52), (60, 52, 54), (66, 56, 56), (74, 60, 58), (82, 66, 62)]
-    for i, hh in enumerate(hts):
-        part("Volcano_Tier%d" % i, (w, hh, w),
-             (cx + rng.uniform(-6, 6), y + hh / 2, cz + rng.uniform(-6, 6)),
-             yaw=rng.uniform(0, 90), color=cols[i], material="Basalt")
-        y += hh
-        w *= 0.72
-    # жерло
-    disc("Volcano_Rim", cx, cz, y + 1.5, 32, 3, (48, 42, 46), "Basalt")
-    disc("Volcano_Lava", cx, cz, y + 2.6, 20, 1.2, (255, 96, 18), "Neon",
-         light=dict(brightness=2.2, range=90, color=(255, 120, 40), shadows=True))
-    part("Volcano_Smoke", (0.1, 0.1, 0.1), (cx, y + 8, cz), transparency=1,
-         cancollide=False,
-         fire=dict(size=14, heat=2, color=(90, 90, 96), secondary=(40, 40, 46)))
-    # лавовый водопад по южному склону
-    for i, (oy, ln, pitch) in enumerate([(0, 42, 0), (-40, 40, 14), (-76, 38, 26)]):
-        part("Volcano_LavaFall", (11, ln, 3),
-             (cx, y - 4 + oy - ln / 2 * math.cos(math.radians(pitch)),
-              cz + 20 + ln / 2 * math.sin(math.radians(pitch))),
-             pitch=pitch, color=(255, 96, 18), material="Neon", cancollide=False,
-             light=dict(brightness=1.4, range=30, color=(255, 110, 30))
-             if i == 0 else None)
-    lava_pool(cx, cz + 92, gy, 26)
-    # паркур: деревянные платформы по спирали к жерлу
-    import math as _m
-    for i in range(9):
-        a = 1.2 + i * 0.75
-        rr = 95 - i * 6.5
-        py = gy + 8 + i * 9.5
-        px, pz = cx + _m.sin(a) * rr, cz + _m.cos(a) * rr
-        part("Volcano_Plank%d" % i, (6.5, 0.9, 6.5), (px, py, pz), yaw=i * 30,
-             color=(74, 58, 44), material="WoodPlanks")
+    """v9: ОГРОМНЫЙ вулкан — рваный кратер, лавовые реки по 4 склонам,
+    пепельные шлейфы, обсидиановые шипы, паркур внутрь кратера и логово."""
+    add_flat(cx, cz, 300, gy, 90.0)
+
+    # --- конус: 16 колец, каждое на 2.4 студа выше, отступ 9 студов ---
+    n = 26
+    tier_h = 2.4
+    w = 300.0
+    for i in range(n):
+        y = gy + i * tier_h
+        t = i / float(n)
+        col = (int(48 + t * 34), int(42 + t * 30), int(46 + t * 26))
+        cnt = max(10, int(w * 2.2 / 26))
+        for k in range(cnt):
+            a = math.pi * 2 * k / cnt + i * 0.13
+            rr = w / 2.0 + rng.uniform(-4, 4)
+            px = cx + math.sin(a) * rr
+            pz = cz + math.cos(a) * rr
+            part("Volcano_Ring%d_%d" % (i, k), (20, tier_h + 0.4, 20),
+                 (px, y + tier_h / 2, pz), yaw=math.degrees(a) + rng.uniform(-14, 14),
+                 color=col, material="Basalt")
+        w = max(46.0, w - 9.4)
+
+    rim_y = gy + n * tier_h
+    # --- рваный край кратера ---
+    for k in range(30):
+        a = math.pi * 2 * k / 30
+        rr = rng.uniform(24, 34)
+        px, pz = cx + math.sin(a) * rr, cz + math.cos(a) * rr
+        part("Volcano_Rim", (rng.uniform(6, 12), rng.uniform(4, 9), rng.uniform(6, 12)),
+             (px, rim_y + rng.uniform(1, 4), pz), yaw=rng.uniform(0, 360),
+             pitch=rng.uniform(-16, 16), color=(40, 36, 40), material="Basalt")
+    # --- лавовое озеро в жерле ---
+    disc("Volcano_Lava", cx, cz, rim_y - 1.2, 26, 2.0, (255, 96, 18), "Neon",
+         light=dict(brightness=3.0, range=140, color=(255, 120, 40), shadows=True))
+    disc("Volcano_LavaCore", cx, cz, rim_y - 0.8, 14, 1.2, (255, 190, 60), "Neon",
+         light=dict(brightness=2.2, range=60, color=(255, 180, 70)))
+    # пузыри лавы
+    for _ in range(10):
+        a = rng.uniform(0, math.pi * 2)
+        rr = rng.uniform(2, 20)
+        part("Volcano_Bubble", (rng.uniform(3, 7), 1.4, rng.uniform(3, 7)),
+             (cx + math.sin(a) * rr, rim_y - 0.7, cz + math.cos(a) * rr),
+             shape="Ball", color=(255, 170, 50), material="Neon", cancollide=False)
+
+    # --- пепельный шлейф и жар ---
+    for i in range(4):
+        part("Volcano_AshPlume", (0.1, 0.1, 0.1), (cx + rng.uniform(-8, 8),
+             rim_y + 12 + i * 24, cz + rng.uniform(-8, 8)), transparency=1,
+             cancollide=False,
+             fire=dict(size=18 + i * 5, heat=1.4, color=(72, 68, 74),
+                       secondary=(34, 32, 36)))
+    part("Volcano_Heat", (0.1, 0.1, 0.1), (cx, rim_y + 3, cz), transparency=1,
+         cancollide=False, fire=dict(size=16, heat=4, color=(255, 150, 60),
+                                     secondary=(180, 70, 20)))
+
+    # --- ЛАВОВЫЕ РЕКИ по четырём склонам ---
+    for si, base_ang in enumerate((0.0, 1.6, 3.2, 4.7)):
+        runw = w
+        for i in range(n):
+            t = i / float(n)
+            y = rim_y - i * tier_h
+            rr = (runw * 0.5) * (1.0 - t * 0.0)
+            runw = max(46.0, runw + 9.4) if False else runw
+        # проще: строим по кольцам сверху вниз
+        for i in range(n):
+            t = i / float(n)
+            y = rim_y - i * tier_h
+            ring = 300.0 - i * 9.4
+            if ring < 52:
+                ring = 52
+            a = base_ang + math.sin(t * 6.0) * 0.22
+            px = cx + math.sin(a) * (ring * 0.52)
+            pz = cz + math.cos(a) * (ring * 0.52)
+            part("Volcano_LavaRiver", (rng.uniform(7, 12), 1.1, 15),
+                 (px, y + 0.9, pz), yaw=math.degrees(a) + rng.uniform(-10, 10),
+                 color=(255, 104, 22), material="Neon", cancollide=False,
+                 light=dict(brightness=1.1, range=26, color=(255, 120, 40))
+                 if i % 4 == 0 else None)
+    # лавовые озёра у подножия
+    for a in (0.0, 1.6, 3.2, 4.7):
+        lava_pool(cx + math.sin(a) * 210, cz + math.cos(a) * 210, gy, 30)
+
+    # --- обсидиановые шипы вокруг ---
+    for _ in range(70):
+        a = rng.uniform(0, math.pi * 2)
+        rr = rng.uniform(170, 300)
+        hh = rng.uniform(10, 32)
+        part("Volcano_Spike", (rng.uniform(3, 7), hh, rng.uniform(3, 7)),
+             (cx + math.sin(a) * rr, gy + hh / 2 - 1, cz + math.cos(a) * rr),
+             yaw=rng.uniform(0, 360), pitch=rng.uniform(-12, 12),
+             color=(30, 27, 34), material="Basalt")
+
+    # --- паркур по спирали к краю кратера ---
+    for i in range(14):
+        a = 1.0 + i * 0.62
+        rr = 250 - i * 13
+        py = gy + 10 + i * 12
+        px, pz = cx + math.sin(a) * rr, cz + math.cos(a) * rr
+        part("Volcano_Plank%d" % i, (8.5, 1.0, 8.5), (px, py, pz), yaw=i * 27,
+             color=(70, 56, 44), material="WoodPlanks")
         if i % 3 == 2:
-            torch_wall(px, pz + 3, py, 0)
-    part("Volcano_Summit", (9, 1, 9), (cx + 14, y - 2, cz + 14), color=(74, 58, 44),
-         material="WoodPlanks")
-    chest_marker(cx + 14, cz + 14, y - 1.4, "Volcano")
+            torch_wall(px, pz + 4, py, 0)
+
+    # --- смотровая площадка на кромке + сундук ---
+    part("Volcano_Summit", (16, 1.2, 16), (cx + 40, rim_y + 1.0, cz + 40),
+         color=(78, 60, 46), material="WoodPlanks")
+    for sx, sz in ((-7, -7), (7, -7), (-7, 7), (7, 7)):
+        part("Volcano_SummitPost", (0.8, 4, 0.8), (cx + 40 + sx, rim_y + 3.0, cz + 40 + sz),
+             color=(84, 64, 46), material="Wood")
+    chest_marker(cx + 40, cz + 40, rim_y + 1.6, "Volcano")
+
+    # --- пещеры у подножия (логово) ---
+    for k, a in enumerate((0.9, 2.7, 4.4)):
+        px = cx + math.sin(a) * 260
+        pz = cz + math.cos(a) * 260
+        part("Volcano_Cave", (26, 16, 20), (px, gy + 7, pz),
+             yaw=math.degrees(a), color=(28, 24, 28), material="Basalt",
+             cancollide=False)
+        part("Volcano_CaveGlow", (4, 3, 4), (px, gy + 3, pz),
+             color=(255, 120, 40), material="Neon", cancollide=False,
+             light=dict(brightness=1.6, range=30, color=(255, 120, 40)))
+        chest_marker(px + 4, pz, gy + 1.2, "Cave%d" % k)
+
+    # --- горячие источники и пепельные камни ---
+    for _ in range(40):
+        a = rng.uniform(0, math.pi * 2)
+        rr = rng.uniform(270, 340)
+        rock(cx + math.sin(a) * rr, cz + math.cos(a) * rr, gy,
+             rng.uniform(0.9, 1.9), "Basalt", (54, 50, 54))
 
 
 # ------------------------- подводный мир -----------------------------------
@@ -1814,6 +2392,7 @@ def sea_monster_marker(mid, x, z):
 
 # ------------------------- ледяная гробница (данж) --------------------------
 def ice_spike_cluster(x, z, gy):
+    gy = sy(x, z, gy)
     """Кластер ледяных шипов (как глетчеры на белых равнинах)."""
     for i in range(rng.randint(3, 5)):
         h = rng.uniform(8, 18)
@@ -1976,77 +2555,261 @@ def build_sea(parent):
 
 
 def build_continent(parent):
-    """Единый материк по полигону: зелёная земля, пляжи, лагуны, отмели."""
+    """v9: рельефный материк. Сначала задаём "плоские пятна" под деревни,
+    лагеря, арены и дороги, затем генерируем сетку земли с холмами."""
     folder("Landmass")
-    CELL = 250.0
-    beach_cells = []
-    shelf_cells = []
-    gx = -3000
-    while gx < 3000:
-        gz = -3000
-        while gz < 3000:
-            cx, cz = gx + CELL / 2, gz + CELL / 2
-            if point_in_poly(cx, cz):
-                d = poly_edge_dist(cx, cz)
-                if d < 170:
-                    col, mat = ground_style(cx, cz)
-                    # пляж: песчаная кромка + каменный «фундамент» под водой
-                    part("Beach", (CELL, 10, CELL), (cx, -1, cz),
-                         color=(198, 182, 142), material="Sand")
-                    part("Beach_Cliff", (CELL - 6, 8, CELL - 6), (cx, -9, cz),
-                         color=(96, 92, 84), material="Rock")
-                    beach_cells.append((cx, cz))
-                else:
-                    col, mat = ground_style(cx, cz)
-                    part("Ground", (CELL, 20, CELL), (cx, -2, cz), color=col,
-                         material=mat)
-                    if d < 470:
-                        shelf_cells.append((cx, cz))
-            gz += CELL
-        gx += CELL
-    # отмели: песчаное дно и лагунная вода вдоль берега
-    for (cx, cz) in shelf_cells:
-        part("Shelf_Floor", (CELL, 2, CELL), (cx, -6.0, cz), color=(168, 156, 126),
+
+    # ---------------- плоскостные зоны (ровно, чтобы дома не висели) ----------
+    # Пепельная Пристань
+    add_flat_rect(-340, -240, 340, 440, 12.0, 70.0)
+    # Глумвуд: Тенегрив, Сердце-Древо, лагерь разбойников
+    add_flat(-1250, 330, 105, 14.0, 85.0)
+    add_flat(-1500, 50, 70, 14.0, 90.0)
+    add_flat(-1000, 320, 72, 14.0, 80.0)
+    # Костяные Поля: Хутор, кладбище, крипта, лагерь культа, врата
+    add_flat(-520, 1020, 95, 12.0, 80.0)
+    add_flat(0, 1550, 190, 12.0, 85.0)
+    add_flat(300, 1850, 90, 12.0, 85.0)
+    add_flat(300, 1200, 85, 12.0, 80.0)
+    add_flat(0, 700, 80, 8.0, 90.0)
+    # Затонувший Берег: порт, слобода, маяк, руины
+    add_flat(1750, 2600, 230, 4.0, 90.0)
+    add_flat(1350, 2180, 130, 8.4, 80.0)
+    add_flat(2150, 2100, 90, 8.4, 80.0)
+    add_flat(1600, 1450, 140, 8.4, 90.0)
+    # Морозные Пики: обитель, гробница, лагерь охотников
+    add_flat(-1750, -1150, 110, 20.0, 85.0)
+    add_flat(-2200, -1150, 100, 20.0, 80.0)
+    add_flat(-1350, -1250, 85, 20.0, 80.0)
+    # Пустоши: лагерь мародёров, руины крепости
+    add_flat(520, -1380, 85, 16.0, 80.0)
+    add_flat(250, -1850, 95, 16.0, 80.0)
+    # Топи: рыбацкий стан
+    add_flat(1050, 550, 90, 12.0, 80.0)
+
+    # ---------------- сетка земли --------------------------------------------
+    total = terrain_grid("Ground", -3780, -3780, 3760, 3760, cell=68.0, max_step=2.5)
+    print("  [рельеф] тайлов земли: %d" % total)
+    worst, lo, hi = terrain_check(-3780, -3780, 3760, 3760, cell=68.0)
+    print("  [рельеф] макс. перепад %.2f, высоты %.1f..%.1f" % (worst, lo, hi))
+
+    # пляжи по кромке материка
+    beach_ring()
+
+    # ---------------- отмели, подводные руины, валуны -------------------------
+    for _ in range(210):
+        x = rng.uniform(-2600, 2600)
+        z = rng.uniform(-2600, 2600)
+        if point_in_poly(x, z) or poly_edge_dist(x, z) > 320:
+            continue
+        part("Shelf_Floor", (120, 2, 120), (x, -6.0, z), color=(168, 156, 126),
              material="Sand")
-        part("Shelf_Water", (CELL, 7.2, CELL), (cx, -2.9, cz), color=(40, 90, 105),
+        part("Shelf_Water", (120, 7.2, 120), (x, -2.9, z), color=(40, 90, 105),
              material="Water", transparency=0.3, cancollide=False)
-    # подводная растительность и руины на отмелях
+
     kelp_n = 0
-    for (cx, cz) in shelf_cells:
-        if rng.random() < 0.4 and kelp_n < 220:
+    for _ in range(420):
+        x = rng.uniform(-2600, 2600)
+        z = rng.uniform(-2600, 2600)
+        if point_in_poly(x, z) or poly_edge_dist(x, z) > 260:
+            continue
+        if kelp_n < 220:
             for _ in range(rng.randint(1, 3)):
-                kelp(cx + rng.uniform(-90, 90), cz + rng.uniform(-90, 90))
+                kelp(x, z)
             kelp_n += 1
+
     sunken_ruins(1750, 2620)
     sea_serpent_bones(1200, 2780)
     sunken_boat(2350, 2520)
-    # прибрежные валуны на пляжах
-    for (cx, cz) in beach_cells:
-        if rng.random() < 0.25:
-            rock(cx + rng.uniform(-90, 90), cz + rng.uniform(-90, 90), 4.0, 1.2,
-                 "Rock", (110, 112, 118))
+
+    # валуны на берегу
+    for _ in range(140):
+        x = rng.uniform(-2600, 2600)
+        z = rng.uniform(-2600, 2600)
+        if not point_in_poly(x, z):
+            continue
+        d = poly_edge_dist(x, z)
+        if 12 < d < 150:
+            rock(x, z, height_at(x, z) - 0.4, rng.uniform(0.8, 1.4), "Rock",
+                 (110, 112, 118))
     endfolder()
 
 
+def beach_ring():
+    """Песчаная кромка по периметру материка — там, где рельеф выходит к морю."""
+    n = 260
+    for i in range(n):
+        a = math.pi * 2 * i / n
+        for rr in (2740, 2820, 2900):
+            x = math.sin(a) * rr
+            z = math.cos(a) * rr
+            if point_in_poly(x, z):
+                h = height_at(x, z)
+                part("Beach", (95, 6, 95), (x, h - 3.4, z),
+                     color=(198, 182, 142), material="Sand")
+                if rng.random() < 0.25:
+                    rock(x + rng.uniform(-30, 30), z + rng.uniform(-30, 30), h,
+                         rng.uniform(0.7, 1.2), "Rock", (108, 108, 114))
+                break
+
+
 def road(x0, z0, x1, z1, top_y, width=9, color=(98, 94, 90), mat="Cobblestone"):
+    """Дорога: земля вокруг выравнивается под полотно, сегменты идут по рельефу."""
     dx, dz = x1 - x0, z1 - z0
     dist = math.hypot(dx, dz)
     n = max(1, int(dist // 14))
     yaw = math.degrees(math.atan2(dx, dz))
+    # заранее выравниваем полосу земли под дорогой
+    steps = max(2, int(dist // 60))
+    for i in range(steps + 1):
+        t = i / float(steps)
+        add_flat(x0 + dx * t, z0 + dz * t, width * 2.4, top_y, 55.0)
+    prev = None
     for i in range(n + 1):
         t = i / float(n)
-        part("Road", (width, 0.5, 14), (x0 + dx * t, top_y + 0.25, z0 + dz * t),
+        px, pz = x0 + dx * t, z0 + dz * t
+        y = height_at(px, pz)
+        if prev is not None:
+            y = prev + max(-2.2, min(2.2, y - prev))
+        prev = y
+        part("Road", (width, 0.5, 14), (px, y + 0.25, pz),
              yaw=yaw, color=color, material=mat)
 
 
 def ramp(cx, cz, base_y, rise, length, width, direction):
-    """direction: '+Z','-Z','+X','-X' — куда ведёт подъём."""
+    """Пологий подъём ступенями (крутые WedgePart больше не используем —
+    земля v9 проходима сама по себе, а пандус нужен только как тропа)."""
     yaw = {"+Z": 0, "-Z": 180, "+X": 90, "-X": -90}[direction]
-    part("Ramp", (width, rise, length), (cx, base_y + rise / 2.0, cz), yaw=yaw,
-         color=(96, 92, 88), material="Cobblestone", cls="WedgePart")
+    n = max(3, int(rise / 2.2))
+    for i in range(n):
+        t = i / float(n)
+        part("RampStep", (width, 1.0, length / n + 1.0),
+             (cx, base_y + (i + 1) * rise / n, cz), yaw=yaw,
+             color=(96, 92, 88), material="Cobblestone")
 
 
 # ------------------------- ЗОНЫ --------------------------------------------
+
+
+# ============================================================================
+# v9: ДЕТАЛИЗАЦИЯ — рельефная растительность, цветы, корабли, быт
+# ============================================================================
+def forest_fill(name, x0, z0, x1, z1, density=0.55, cell=150.0,
+                trees=("tree_nice",), scale=(0.8, 1.35), bushes=True,
+                grass=True, rocks=True, flowers=None, skip=()):
+    """Заполняет область растительностью, сажая всё на рельеф."""
+    funcs = {"tree_nice": tree_nice, "tree_gloom": tree_gloom, "pine": pine,
+             "dead_tree": dead_tree, "palm_dead": palm_dead}
+    x = x0
+    while x <= x1:
+        z = z0
+        while z <= z1:
+            if point_in_poly(x, z) and rng.random() < density:
+                skip_here = False
+                for (sx, sz, sr) in skip:
+                    if math.hypot(x - sx, z - sz) < sr:
+                        skip_here = True
+                        break
+                if not skip_here:
+                    h = height_at(x, z)
+                    if h > -0.5:
+                        fn = funcs[rng.choice(trees)]
+                        fn(x + rng.uniform(-30, 30), z + rng.uniform(-30, 30), h,
+                           rng.uniform(*scale))
+                        if bushes and rng.random() < 0.6:
+                            bush(x + rng.uniform(-40, 40), z + rng.uniform(-40, 40),
+                                 h, rng.uniform(0.7, 1.3))
+                        if grass and rng.random() < 0.8:
+                            for _ in range(rng.randint(1, 4)):
+                                grass_tuft(x + rng.uniform(-45, 45),
+                                           z + rng.uniform(-45, 45), h)
+                        if rocks and rng.random() < 0.18:
+                            rock(x + rng.uniform(-40, 40), z + rng.uniform(-40, 40),
+                                 h, rng.uniform(0.6, 1.3))
+                        if flowers and rng.random() < flowers:
+                            for _ in range(rng.randint(1, 3)):
+                                flower(x + rng.uniform(-45, 45),
+                                       z + rng.uniform(-45, 45), h)
+            z += cell
+        x += cell
+
+
+def ship(cx, cz, gy, yaw=0.0, size=1.0, sails=True, col=(96, 74, 52)):
+    """Парусник: корпус, мачты, паруса, носовая фигура."""
+    L, W, H = 64 * size, 20 * size, 12 * size
+    part("Ship_Hull", (W, H, L), (cx, gy + H / 2 + 1, cz), yaw=yaw,
+         color=col, material="WoodPlanks")
+    # заострённый нос
+    nx, nz = l2w(cx, cz, yaw, 0, L / 2 + 5 * size)
+    part("Ship_Bow", (W * 0.62, H, 14 * size), (nx, gy + H / 2 + 1, nz), yaw=yaw,
+         color=col, material="WoodPlanks", cls="Part")
+    # палуба
+    part("Ship_Deck", (W - 3, 0.8, L - 6), (cx, gy + H + 1.4, cz), yaw=yaw,
+         color=(132, 104, 74), material="WoodPlanks")
+    # мачты и паруса
+    for i, off in enumerate((-L * 0.28, 0.0, L * 0.28)):
+        mx, mz = l2w(cx, cz, yaw, 0, off)
+        mh = (30 + i * 6) * size
+        part("Ship_Mast", (1.4, mh, 1.4), (mx, gy + H + mh / 2, mz), color=(78, 58, 40),
+             material="Wood")
+        if sails:
+            sx, sz = l2w(cx, cz, yaw, 0, off)
+            part("Ship_Sail", (1.0, mh * 0.62, W * 1.5), (sx, gy + H + mh * 0.58, sz),
+                 yaw=yaw, color=(228, 222, 206), material="Fabric", cancollide=False)
+        part("Ship_Yard", (2.0, 1.0, W * 1.7), (mx, gy + H + mh * 0.86, mz), yaw=yaw,
+             color=(88, 66, 46), material="Wood", cancollide=False)
+    # кормовая надстройка и штурвал
+    ax, az = l2w(cx, cz, yaw, 0, -L * 0.42)
+    part("Ship_Cabin", (W * 0.8, 7 * size, 14 * size), (ax, gy + H + 4.5, az), yaw=yaw,
+         color=(110, 84, 58), material="WoodPlanks")
+    # флаг
+    fx, fz = l2w(cx, cz, yaw, 0, L * 0.3)
+    part("Ship_Flag", (0.3, 4, 6), (fx, gy + H + 34 * size, fz), yaw=yaw,
+         color=(150, 40, 40), material="Fabric", cancollide=False)
+
+
+def dock(name, x, z, gy, length=90, width=12, yaw=0.0):
+    """Причал на сваях с фонарями и бочками."""
+    for i in range(int(length // 12) + 1):
+        px, pz = l2w(x, z, yaw, 0, -i * 12)
+        part(name + "_Plank", (width, 0.8, 13), (px, gy + 3.2, pz), yaw=yaw,
+             color=(112, 88, 62), material="WoodPlanks")
+        for sx in (-1, 1):
+            bx, bz = l2w(px, pz, yaw, sx * (width / 2 - 1), 0)
+            part(name + "_Post", (1.0, 9, 1.0), (bx, gy - 1.2, bz),
+                 color=(84, 66, 46), material="Wood")
+        if i % 3 == 0:
+            lx, lz = l2w(px, pz, yaw, width / 2 - 1.5, 0)
+            part(name + "_Lantern", (1.2, 1.6, 1.2), (lx, gy + 4.6, lz),
+                 color=(255, 200, 110), material="Neon", cancollide=False,
+                 light=dict(brightness=1.4, range=26, color=(255, 200, 110)))
+        if rng.random() < 0.3:
+            bx, bz = l2w(px, pz, yaw, rng.uniform(-3, 3), rng.uniform(-3, 3))
+            part(name + "_Barrel", (2.2, 2.6, 2.2), (bx, gy + 4.9, bz),
+                 shape="Cylinder", color=(108, 82, 56), material="WoodPlanks")
+
+
+def market_square(x, z, gy, n=6, radius=34):
+    """Рыночная площадь: лавки по кругу, флажки, бочки, ящики."""
+    for i in range(n):
+        a = math.pi * 2 * i / n
+        sx = x + math.sin(a) * radius
+        sz = z + math.cos(a) * radius
+        stall(sx, sz, gy + 0.55, yaw=math.degrees(a) + 90)
+        bx, bz = l2w(sx, sz, math.degrees(a) + 90, 0, 8)
+        part("Market_Crate", (2.0, 2.0, 2.0), (bx, gy + 1.0, bz),
+             yaw=rng.uniform(0, 90), color=(114, 88, 58), material="WoodPlanks")
+    # гирлянда флажков над площадью
+    for i in range(14):
+        a = math.pi * 2 * i / 14
+        fx, fz = x + math.sin(a) * (radius - 6), z + math.cos(a) * (radius - 6)
+        part("Market_Flag", (1.4, 1.0, 0.2), (fx, gy + 8.5, fz), yaw=math.degrees(a),
+             color=rng.choice([(200, 70, 60), (240, 200, 80), (90, 150, 210),
+                               (120, 200, 120)]),
+             material="Fabric", cancollide=False)
+    well(x, z, gy)
+
+
 
 def build_village(parent):
     folder("EmberfallVillage")
@@ -2111,6 +2874,7 @@ def build_village(parent):
     # кварталы таунхаусов — плотная городская застройка
     townhouse_row("TownRowA", -26, -110, GY, yaw=90, units=4)
     townhouse_row("TownRowB", 40, 158, GY, yaw=0, units=4)
+    market_square(0, 165, GY, n=7, radius=40)
     stall(45, 58, GY + 0.55, yaw=10)
     stall(-70, -30, GY + 0.55, yaw=70)
     stall(80, 250, GY + 0.55, yaw=250)
@@ -2155,7 +2919,7 @@ def build_village(parent):
     tree_gloom(250, 300, GY, 1.0)
 
     # --- табличка версии у спавна (проверка что открыт правильный файл) ---
-    signpost(8, 146, GY + 0.55, 0, "EMBERFALL v8\nмагия, мобы, боссы, прокачка")
+    signpost(8, 146, GY + 0.55, 0, "EMBERFALL v10\nрельеф, горы, деревни, лагеря")
 
     # --- указатели у ворот ---
     signpost(0, -214, GY, 0, "← Морозные Пики | Глумвуд ←\nПепельные Пустоши →")
@@ -2266,8 +3030,6 @@ def build_village(parent):
 def build_gloomwood(parent):
     folder("Gloomwood")
     GY = 14.0
-    slab("GloomwoodGround", -2300, -700, -700, 800, GY, 6, (72, 104, 62), "Ground")
-    plateau_skirt("GloomwoodGround", -2300, -700, -700, 800, GY, (88, 116, 66))
     ramp(-700, 100, BASE_TOP, 6, 24, 12, "-X")
 
     # Сердце-Древо
@@ -2291,8 +3053,30 @@ def build_gloomwood(parent):
     mega_mesa(-1130, -540, GY, base_w=90, h=80, snow=200)
     mega_mesa(-1320, -590, GY, base_w=76, h=68, snow=200)
 
-    # --- лагерь разбойников ---
+    # --- лагеря разбойников (3 штуки) ---
     bandit_camp(-1000, 320, GY, yaw=15, name="BanditCamp")
+    bandit_camp(-2050, 640, GY, yaw=110, name="BanditCampNorth",
+                banner_col=(130, 50, 40), ntents=3)
+    bandit_camp(-880, -430, GY, yaw=250, name="BanditCampRoad",
+                tent_cols=((80, 62, 48), (70, 56, 46)), banner_col=(100, 40, 40))
+
+    # --- деревня лесорубов ДУПЛИНО ---
+    small_village("Duplino", -1850, -320, GY, n_houses=6, radius=52,
+                  pal={"wall": (120, 96, 70), "roof": (62, 46, 34)},
+                  palisade=True, sign_text="ДУПЛИНО\\nлесорубов",
+                  well_pos=(-1850, -320))
+    for _ in range(24):
+        tx = rng.uniform(-1950, -1750)
+        tz = rng.uniform(-420, -220)
+        fallen_log(tx, tz, GY)
+
+    # --- густой лес (v9): сажаем на рельеф, обходим деревни и лагеря ---
+    forest_fill("Gloomwood", -2320, -680, -700, 780, density=0.62, cell=118.0,
+                trees=("tree_gloom", "tree_gloom", "tree_nice", "dead_tree"),
+                scale=(0.85, 1.5),
+                skip=[(-1250, 330, 130), (-1500, 50, 90), (-1000, 320, 95),
+                      (-2050, 640, 90), (-880, -430, 85), (-1850, -320, 120),
+                      (-1150, -450, 90), (-2290, 570, 80)])
 
     # --- ТЕНЕГРИВ: лесная деревня (дома, лавка, колодец, огород, палисад) ---
     house("Tenegriv_HouseA", -1250, 330, GY, 13, 10, 8, yaw=12, wall=(96, 78, 58),
@@ -2403,10 +3187,27 @@ def build_gloomwood(parent):
 
 def build_frostpeak(parent):
     folder("Frostpeak")
-    slab("FrostT1", -2300, -2300, -900, -1000, 20, 6, (216, 222, 232), "Snow")
-    slab("FrostT2", -2100, -2100, -1100, -1200, 32, 16, (210, 218, 230), "Snow")
-    slab("FrostT3", -1900, -1900, -1300, -1400, 46, 28, (168, 196, 222), "Glacier")
-    slab("FrostT4", -1750, -1750, -1450, -1550, 62, 42, (222, 228, 238), "Snow")
+    # ступенчатые склоны: наверх можно ЗАЙТИ пешком (шаг 2.4 студа)
+    add_plateau_rect(-2320, -2320, -880, -980, 20.0)
+    add_plateau_rect(-2120, -2120, -1080, -1180, 32.0)
+    add_plateau_rect(-1920, -1920, -1280, -1380, 46.0)
+    add_plateau_rect(-1770, -1770, -1430, -1530, 62.0)
+    terrace_steps("FrostT1", -2320, -2320, -880, -980, 20.0, 8.0,
+                  (216, 222, 232), "Snow", tread=13.0, step=2.4)
+    terrace_steps("FrostT2", -2120, -2120, -1080, -1180, 32.0, 20.0,
+                  (210, 218, 230), "Snow", tread=12.0, step=2.4)
+    terrace_steps("FrostT3", -1920, -1920, -1280, -1380, 46.0, 32.0,
+                  (168, 196, 222), "Glacier", tread=11.0, step=2.4)
+    terrace_steps("FrostT4", -1770, -1770, -1430, -1530, 62.0, 46.0,
+                  (222, 228, 238), "Snow", tread=10.0, step=2.4)
+    # ледяные торосы по склонам для фактуры
+    for _ in range(70):
+        tx = rng.uniform(-2280, -900)
+        tz = rng.uniform(-2280, -1000)
+        hh = rng.uniform(3, 9)
+        part("FrostRidge", (rng.uniform(3, 7), hh, rng.uniform(3, 7)),
+             (tx, 20 + rng.uniform(0, 10), tz), yaw=rng.uniform(0, 360),
+             pitch=rng.uniform(-12, 12), color=(198, 216, 232), material="Glacier")
 
     ramp(-1100, -1650, 20, 12, 40, 16, "-X")
     ramp(-1300, -1550, 32, 14, 44, 16, "-X")
@@ -2438,7 +3239,7 @@ def build_frostpeak(parent):
     waterfall(-1050, -2640, 8.0, 0.5, width=26, yaw=0)
 
     # Горная Обитель — деревня у подножия
-    hamlet_excl = [(-1750, -1150, 40), (-1750, -1500, 60)]
+    hamlet_excl = [(-1750, -1150, 40), (-2200, -1150, 60)]
     house("Hamlet_HouseA", -1750, -1150, 20, 14, 11, 8, yaw=15)
     house("Hamlet_HouseB", -1786, -1120, 20, 12, 10, 8, yaw=-20)
     house("Hamlet_HouseC", -1716, -1186, 20, 12, 10, 8, yaw=100)
@@ -2449,12 +3250,19 @@ def build_frostpeak(parent):
         px, pz = -1750 + math.sin(a) * 52, -1150 + math.cos(a) * 52
         part("Hamlet_Palisade", (1.1, 7, 1.1), (px, 20 + 3.1, pz),
              yaw=math.degrees(a), color=(88, 70, 52), material="Wood")
-    signpost(-1712, -1120, 20, -45, "Горная Обитель\n← Ледяная Гробница")
+    signpost(-1712, -1120, 20, -45, "Горная Обитель\n← Ледяная Гробница (-450)")
     lamppost(-1735, -1140, 20)
     lamppost(-1765, -1170, 20)
 
+    # --- деревня ВЕТРОГРАД на второй террасе ---
+    small_village("Vetrograd", -1500, -1350, 32.0, n_houses=5, radius=46,
+                  pal={"wall": (200, 204, 210), "roof": (110, 128, 150)},
+                  wall_mat="Concrete", roof_mat="Slate", palisade=True,
+                  sign_text="ВЕТРОГРАД\\nсеверные охотники",
+                  well_pos=(-1500, -1350))
+
     # Ледяная Гробница — подземелье с боссом Морозным Призраком
-    ice_tomb(-1750, -1500, 20, yaw=0)
+    ice_tomb(-2200, -1150, 20, yaw=25)
 
     # Ледовый паркур к арене Колосса
     parkour_rocks((-1400, -1520), (-1560, -1660), 22, 60, 10,
@@ -2531,11 +3339,7 @@ def build_frostpeak(parent):
 def build_ashwaste(parent):
     folder("Ashwaste")
     GY = 16.0
-    slab("AshGround", -800, -2500, 1000, -1100, GY, 6, (130, 98, 84), "Basalt")
-    plateau_skirt("AshGround", -800, -2500, 1000, -1100, GY, (112, 96, 78),
-                  mat="Basalt")
-    slab("AshCracked", -600, -2300, 800, -1300, GY + 0.2, GY - 1.8, (104, 82, 70),
-         "CrackedLava")
+    lava_field(-700, -2400, 900, -1200)
 
     # перешеек из деревни: дорога через бывший пролив и подъём
     road(0, -690, 0, -1110, 8.0, width=9)
@@ -2583,6 +3387,36 @@ def build_ashwaste(parent):
                 banner_col=(180, 60, 30), name="MarauderCamp")
 
     fortress_ruins(250, -1850, GY)
+
+    # --- мёртвый лес Пустошей ---
+    forest_fill("AshDead", -780, -2450, 980, -1150, density=0.32, cell=170.0,
+                trees=("dead_tree",), scale=(0.9, 1.6), bushes=False,
+                skip=[(300, -2250, 330), (100, -2100, 150), (520, -1380, 110),
+                      (250, -1850, 120), (-350, -1550, 110)])
+
+    # --- ФОРТ МАРОДЁРОВ: частокол, башни, костры ---
+    add_flat(-350, -1550, 95, GY, 80.0)
+    for i in range(34):
+        a = math.pi * 2 * i / 34
+        if angle_gap(a, 1.0) < 0.22:
+            continue
+        px, pz = -350 + math.sin(a) * 62, -1550 + math.cos(a) * 62
+        part("MarauderFort_Stake", (1.4, 8.5, 1.4), (px, GY + 4.0, pz),
+             yaw=math.degrees(a), color=(72, 58, 46), material="Wood")
+    for i in range(4):
+        a = math.pi * 2 * i / 4 + 0.4
+        px, pz = -350 + math.sin(a) * 62, -1550 + math.cos(a) * 62
+        v_cyl("MarauderFort_Tower", px, pz, GY, 14, 9, (66, 54, 44), "Wood")
+        part("MarauderFort_Deck", (11, 1, 11), (px, GY + 14.4, pz),
+             color=(78, 62, 48), material="WoodPlanks")
+        truss("MarauderFort_Ladder", (2, 12, 2), (px + 5.4, GY + 6, pz))
+    tent(-350, -1580, GY, yaw=20, w=9, d=11, h=5.4, color=(70, 58, 48))
+    tent(-320, -1530, GY, yaw=100, w=8, d=10, h=5.0, color=(62, 52, 44))
+    tent(-380, -1520, GY, yaw=250, w=8, d=10, h=5.0, color=(58, 48, 42))
+    campfire(-350, -1550, GY)
+    chest_marker(-336, -1562, GY + 0.6, "MarauderFort")
+    part("MarauderFort_Banner", (3.4, 6.0, 0.2), (-350, GY + 10.0, -1488),
+         color=(180, 60, 30), material="Fabric", cancollide=False)
     boss_arena_circular("AshArena", 100, -2100, GY, r=65, pillar_col=(38, 35, 42),
                         pillar_mat="Basalt", boss_id="Ashlord")
     for i in range(8):
@@ -2594,8 +3428,7 @@ def build_ashwaste(parent):
 def build_mirefen(parent):
     folder("Mirefen")
     GY = 12.0
-    slab("MirefenGround", 700, -900, 2300, 1000, GY, 6, (130, 110, 64), "Mud")
-    plateau_skirt("MirefenGround", 700, -900, 2300, 1000, GY, (118, 118, 68))
+    swamp_field(740, -860, 2260, 960)
     ramp(700, 100, BASE_TOP, 4, 16, 12, "+X")
 
     # центральный водоём и арена
@@ -2672,7 +3505,7 @@ def build_mirefen(parent):
 def build_sunken_coast(parent):
     folder("SunkenCoast")
     GY = 8.4
-    slab("CoastSand", 800, 900, 2400, 2300, GY, 6.4, (200, 184, 142), "Sand")
+    sand_field(820, 920, 2380, 2280)
     slab("CoastGrass", 900, 1000, 2200, 2150, GY + 0.4, GY - 1.6, (120, 130, 80),
          "Ground")
 
@@ -2705,6 +3538,27 @@ def build_sunken_coast(parent):
                                         (1745, 2745, 80)]):
         part("Port_Rowboat%d" % i, (10, 1.6, 3.4), (bx, 1.0, bz), yaw=byaw,
              color=(84, 62, 44), material="Wood", cancollide=False)
+
+    # --- пальмы и прибрежный колорит ---
+    forest_fill("CoastPalm", 850, 950, 2300, 2250, density=0.34, cell=150.0,
+                trees=("palm_dead",), scale=(0.9, 1.4), bushes=False,
+                skip=[(1750, 2600, 260), (1350, 2180, 150), (2150, 2100, 110),
+                      (1180, 1600, 110), (2250, 1750, 110)])
+
+    # --- пиратская бухта и деревня контрабандистов ---
+    bandit_camp(2250, 1750, 8.4, yaw=300, tent_cols=((64, 54, 44), (56, 48, 42)),
+                banner_col=(150, 40, 60), name="PirateCove", ntents=3)
+    small_village("Kontrabanda", 1180, 1600, 8.4, n_houses=5, radius=46,
+                  pal={"wall": (140, 126, 108), "roof": (86, 70, 52)},
+                  sign_text="КОНТРАБАНДА\\nбухта", well_pos=(1180, 1600))
+
+    # --- корабли в порту ---
+    ship(1830, 2760, 2.0, yaw=190, size=1.0)
+    ship(1600, 2810, 2.0, yaw=205, size=0.8)
+    ship(2050, 2720, 2.0, yaw=170, size=1.15)
+    dock("PortDockA", 1750, 2660, 2.0, length=110, width=13, yaw=0)
+    dock("PortDockB", 1880, 2650, 2.0, length=84, width=11, yaw=15)
+    dock("PortDockC", 1620, 2680, 2.0, length=70, width=10, yaw=-12)
 
     # --- Рыбацкая слобода ---
     fx, fz = 1350, 2180
@@ -2761,8 +3615,6 @@ def build_sunken_coast(parent):
 def build_bonefields(parent):
     folder("Bonefields")
     GY = 12.0
-    slab("BoneGround", -900, 800, 900, 2300, GY, 6, (140, 144, 94), "Ground")
-    plateau_skirt("BoneGround", -900, 800, 900, 2300, GY, (118, 128, 78))
     ramp(0, 908, BASE_TOP, 4, 16, 12, "+Z")
 
     # кладбище
@@ -2799,6 +3651,18 @@ def build_bonefields(parent):
     # лагерь культа у кладбища
     bandit_camp(300, 1200, GY, yaw=160, tent_cols=((60, 50, 66), (52, 44, 60)),
                 banner_col=(120, 40, 160), name="CultCamp", ntents=3)
+
+    # --- редколесье и кости ---
+    forest_fill("BoneTrees", -880, 820, 880, 2280, density=0.26, cell=175.0,
+                trees=("dead_tree", "tree_gloom"), scale=(0.8, 1.3),
+                skip=[(0, 1550, 210), (300, 1850, 110), (300, 1200, 105),
+                      (-520, 1020, 120), (620, 1450, 100)])
+
+    # --- деревня могильщиков СУХОЙ ЛОГ ---
+    small_village("SuhoyLog", 620, 1450, 12.0, n_houses=4, radius=42,
+                  pal={"wall": (128, 124, 104), "roof": (72, 70, 60)},
+                  palisade=True, sign_text="СУХОЙ ЛОГ\\nмогильщики",
+                  well_pos=(620, 1450))
 
     # --- ХУТОР ОВРАЖНЫЙ: фермерская деревня ---
     house("Khutor_HouseA", -520, 1020, GY, 13, 10, 8, yaw=8, wall=(150, 128, 96),
@@ -2970,6 +3834,7 @@ def build_islands(parent):
     spots = [(3300, -900), (-3400, 700), (900, 3400), (-1600, -3300), (2900, 2900)]
     for i, (x, z) in enumerate(spots):
         r = rng.uniform(55, 85)
+        add_plateau_circle(x, z, r * 1.05, 4.0)
         disc("Island%d_Sand" % i, x, z, 4.0, r, 6, (188, 172, 134), "Sand")
         part("Island%d_Hill" % i, (r * 0.9, 14, r * 0.9), (x, 8, z), yaw=rng.uniform(0, 90),
              color=(90, 92, 98), material="Rock")
@@ -2981,6 +3846,207 @@ def build_islands(parent):
         rock(x + rng.uniform(-r / 2, r / 2), z + rng.uniform(-r / 2, r / 2), 4.0, 1.2,
              "Rock", (90, 92, 98))
     endfolder()
+
+
+# ============================================================================
+# v9: НОВЫЕ ЗЕМЛИ — предгорья, архипелаг, южные острова
+# ============================================================================
+def build_highlands(parent):
+    """Дымные Предгорья (юго-запад): высокие холмы, шахты, деревня Каменный Брод."""
+    folder("Highlands")
+    GY = 26.0
+    add_flat(-2900, 1900, 150, 26.0, 90.0)      # Каменный Брод
+    add_flat(-2750, 2450, 95, 26.0, 80.0)       # шахта
+    add_flat(-3150, 1400, 90, 26.0, 80.0)       # лагерь горных бандитов
+
+    # деревня Каменный Брод
+    for i, (dx, dz, yaw) in enumerate([(-30, -20, 12), (26, -18, -20),
+                                       (4, 34, 96), (-34, 22, 200), (36, 26, 70)]):
+        house("KamenBrod_House%d" % i, -2900 + dx, 1900 + dz, GY, 13, 10, 8,
+              yaw=yaw, wall=(150, 140, 124), roof=(92, 74, 58), wall_mat="Slate")
+    well(-2896, 1912, GY)
+    smithy(-2934, 1876, GY, yaw=20)
+    stall(-2870, 1878, GY + 0.55, yaw=-30)
+    lamppost(-2880, 1930, GY)
+    lamppost(-2920, 1886, GY)
+    signpost(-2850, 1900, GY, 90, "КАМЕННЫЙ БРОД\nшахты предгорий")
+    for i in range(22):
+        a = math.pi * 2 * i / 22
+        if angle_gap(a, 1.4) < 0.36:
+            continue
+        px, pz = -2900 + math.sin(a) * 62, 1900 + math.cos(a) * 62
+        part("Brod_Palisade", (1.1, 6.4, 1.1), (px, GY + 2.8, pz),
+             yaw=math.degrees(a), color=(96, 78, 58), material="Wood")
+
+    # шахта: вход в скале, рельсы, вагонетка, фонари
+    rock(-2750, 2462, GY, 3.0, "Rock", (108, 106, 104))
+    part("Mine_Entrance", (10, 9, 5), (-2750, GY + 4.5, 2452),
+         color=(56, 50, 46), material="Basalt", cancollide=False)
+    for sx in (-6, 6):
+        part("Mine_Beam", (1.2, 9.6, 1.2), (-2750 + sx, GY + 4.8, 2445),
+             color=(84, 62, 44), material="Wood")
+    part("Mine_Lintel", (14, 1.4, 1.4), (-2750, GY + 9.4, 2445),
+         color=(84, 62, 44), material="Wood")
+    for i in range(9):
+        part("Mine_Rail", (1.0, 0.4, 3.0), (-2750, GY + 0.55, 2436 - i * 6),
+             color=(96, 96, 102), material="Metal")
+    part("Mine_Cart", (4.4, 3.0, 5.4), (-2750, GY + 2.2, 2400),
+         color=(90, 74, 58), material="WoodPlanks")
+    part("Mine_CartOre", (3.4, 1.2, 4.0), (-2750, GY + 3.9, 2400),
+         color=(150, 120, 80), material="Cobblestone")
+    chest_marker(-2742, 2398, GY + 0.6, "Mine")
+    torch_wall(-2742, 2444, GY + 4.0, 0)
+    torch_wall(-2758, 2444, GY + 4.0, 0)
+
+    # лагерь горных бандитов на выступе
+    bandit_camp(-3150, 1400, GY, yaw=75, tent_cols=((88, 70, 54), (76, 62, 50)),
+                banner_col=(120, 70, 30), name="HighlandBandits", ntents=3)
+
+    # горы и каменные гряды
+    mega_mesa(-3250, 2350, GY, base_w=190, h=135, snow=400)
+    mega_mesa(-2650, 2900, GY, base_w=165, h=110, snow=400)
+    mega_mesa(-3450, 950, GY, base_w=150, h=98, snow=400)
+    for _ in range(90):
+        x, z = rng.uniform(-3500, -2300), rng.uniform(900, 3000)
+        if math.hypot(x + 2900, z - 1900) < 110 or math.hypot(x + 2750, z - 2450) < 90:
+            continue
+        rock(x, z, sy(x, z, GY), rng.uniform(0.9, 1.8), "Granite", (118, 116, 112))
+    for _ in range(45):
+        x, z = rng.uniform(-3500, -2300), rng.uniform(900, 3000)
+        pine(x, z, sy(x, z, GY), rng.uniform(0.9, 1.5))
+
+    # --- цветы и мелкий быт Предгорий ---
+    for _ in range(420):
+        fx, fz = rng.uniform(-3400, -2300), rng.uniform(1000, 2900)
+        if point_in_poly(fx, fz) and rng.random() < 0.6:
+            flower(fx, fz, height_at(fx, fz))
+    for _ in range(60):
+        x, z = rng.uniform(-3400, -2400), rng.uniform(1000, 2900)
+        if rng.random() < 0.4:
+            stone_pile(x, z, height_at(x, z))
+    endfolder()
+
+
+def build_archipelago(parent):
+    """Северный архипелаг: 6 островов с руинами, гробницами и пиратской бухтой."""
+    folder("Archipelago")
+    isles = [
+        (-2000, -3400, 200, "FrostIsle"),
+        (-1150, -3500, 165, "RuinIsle"),
+        (-300, -3450, 185, "WolfIsle"),
+        (700, -3400, 175, "BoneIsle"),
+        (1650, -3300, 190, "PirateIsle"),
+        (2500, -3050, 160, "SmokeIsle"),
+    ]
+    for i, (x, z, r, tag) in enumerate(isles):
+        add_plateau_circle(x, z, r * 1.05, 14.0)
+        disc(tag + "_Base", x, z, 6.0, r, 12, (176, 168, 140), "Sand")
+        disc(tag + "_Hill", x, z, 14.0, r * 0.72, 22, (104, 122, 84), "Ground")
+        # скальное основание
+        disc(tag + "_Rock", x, z, 0.5, r * 1.02, 16, (88, 88, 92), "Rock")
+        for _ in range(14):
+            a = rng.uniform(0, math.pi * 2)
+            rr = rng.uniform(0, r * 0.6)
+            tree_gloom(x + math.sin(a) * rr, z + math.cos(a) * rr, 14.0,
+                       rng.uniform(0.7, 1.1))
+        for _ in range(10):
+            a = rng.uniform(0, math.pi * 2)
+            rr = rng.uniform(r * 0.55, r * 0.95)
+            rock(x + math.sin(a) * rr, z + math.cos(a) * rr, 6.0,
+                 rng.uniform(0.8, 1.4), "Rock", (110, 110, 116))
+
+    # руины и достопримечательности по островам
+    ruin_columns(-1150, -3500, 14.0, n=10, spread=80)
+    ice_tomb(-2000, -3400, 14.0, yaw=20)
+    bandit_camp(1650, -3300, 14.0, yaw=40, tent_cols=((70, 58, 48), (60, 50, 44)),
+                banner_col=(40, 70, 120), name="PirateCove", ntents=3)
+    watch_tower(-300, -3450, 14.0, tag="WolfIsle")
+    crypt(700, -3400, 14.0)
+    volcano(2500, -3050, 10.0)
+    for (x, z, tag) in [(-1150, -3420, "RuinIsle"), (700, -3320, "BoneIsle"),
+                        (-2000, -3320, "FrostIsle")]:
+        chest_marker(x, z, 14.8, tag)
+
+    # каменные арки-мосты между двумя ближними островами
+    for i in range(11):
+        t = i / 10.0
+        ax = -1150 + (-300 + 1150) * t
+        az = -3500 + (-3450 + 3500) * t
+        part("ArchBridge", (26, 1.2, 16), (ax, 15.0 + math.sin(t * math.pi) * 8, az),
+             yaw=math.degrees(math.atan2(-300 + 1150, -3450 + 3500)),
+             color=(120, 116, 108), material="Cobblestone")
+    endfolder()
+
+
+def build_south_isles(parent):
+    """Южные острова: рыбацкие деревни, маяк-близнец, коралловые отмели."""
+    folder("SouthIsles")
+    isles = [
+        (-900, 3400, 210, "FisherIsle"),
+        (500, 3450, 180, "CornIsle"),
+        (2100, 3300, 200, "TwinLightIsle"),
+        (3100, 2400, 170, "CoralIsle"),
+    ]
+    for (x, z, r, tag) in isles:
+        add_plateau_circle(x, z, r * 1.05, 12.0)
+        disc(tag + "_Base", x, z, 5.0, r, 10, (200, 186, 148), "Sand")
+        disc(tag + "_Ground", x, z, 12.0, r * 0.7, 18, (108, 130, 80), "Ground")
+        for _ in range(16):
+            a = rng.uniform(0, math.pi * 2)
+            rr = rng.uniform(0, r * 0.65)
+            palm_dead(x + math.sin(a) * rr, z + math.cos(a) * rr, 12.0, 1.1)
+        for _ in range(8):
+            a = rng.uniform(0, math.pi * 2)
+            rr = rng.uniform(r * 0.5, r * 0.95)
+            rock(x + math.sin(a) * rr, z + math.cos(a) * rr, 5.0,
+                 rng.uniform(0.7, 1.3), "Rock", (116, 112, 104))
+
+    # деревня рыбаков
+    for i, (dx, dz, yaw) in enumerate([(-26, -16, 10), (24, -20, -14), (2, 30, 90)]):
+        house("Fisher_House%d" % i, -900 + dx, 3400 + dz, 12.0, 12, 9, 7,
+              yaw=yaw, wall=(150, 132, 104), roof=(74, 92, 96))
+    for i in range(4):
+        part("Fisher_Pier", (5, 1, 34), (-900 + i * 16, 8.0, 3400 + 150),
+             color=(96, 78, 58), material="WoodPlanks")
+    campfire(-880, 3400, 12.0)
+    chest_marker(-870, 3410, 12.6, "FisherIsle")
+
+    # маяк-близнец
+    lighthouse(2100, 3300, 12.0)
+    lighthouse(2260, 3300, 12.0)
+    lighthouse(3100, 2400, 10.0)
+    for i, (x, z) in enumerate([(500, 3450), (2100, 3260), (3100, 2360)]):
+        crystal(x, z, 12.0, 1.2, rng.choice(["cyan", "violet"]))
+    farm_field(500, 3450, 12.55, 26, 18, yaw=20)
+    scarecrow(500, 3430, 12.55)
+    endfolder()
+
+
+
+def build_trade_routes(parent):
+    """Торговые пути по новым землям + мосты через проливы."""
+    folder("TradeRoutes")
+    road(-2900, 1500, -1100, 1350, 20.0, width=10, color=(104, 98, 88))
+    road(-1100, 1350, -200, 1200, 16.0, width=10, color=(104, 98, 88))
+    road(1650, 2200, 3080, 2400, 8.4, width=9, color=(150, 138, 110), mat="Sandstone")
+    road(700, 3300, 2100, 3300, 12.0, width=9, color=(150, 138, 110), mat="Sandstone")
+    road(-900, 3200, 200, 2600, 14.0, width=9, color=(120, 112, 96))
+    road(-2400, 2100, -2900, 1600, 26.0, width=11, color=(112, 106, 96))
+    # мосты-арки между островами архипелага
+    for i in range(12):
+        t = i / 11.0
+        ax = 1650 + (2500 - 1650) * t
+        az = -3300 + (-3050 + 3300) * t
+        part("ArchPirate", (22, 1.4, 15), (ax, 16.0 + math.sin(t * math.pi) * 7, az),
+             color=(126, 120, 110), material="Cobblestone")
+    for i in range(10):
+        t = i / 9.0
+        ax = -900 + (500 + 900) * t
+        az = 3400 + 10 * math.sin(t * math.pi)
+        part("ArchSouth", (24, 1.4, 14), (ax, 15.0 + math.sin(t * math.pi) * 6, az),
+             color=(150, 138, 112), material="Sandstone")
+    endfolder()
+
 
 
 def build_game_logic(parent):
@@ -2995,6 +4061,9 @@ def build_game_logic(parent):
     zone_trigger("SunkenCoast", 680, 880, 2420, 2320)
     zone_trigger("Bonefields", -920, 880, 920, 2320)
     zone_trigger("HollowDeep", -2330, 1730, -2070, 1970)
+    zone_trigger("Highlands", -3560, 900, -2280, 3060)
+    zone_trigger("Archipelago", -2300, -3700, 2760, -2820)
+    zone_trigger("SouthIsles", -1150, 3120, 3350, 3700)
     endfolder()
 
     folder("MobSpawns")
@@ -3032,6 +4101,41 @@ def build_game_logic(parent):
             mob_spawn(nm, j + 1, x + math.sin(a) * 9, z + math.cos(a) * 9, gy)
     endfolder()
 
+    # --- новые земли: предгорья, архипелаг, южные острова ---
+    for i, (x, z, y) in enumerate([(-3100, 1600, 26), (-2750, 2200, 26),
+                                   (-3300, 2600, 26), (-2500, 1700, 26),
+                                   (-2900, 2900, 30), (-2400, 2500, 28)]):
+        mob_spawn("Highlands", i + 1, x, z, y)
+    for i, (x, z, y) in enumerate([(-2000, -3400, 14), (-1150, -3500, 14),
+                                   (-300, -3450, 14), (700, -3400, 14),
+                                   (1650, -3300, 14), (2500, -3050, 10)]):
+        mob_spawn("Archipelago", i + 1, x, z, y)
+    for i, (x, z, y) in enumerate([(-900, 3400, 12), (500, 3450, 12),
+                                   (2100, 3300, 12), (3100, 2400, 10),
+                                   (1200, 3200, 8)]):
+        mob_spawn("SouthIsles", i + 1, x, z, y)
+
+    # больше точек в старых зонах (гуще мир)
+    for i, (x, z, y) in enumerate([(-1150, -80, 14), (-1650, -250, 14),
+                                   (-2150, 100, 14), (-800, 620, 14),
+                                   (-1900, -520, 14), (-1400, 760, 14)]):
+        mob_spawn("Gloomwood", i + 11, x, z, y)
+    for i, (x, z, y) in enumerate([(-820, 1300, 26), (-700, 1900, 28),
+                                   (620, 1600, 20), (-350, 2100, 24)]):
+        mob_spawn("Highlands", i + 7, x, z, y)
+    for i, (x, z, y) in enumerate([(900, 1300, 8.4), (1500, 1300, 8.4),
+                                   (2300, 2200, 8.4), (1000, 2500, 8.4)]):
+        mob_spawn("SunkenCoast", i + 6, x, z, y)
+    for i, (x, z, y) in enumerate([(1400, -200, 12), (1900, 400, 12),
+                                   (2200, -600, 12), (800, -700, 12)]):
+        mob_spawn("Mirefen", i + 7, x, z, y)
+    for i, (x, z, y) in enumerate([(-600, -1700, 16), (700, -2400, 16),
+                                   (-400, -2200, 16), (900, -1800, 16)]):
+        mob_spawn("Ashwaste", i + 7, x, z, y)
+    for i, (x, z, y) in enumerate([(-300, 1400, 12), (700, 2000, 12),
+                                   (-700, 1800, 12)]):
+        mob_spawn("Bonefields", i + 7, x, z, y)
+
     folder("BossSpawns")
     # боссы ставятся вместе с аренами; тут дубликатов нет
     endfolder()
@@ -3047,6 +4151,11 @@ def build_game_logic(parent):
     npc_spot("Farmer", -560, 1002, 12.0)
     npc_spot("Portmaster", 1750, 2612, 4.0)
     npc_spot("Fishmonger", 1382, 2205, 8.4)
+    npc_spot("Miner", -2750, 2420, 26.0)
+    npc_spot("Highlander", -2880, 1900, 26.0)
+    npc_spot("Pirate", 1650, -3280, 14.0)
+    npc_spot("Villager", -1500, -1330, 32.0)
+    npc_spot("Mogilshik", 620, 1440, 12.0)
     endfolder()
 
     folder("ArenaTriggers")
@@ -3324,7 +4433,7 @@ local SPOTS = {
 	{ cmds = {"!каньон", "!deep"},     pos = Vector3.new(-860, 14, 1450),   name = "Вход в Полую Бездну" },
 	{ cmds = {"!трон", "!king"},       pos = Vector3.new(-2200, 16, 1850),  name = "Трон Безымянного Короля" },
 	{ cmds = {"!обитель", "!hamlet"},  pos = Vector3.new(-1750, 26, -1150), name = "Горная Обитель" },
-	{ cmds = {"!гробница", "!tomb"},   pos = Vector3.new(-1750, 26, -1460), name = "Ледяная Гробница (данж)" },
+	{ cmds = {"!гробница", "!tomb"},   pos = Vector3.new(-2200, 26, -1120), name = "Ледяная Гробница (данж)" },
 	{ cmds = {"!обзор", "!view"},      pos = Vector3.new(-548, 42, 156),    name = "Круча Дозора (сундук)" },
 	{ cmds = {"!сундук", "!chest"},    pos = Vector3.new(2712, 10, 2600),   name = "Остров-спутник (сундук)" },
 	{ cmds = {"!тенегрив", "!tenegriv"}, pos = Vector3.new(-1250, 20, 330), name = "Тенегрив (лесная деревня)" },
@@ -3336,6 +4445,18 @@ local SPOTS = {
 	{ cmds = {"!батарея", "!cannon"},  pos = Vector3.new(1930, 10, 2650),   name = "Береговая батарея" },
 	{ cmds = {"!пост", "!outpost"},    pos = Vector3.new(-556, 12, -216),   name = "Форт-пост Запад" },
 	{ cmds = {"!водопадр", "!riverfall"}, pos = Vector3.new(-1047, 16, 840), name = "Водопад Западной реки" },
+	-- v9: новые земли
+	{ cmds = {"!предгорья", "!highlands"}, pos = Vector3.new(-2900, 34, 1900), name = "Предгорья — Каменный Брод" },
+	{ cmds = {"!шахта", "!mine"},       pos = Vector3.new(-2750, 34, 2420), name = "Шахта предгорий" },
+	{ cmds = {"!архипелаг", "!arch"},   pos = Vector3.new(-1150, 22, -3450), name = "Северный архипелаг" },
+	{ cmds = {"!пираты", "!cove"},      pos = Vector3.new(1650, 22, -3280), name = "Пиратская бухта" },
+	{ cmds = {"!юг", "!south"},         pos = Vector3.new(-900, 20, 3380), name = "Южные острова — рыбаки" },
+	{ cmds = {"!маякблизнец", "!twin"}, pos = Vector3.new(2100, 20, 3280), name = "Маяки-близнецы" },
+	{ cmds = {"!ветроград", "!wind"},   pos = Vector3.new(-1500, 40, -1330), name = "Ветроград (Морозные Пики)" },
+	{ cmds = {"!дуплино", "!wood"},     pos = Vector3.new(-1850, 22, -320), name = "Деревня лесорубов Дуплино" },
+	{ cmds = {"!гнильцы", "!swamp"},    pos = Vector3.new(1750, 20, 700), name = "Деревня на сваях Гнильцы" },
+	{ cmds = {"!форт", "!fort"},        pos = Vector3.new(-350, 24, -1480), name = "Форт мародёров" },
+	{ cmds = {"!контрабанда", "!smug"}, pos = Vector3.new(1180, 16, 1600), name = "Бухта Контрабанда" },
 }
 
 Players.PlayerAdded:Connect(function(pl)
@@ -3472,7 +4593,7 @@ def build_services():
 
 
 def main():
-    out_name = "Emberfall_Map_v8.rbxlx"
+    out_name = "Emberfall_Map_v10.rbxlx"
 
     _lines.append('<?xml version="1.0" encoding="utf-8"?>')
     _lines.append('<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" '
@@ -3517,6 +4638,27 @@ def main():
     end_props()
     end_item()
 
+    # ---- ПРОХОД 1: планировка (только рельефные "плоские пятна") ----
+    global PLANNING
+    PLANNING = True
+    build_sea(None)
+    build_village(None)
+    build_gloomwood(None)
+    build_frostpeak(None)
+    build_ashwaste(None)
+    build_mirefen(None)
+    build_sunken_coast(None)
+    build_bonefields(None)
+    build_hollow_deep(None)
+    build_trade_routes(None)
+    build_highlands(None)
+    build_archipelago(None)
+    build_south_isles(None)
+    build_islands(None)
+    build_continent(None)
+    PLANNING = False
+
+    # ---- ПРОХОД 2: настоящая сборка ----
     folder("World")
     build_sea(None)
     build_continent(None)
@@ -3528,6 +4670,10 @@ def main():
     build_sunken_coast(None)
     build_bonefields(None)
     build_hollow_deep(None)
+    build_trade_routes(None)
+    build_highlands(None)
+    build_archipelago(None)
+    build_south_isles(None)
     build_islands(None)
     endfolder()
 

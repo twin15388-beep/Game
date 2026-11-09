@@ -137,7 +137,7 @@ end
 -- СУНДУКИ
 -- ============================================================================
 local function setupChest(part)
-	local tag = part.Name
+	local tag = part.Name:gsub("^Chest_Body_", ""):gsub("^Chest_", "")
 	local bodyPos = part.Position
 	-- ищем связанный сундук по тегу (Chest_Body_X / Chest_Lid_X / Chest_Glow_X)
 	return {
@@ -185,7 +185,8 @@ function WorldService.openChest(st, chest)
 	table.insert(gained, coins .. " монет")
 
 	-- анимация крышки
-	local lid = chest.body.Parent and chest.body.Parent:FindFirstChild("Chest_Lid_" .. chest.tag:gsub("^Chest_Body_", ""))
+	local lid = chest.body.Parent and (chest.body.Parent:FindFirstChild("Chest_Lid_" .. chest.tag)
+		or chest.body.Parent:FindFirstChild("Chest_" .. chest.tag .. "_Lid"))
 	if lid then
 		local base = lid.CFrame
 		local tw = TweenService:Create(lid, TweenInfo.new(0.35, Enum.EasingStyle.Back), {
@@ -281,6 +282,9 @@ local ZONE_NAMES = {
 	SunkenCoast = "Затонувший Берег",
 	Bonefields = "Костяные Поля",
 	HollowDeep = "Полая Бездна",
+	Highlands = "Дымные Предгорья",
+	Archipelago = "Северный Архипелаг",
+	SouthIsles = "Южные Острова",
 }
 WorldService.ZoneNames = ZONE_NAMES
 
@@ -490,7 +494,7 @@ function WorldService.setup(d)
 
 	-- ---------------- СУНДУКИ ----------------
 	for _, part in ipairs(Workspace:GetDescendants()) do
-		if part:IsA("BasePart") and part.Name:match("^Chest_Body_") then
+		if part:IsA("BasePart") and part.Name:match("^Chest_") then
 			table.insert(chests, setupChest(part))
 		end
 	end

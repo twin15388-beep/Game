@@ -181,7 +181,18 @@ local function sendSnapshot(st)
 	QuestService.sendQuests(st)
 end
 
-local STARTER_KIT = {
+-- Мастерская печатей: обмен материалов на «Печать призыва» босса (квесты/боссы)
+local SEALS = {
+	FrostWraith  = "Печать Ледяного Призрака",
+	FrostColossus = "Печать Ледяного Колосса",
+	SwampMother  = "Печать Матери Болот",
+	CryptWraith  = "Печать Склепного Призрака",
+	Ashlord      = "Печать Пепельного Владыки",
+	NamelessKing = "Печать Безымянного Короля",
+}
+PlayerState.Seals = SEALS
+
+STARTER_KIT = {
 	{ id = "W_Stick", equip = "weapon" },
 	{ id = "A_Rags", equip = "armor" },
 	{ id = "C_Bread", count = 3 },
@@ -442,6 +453,18 @@ end)
 
 -- лечение у лекаря (40 монет)
 local HEAL_PRICE = 40
+-- призыв босса по печати
+remotes[req.BossSummon].OnServerEvent:Connect(function(pl, bossId)
+	local st = PlayerState.get(pl)
+	if not st or type(bossId) ~= "string" then return end
+	local ok, err = BossService.summonBoss(st, bossId)
+	if ok then
+		PlayerState.notify(st, remotes, "Печать сработала! Босс вызван.", "boss")
+	else
+		PlayerState.notify(st, remotes, "✖ " .. (err or "не удалось"), "warn")
+	end
+end)
+
 remotes[req.Heal].OnServerEvent:Connect(function(pl)
 	local st = PlayerState.get(pl)
 	if not st then return end

@@ -7,7 +7,7 @@ SHARED["Config"] = """-- Emberfall | Config — все числа баланса
 
 local Config = {}
 
-Config.Version = "v8"
+Config.Version = "v10"
 Config.GameName = "EMBERFALL — Пепел Вечности"
 
 -- ---------------------------- уровень / опыт -------------------------------
@@ -86,6 +86,21 @@ Config.Elements = {
 		id = "Nature", name = "Природа", rune = "🌿",
 		color = Color3.fromRGB(120, 220, 120),
 		desc = "Лечение, корни, гнев леса.",
+	},
+	{
+		id = "Earth", name = "Земля", rune = "🪨",
+		color = Color3.fromRGB(196, 152, 96),
+		desc = "Каменные шипы, щит-скала, обвал. Стихия стойкости.",
+	},
+	{
+		id = "Wind", name = "Ветер", rune = "🌀",
+		color = Color3.fromRGB(190, 240, 230),
+		desc = "Быстрые лезвия, рывок, смерч. Стихия скорости.",
+	},
+	{
+		id = "Blood", name = "Кровь", rune = "🩸",
+		color = Color3.fromRGB(200, 50, 70),
+		desc = "Похищение жизни, жертва HP за урон, Кровавый пир.",
 	},
 }
 
@@ -249,6 +264,84 @@ GameData.Spells = {
 		damage = 112, radius = 18, range = 200, fallTime = 0.9, castTime = 0.55,
 		desc = "Древесный кулак с неба. Урон по площади.",
 	},
+	-- ---------------------------------- ЗЕМЛЯ ---------------------------------
+	{
+		id = "Earth_Stone", name = "Каменный шип", element = "Earth", icon = "🪨",
+		kind = "projectile", tier = 1, reqLevel = 1, manaCost = 12, cooldown = 1.25,
+		damage = 25, speed = 105, radius = 2.6, range = 145, castTime = 0.18,
+		desc = "Тяжёлый камень. Медленнее огня, но бьёт ощутимо.",
+	},
+	{
+		id = "Earth_Wall", name = "Каменная кожа", element = "Earth", icon = "🧱",
+		kind = "buff", tier = 1, reqLevel = 5, manaCost = 24, cooldown = 9,
+		buffType = "armor", buffValue = 28, duration = 8, castTime = 0.2,
+		desc = "+28 брони на 8 секунд.",
+	},
+	{
+		id = "Earth_Quake", name = "Землетрясение", element = "Earth", icon = "⛰",
+		kind = "area", tier = 2, reqLevel = 11, manaCost = 38, cooldown = 7,
+		damage = 48, radius = 22, castTime = 0.5,
+		slow = { mult = 0.55, duration = 2.5 },
+		desc = "Волна земли: урон и замедление вокруг.",
+	},
+	{
+		id = "Earth_Colossus", name = "Поступь колосса", element = "Earth", icon = "🗿",
+		kind = "meteor", tier = 3, reqLevel = 22, manaCost = 66, cooldown = 14,
+		damage = 140, radius = 19, range = 190, fallTime = 0.95, castTime = 0.6,
+		desc = "Гигантская скала с неба. Сокрушительный удар по площади.",
+	},
+	-- ---------------------------------- ВЕТЕР ---------------------------------
+	{
+		id = "Wind_Blade", name = "Лезвие ветра", element = "Wind", icon = "🌀",
+		kind = "projectile", tier = 1, reqLevel = 1, manaCost = 10, cooldown = 0.9,
+		damage = 17, speed = 160, radius = 1.9, range = 175, castTime = 0.1,
+		desc = "Самый быстрый снаряд в игре — почти не промахивается.",
+	},
+	{
+		id = "Wind_Dash", name = "Порыв", element = "Wind", icon = "💨",
+		kind = "dash", tier = 1, reqLevel = 4, manaCost = 16, cooldown = 4,
+		damage = 22, distance = 40, radius = 6, castTime = 0,
+		desc = "Рывок с уроном всем на пути.",
+	},
+	{
+		id = "Wind_Cyclone", name = "Смерч", element = "Wind", icon = "🌪",
+		kind = "storm", tier = 2, reqLevel = 13, manaCost = 50, cooldown = 10,
+		damage = 26, radius = 22, range = 130, strikes = 7, duration = 3.2, castTime = 0.45,
+		desc = "7 вихрей по области за 3 секунды.",
+	},
+	{
+		id = "Wind_Storm", name = "Буря клинков", element = "Wind", icon = "🌬",
+		kind = "chain", tier = 3, reqLevel = 23, manaCost = 54, cooldown = 9,
+		damage = 70, radius = 40, chainTargets = 4, range = 155, castTime = 0.35,
+		desc = "Прыгает по 4 врагам.",
+	},
+	-- ---------------------------------- КРОВЬ ---------------------------------
+	{
+		id = "Blood_Drain", name = "Кровавый струй", element = "Blood", icon = "🩸",
+		kind = "projectile", tier = 1, reqLevel = 1, manaCost = 13, cooldown = 1.2,
+		damage = 20, speed = 115, radius = 2.2, range = 150, castTime = 0.2,
+		lifesteal = 0.5,
+		desc = "Крадёт 50% урона как здоровье.",
+	},
+	{
+		id = "Blood_Sacrifice", name = "Жертвенная ярость", element = "Blood", icon = "🖤",
+		kind = "buff", tier = 2, reqLevel = 9, manaCost = 20, cooldown = 12,
+		buffType = "power", buffValue = 0.35, duration = 8, castTime = 0.25,
+		desc = "+35% урона на 8 секунд. Цена — риск.",
+	},
+	{
+		id = "Blood_Feast", name = "Кровавый пир", element = "Blood", icon = "🫀",
+		kind = "area", tier = 2, reqLevel = 17, manaCost = 44, cooldown = 9,
+		damage = 56, radius = 19, castTime = 0.5, lifesteal = 0.7,
+		desc = "Вытягивает жизнь из всех вокруг, лечит на 70% урона.",
+	},
+	{
+		id = "Blood_Exsanguinate", name = "Обескровливание", element = "Blood", icon = "💀",
+		kind = "meteor", tier = 3, reqLevel = 27, manaCost = 68, cooldown = 14,
+		damage = 118, radius = 16, range = 195, fallTime = 0.85, castTime = 0.55,
+		lifesteal = 0.4,
+		desc = "Кровавый разлом: урон по площади и лечение.",
+	},
 }
 
 GameData.SpellById = {}
@@ -316,6 +409,8 @@ GameData.Items = {
 	{ id = "M_AshEssence",  name = "Пепельная эссенция",  type = "material", rarity = "rare", price = 90, desc = "Тёплая на ощупь." },
 	{ id = "M_BoneDust",    name = "Костяная пыль",       type = "material", rarity = "rare", price = 85, desc = "Материал для ритуалов." },
 	{ id = "M_VoidShard",   name = "Осколок Бездны",      type = "material", rarity = "epic", price = 220, desc = "Смотрит в ответ." },
+	{ id = "M_Coral",       name = "Коралл",              type = "material", rarity = "uncommon", price = 60, desc = "Хрустит под ногами." },
+	{ id = "M_EmberStone",  name = "Пепельный камень",    type = "material", rarity = "rare", price = 100, desc = "Ещё тёплый." },
 }
 
 GameData.ItemById = {}
@@ -407,6 +502,36 @@ GameData.Mobs = {
 	{ id = "BoneGuardian", name = "Костяной страж", zone = "Bonefields", level = 40, health = 720, damage = 46, speed = 12, xp = 430, elite = true,
 	  model = "golem", color = Color3.fromRGB(226, 220, 198), scale = 1.45, aggro = 60, attackCooldown = 2.3,
 	  loot = { { item = "W_BoneScythe", chance = 0.12 }, { item = "A_BoneMail", chance = 0.1 }, { item = "M_BoneDust", chance = 1, min = 2, max = 4 } } },
+
+	-- ПРЕДГОРЬЯ (26-34)
+	{ id = "RockTroll", name = "Каменный тролль", zone = "Highlands", level = 28, health = 520, damage = 30, speed = 12, xp = 210, elite = true,
+	  model = "golem", color = Color3.fromRGB(126, 116, 100), scale = 1.45, aggro = 60, attackCooldown = 2.1,
+	  loot = { { item = "M_Ore", chance = 0.8, min = 1, max = 3 }, { item = "A_Chain", chance = 0.08 } } },
+	{ id = "MinerGhoul", name = "Шахтный гуль", zone = "Highlands", level = 26, health = 300, damage = 26, speed = 14, xp = 160,
+	  model = "humanoid", color = Color3.fromRGB(110, 106, 92), scale = 1.0, aggro = 55, attackCooldown = 1.6,
+	  loot = { { item = "M_Ore", chance = 0.5 }, { item = "C_HealthPotion", chance = 0.2 } } },
+	{ id = "Highwayman", name = "Горный разбойник", zone = "Highlands", level = 30, health = 380, damage = 32, speed = 15, xp = 220,
+	  model = "humanoid", color = Color3.fromRGB(98, 76, 58), scale = 1.0, aggro = 70, attackCooldown = 1.4, ranged = 65,
+	  loot = { { item = "C_Elixir", chance = 0.1 }, { item = "W_Hatchet", chance = 0.1 }, { item = "M_Ore", chance = 0.4 } } },
+
+	-- АРХИПЕЛАГ (28-40)
+	{ id = "SeaWraith", name = "Морской призрак", zone = "Archipelago", level = 32, health = 360, damage = 34, speed = 15, xp = 240,
+	  model = "floating", color = Color3.fromRGB(120, 180, 200), scale = 1.1, aggro = 70, attackCooldown = 1.9, ranged = 75,
+	  loot = { { item = "M_IceShard", chance = 0.4 }, { item = "C_ManaPotion", chance = 0.3 } } },
+	{ id = "PirateLord", name = "Пират-капитан", zone = "Archipelago", level = 36, health = 620, damage = 40, speed = 15, xp = 330, elite = true,
+	  model = "humanoid", color = Color3.fromRGB(120, 70, 60), scale = 1.2, aggro = 70, attackCooldown = 1.6,
+	  loot = { { item = "W_Sabre", chance = 0.2 }, { item = "C_Elixir", chance = 0.25 }, { item = "T_SwiftCharm", chance = 0.1 } } },
+	{ id = "FrostCrab", name = "Морозный краб", zone = "Archipelago", level = 29, health = 340, damage = 28, speed = 13, xp = 190,
+	  model = "beast", color = Color3.fromRGB(190, 210, 220), scale = 1.2, aggro = 50, attackCooldown = 1.7,
+	  loot = { { item = "M_Pelt", chance = 0.5 }, { item = "M_IceShard", chance = 0.25 } } },
+
+	-- ЮЖНЫЕ ОСТРОВА (22-32)
+	{ id = "CoralGolem", name = "Коралловый голем", zone = "SouthIsles", level = 24, health = 420, damage = 24, speed = 11, xp = 170,
+	  model = "golem", color = Color3.fromRGB(210, 140, 150), scale = 1.3, aggro = 55, attackCooldown = 2.0,
+	  loot = { { item = "M_BoneDust", chance = 0.4 }, { item = "C_HealthPotion", chance = 0.3 } } },
+	{ id = "BeachRaider", name = "Береговой налётчик", zone = "SouthIsles", level = 28, health = 320, damage = 28, speed = 16, xp = 200,
+	  model = "humanoid", color = Color3.fromRGB(100, 84, 66), scale = 1.0, aggro = 65, attackCooldown = 1.5,
+	  loot = { { item = "C_Elixir", chance = 0.08 }, { item = "M_Ore", chance = 0.35 } } },
 
 	-- ПОЛАЯ БЕЗДНА (50+)
 	{ id = "VoidStalker", name = "Теневой страж",  zone = "HollowDeep", level = 52, health = 900, damage = 58, speed = 16, xp = 620, elite = true,
@@ -516,6 +641,16 @@ GameData.Bosses = {
 	},
 }
 
+-- «Печати призыва»: босса можно вызвать в его зоне, даже если арена пуста
+GameData.BossSummons = {
+	{ id = "FrostWraith",  seal = "P_FrostWraith",  mats = { { item = "M_IceShard", count = 4 } } },
+	{ id = "FrostColossus", seal = "P_FrostColossus", mats = { { item = "M_IceShard", count = 6 }, { item = "M_Ore", count = 4 } } },
+	{ id = "SwampMother",  seal = "P_SwampMother",  mats = { { item = "M_BoneDust", count = 5 }, { item = "M_Pelt", count = 3 } } },
+	{ id = "CryptWraith",  seal = "P_CryptWraith",  mats = { { item = "M_BoneDust", count = 6 }, { item = "M_AshEssence", count = 3 } } },
+	{ id = "Ashlord",      seal = "P_Ashlord",      mats = { { item = "M_AshEssence", count = 6 }, { item = "M_EmberStone", count = 4 } } },
+	{ id = "NamelessKing", seal = "P_NamelessKing", mats = { { item = "M_VoidShard", count = 5 }, { item = "M_BoneDust", count = 8 } } },
+}
+
 GameData.BossById = {}
 for _, b in ipairs(GameData.Bosses) do
 	GameData.BossById[b.id] = b
@@ -562,6 +697,7 @@ Net.Req = {
 	Ping = "Req_Ping",               -- (clientTime)
 	Interact = "Req_Interact",       -- (targetInstance)
 	Heal = "Req_Heal",               -- (): лечение у лекаря
+	BossSummon = "Req_BossSummon",   -- (bossId): крафт «Печати призыва»
 }
 
 -- Server -> Client
@@ -818,6 +954,60 @@ Quests.List = {
 		rewards = { xp = 16000, coins = 5600, items = { { id = "W_BoneScythe", count = 1 } }, statPoints = 1 },
 	},
 
+	-- ============================ ПРЕДГОРЬЯ ==================================
+	{
+		id = "Q_Trolls", name = "Тролльи тропы", giver = "Highlander", minLevel = 27,
+		desc = "Горец Бран: каменные тролли раздавили торговый караван. Убей 5 троллей.",
+		objectives = { { type = "kill", target = "RockTroll", count = 5, text = "Убить каменных троллей" } },
+		rewards = { xp = 3600, coins = 1200, items = { { id = "A_AshPlate", count = 1 } } },
+	},
+	{
+		id = "Q_MineShadows", name = "Тени шахты", giver = "Miner", minLevel = 25,
+		desc = "Шахтёр Гром: из забоя лезут гули. Убей 10 шахтных гулей.",
+		objectives = { { type = "kill", target = "MinerGhoul", count = 10, text = "Убить шахтных гулей" } },
+		rewards = { xp = 3200, coins = 1100, items = { { id = "M_Ore", count = 8 } } },
+	},
+	{
+		id = "Q_Highway", name = "Горный тракт", giver = "Highlander", minLevel = 30,
+		desc = "Горные разбойники грабят предгорья. Убей 8.",
+		objectives = { { type = "kill", target = "Highwayman", count = 8, text = "Убить горных разбойников" } },
+		rewards = { xp = 4200, coins = 1500, items = { { id = "C_Elixir", count = 2 } } },
+	},
+
+	-- ============================ АРХИПЕЛАГ ==================================
+	{
+		id = "Q_PiratesBane", name = "Гибель пиратов", giver = "Pirate", minLevel = 32,
+		desc = "Кровавый Джо хочет покоя: убей 8 пиратов-капитанов.",
+		objectives = { { type = "kill", target = "PirateLord", count = 8, text = "Убить пиратских капитанов" } },
+		rewards = { xp = 6000, coins = 2200, items = { { id = "T_BloodCharm", count = 1 } } },
+	},
+	{
+		id = "Q_SeaWraiths", name = "Призраки архипелага", giver = "Pirate", minLevel = 30,
+		desc = "Морские призраки не дают рыбачить. Убей 10.",
+		objectives = { { type = "kill", target = "SeaWraith", count = 10, text = "Убить морских призраков" } },
+		rewards = { xp = 5200, coins = 1900, items = { { id = "C_ManaPotion", count = 6 } } },
+	},
+
+	-- ============================ ЮЖНЫЕ ОСТРОВА ==============================
+	{
+		id = "Q_Coral", name = "Коралловый риф", giver = "Fishmonger", minLevel = 22,
+		desc = "Рыбак просит кораллы: принеси 4.",
+		objectives = { { type = "collect", target = "M_Coral", count = 4, text = "Собрать кораллы" } },
+		rewards = { xp = 2600, coins = 900, items = { { id = "T_SwiftCharm", count = 1 } } },
+	},
+	{
+		id = "Q_BeachRaiders", name = "Налётчики", giver = "Farmer", minLevel = 24,
+		desc = "Береговые налётчики жгут дома. Убей 8.",
+		objectives = { { type = "kill", target = "BeachRaider", count = 8, text = "Убить налётчиков" } },
+		rewards = { xp = 3000, coins = 1000, items = { { id = "C_HealthPotion", count = 6 } } },
+	},
+	{
+		id = "Q_FrostWind", name = "Ветроград", giver = "Villager", minLevel = 28,
+		desc = "Житель Ветрограда просит зачистить морозных волков у стен.",
+		objectives = { { type = "kill", target = "FrostWolf", count = 12, text = "Убить морозных волков" } },
+		rewards = { xp = 4600, coins = 1600, items = { { id = "A_FrostPlate", count = 1 } } },
+	},
+
 	-- ============================ ПОЛАЯ БЕЗДНА ===============================
 	{
 		id = "Q_VoidShards", name = "Осколки Бездны", giver = "QuestKeeper", minLevel = 48,
@@ -925,6 +1115,46 @@ NPCData.List = {
 		lines = {
 			"Утопленники лезут на причалы каждую ночь.",
 			"Море забирает всех. И возвращает не такими.",
+		},
+		role = "quests",
+	},
+	{
+		key = "Miner", name = "Шахтёр", title = "Гром", color = Color3.fromRGB(160, 140, 110),
+		lines = {
+			"В шахте что-то завелось. Гули, не иначе.",
+			"Руда тут богатая — если выживешь.",
+		},
+		role = "quests",
+	},
+	{
+		key = "Highlander", name = "Горец", title = "Бран", color = Color3.fromRGB(140, 120, 96),
+		lines = {
+			"Предгорья — край суровый. Тролли топчут наши тропы.",
+			"Возьми заказ, если не боишься камня.",
+		},
+		role = "quests",
+	},
+	{
+		key = "Pirate", name = "Старый пират", title = "Кровавый Джо", color = Color3.fromRGB(150, 90, 80),
+		lines = {
+			"Тут был мой корабль. Был.",
+			"Морские призраки не дают уплыть.",
+		},
+		role = "quests",
+	},
+	{
+		key = "Villager", name = "Житель Ветрограда", title = "Эйнар", color = Color3.fromRGB(200, 200, 210),
+		lines = {
+			"Северные охотники держат оборону, но силы кончаются.",
+			"Помоги — и Ветроград запомнит тебя.",
+		},
+		role = "quests",
+	},
+	{
+		key = "Mogilshik", name = "Могильщик", title = "Сумрачный Том", color = Color3.fromRGB(120, 118, 100),
+		lines = {
+			"Копаю глубже, чем они встают.",
+			"Нежить лезет из земли каждую ночь.",
 		},
 		role = "quests",
 	},
@@ -2521,6 +2751,20 @@ end
 -- СПАВН / СМЕРТЬ
 -- ============================================================================
 local function applyBossBar()
+	if worldBoss and not worldBoss.dead and worldBoss.root and worldBoss.root.Parent then
+		-- мировой босс перекрывает аренного, если игрок рядом
+		for _, pl in ipairs(Players:GetPlayers()) do
+			local rr = pl.Character and pl.Character:FindFirstChild("HumanoidRootPart")
+			if rr and (rr.Position - worldBoss.root.Position).Magnitude < 320 then
+				broadcast(Net.Rep.BossBar, {
+					visible = true, name = worldBoss.def.name, title = worldBoss.def.title,
+					level = worldBoss.def.level, hp = worldBoss.health,
+					maxHp = worldBoss.maxHealth, phase = 1,
+				})
+				return
+			end
+		end
+	end
 	if not activeBoss or activeBoss.dead then
 		broadcast(Net.Rep.BossBar, { visible = false })
 		return
@@ -2586,6 +2830,72 @@ local function spawnBoss(arena, now)
 
 	arena.mob = mob
 	activeBoss = mob
+	return mob
+end
+
+
+
+-- ============================================================================
+-- МИРОВОЙ БОСС: «Пепельный Странник» — появляется сам, раз в ~12 минут
+-- ============================================================================
+local worldBoss = nil
+
+local WORLD_BOSS_DEF = {
+	id = "EmberWanderer", name = "Пепельный Странник", title = "Вестник Конца",
+	level = 45, health = 11000, damage = 88, speed = 15, xp = 9000,
+	model = "humanoid", color = Color3.fromRGB(220, 90, 40), scale = 2.1, glow = true,
+	arenaRadius = 90, respawn = 600, isWorldBoss = true,
+	phases = {
+		{ at = 1.0, abilities = { "Slam", "Volley" } },
+		{ at = 0.6, abilities = { "Slam", "Meteor", "Summon" } },
+		{ at = 0.25, abilities = { "Meteor", "FrostNova", "Volley", "Summon" }, enrage = 0.5 },
+	},
+	loot = { { item = "W_AshCleaver", chance = 0.9 }, { item = "C_Elixir", chance = 1, min = 2, max = 4 },
+	         { item = "M_AshEssence", chance = 1, min = 6, max = 10 },
+	         { item = "T_BloodCharm", chance = 0.5 } },
+}
+
+local function spawnWorldBoss()
+	local pl = Players:GetPlayers()[math.random(1, #Players:GetPlayers())]
+	local char = pl and pl.Character
+	local root = char and char:FindFirstChild("HumanoidRootPart")
+	if not root then return end
+	local angle = math.random() * math.pi * 2
+	local dist = math.random(70, 110)
+	local pos = root.Position + Vector3.new(math.cos(angle) * dist, 0, math.sin(angle) * dist)
+	local gy = deps.mobService.groundY(pos)
+	pos = Vector3.new(pos.X, gy or pos.Y, pos.Z)
+
+	deps.combat.broadcast(Net.Rep.BossEvent, {
+		event = "world", id = WORLD_BOSS_DEF.id, name = WORLD_BOSS_DEF.name,
+		title = WORLD_BOSS_DEF.title, level = WORLD_BOSS_DEF.level,
+	})
+	deps.combat.broadcast(Net.Rep.Notify, {
+		text = "МИРОВОЙ БОСС: " .. WORLD_BOSS_DEF.name .. " появился рядом с " .. pl.DisplayName .. "!",
+		kind = "boss",
+	})
+
+	local defCopy = {}
+	for k, v in pairs(WORLD_BOSS_DEF) do defCopy[k] = v end
+	defCopy.baseSpeed = WORLD_BOSS_DEF.speed
+	defCopy.isBoss = true
+
+	local mob = deps.mobService.spawnMob(defCopy, pos)
+	mob.isBoss = true
+	mob.attackInterval = 2.6
+	mob.lastAttack = os.clock()
+	local origDamaged = mob.onDamaged
+	mob.onDamaged = function(dmg, st)
+		origDamaged(dmg, st)
+		applyBossBar()
+	end
+	mob.onDeath = function()
+		mob.model:Destroy()
+		if worldBoss == mob then worldBoss = nil end
+		applyBossBar()
+	end
+	worldBoss = mob
+	applyBossBar()
 	return mob
 end
 
@@ -2658,6 +2968,7 @@ end
 
 function BossService.startLoop()
 	local barAcc = 0
+	local worldAcc = 0
 	local arenaAcc = 0
 	RunService.Heartbeat:Connect(function(dt)
 		local now = os.clock()
@@ -2669,6 +2980,19 @@ function BossService.startLoop()
 			applyBossBar()
 			if activeBoss and not activeBoss.dead then
 				bossThink(activeBoss, activeBoss.def, now)
+			end
+		end
+
+		-- мировой босс: раз в 12 минут появляется у случайного игрока
+		worldAcc = worldAcc + dt
+		if worldAcc > 720 and #Players:GetPlayers() > 0 and not worldBoss then
+			worldAcc = 0
+			spawnWorldBoss()
+		end
+		if worldBoss and (worldBoss.dead or not worldBoss.root.Parent) then
+			if worldBoss and worldBoss.dead then
+				worldBoss = nil
+				applyBossBar()
 			end
 		end
 
@@ -2705,6 +3029,37 @@ end
 -- доступ для автотестов
 function BossService.arenasForTest()
 	return arenas
+end
+
+-- Секретный босс по «Печати призыва»: печать требует 6 мин отката,
+-- призывает любого босса в его биоме (даже на 1 игрока).
+function BossService.summonBoss(st, bossId)
+	local def = GameData.BossById[bossId]
+	if not def then return false, "нет такого босса" end
+	if def.isWorldBoss then
+		-- мирового босса призывать нельзя
+	end
+	local now = os.clock()
+	st.data.bossSummonAt = st.data.bossSummonAt or 0
+	if now - st.data.bossSummonAt < 360 then
+		return false, "Печать ещё не восстановилась (" .. math.ceil(360 - (now - st.data.bossSummonAt)) .. "с)"
+	end
+
+	-- ищем свободную арену этого босса
+	local arena = nil
+	for _, a in ipairs(arenas) do
+		if a.def.id == bossId and not a.mob then arena = a break end
+	end
+	if not arena then
+		return false, "арена этого босса занята"
+	end
+	st.data.bossSummonAt = now
+	spawnBoss(arena, now)
+	deps.combat.broadcast(Net.Rep.BossEvent, {
+		event = "summon", id = def.id, name = def.name,
+		by = st.player.DisplayName,
+	})
+	return true
 end
 
 function BossService.getActiveBoss()
@@ -3675,7 +4030,7 @@ end
 -- СУНДУКИ
 -- ============================================================================
 local function setupChest(part)
-	local tag = part.Name
+	local tag = part.Name:gsub("^Chest_Body_", ""):gsub("^Chest_", "")
 	local bodyPos = part.Position
 	-- ищем связанный сундук по тегу (Chest_Body_X / Chest_Lid_X / Chest_Glow_X)
 	return {
@@ -3723,7 +4078,8 @@ function WorldService.openChest(st, chest)
 	table.insert(gained, coins .. " монет")
 
 	-- анимация крышки
-	local lid = chest.body.Parent and chest.body.Parent:FindFirstChild("Chest_Lid_" .. chest.tag:gsub("^Chest_Body_", ""))
+	local lid = chest.body.Parent and (chest.body.Parent:FindFirstChild("Chest_Lid_" .. chest.tag)
+		or chest.body.Parent:FindFirstChild("Chest_" .. chest.tag .. "_Lid"))
 	if lid then
 		local base = lid.CFrame
 		local tw = TweenService:Create(lid, TweenInfo.new(0.35, Enum.EasingStyle.Back), {
@@ -3819,6 +4175,9 @@ local ZONE_NAMES = {
 	SunkenCoast = "Затонувший Берег",
 	Bonefields = "Костяные Поля",
 	HollowDeep = "Полая Бездна",
+	Highlands = "Дымные Предгорья",
+	Archipelago = "Северный Архипелаг",
+	SouthIsles = "Южные Острова",
 }
 WorldService.ZoneNames = ZONE_NAMES
 
@@ -4028,7 +4387,7 @@ function WorldService.setup(d)
 
 	-- ---------------- СУНДУКИ ----------------
 	for _, part in ipairs(Workspace:GetDescendants()) do
-		if part:IsA("BasePart") and part.Name:match("^Chest_Body_") then
+		if part:IsA("BasePart") and part.Name:match("^Chest_") then
 			table.insert(chests, setupChest(part))
 		end
 	end
@@ -4380,7 +4739,18 @@ local function sendSnapshot(st)
 	QuestService.sendQuests(st)
 end
 
-local STARTER_KIT = {
+-- Мастерская печатей: обмен материалов на «Печать призыва» босса (квесты/боссы)
+local SEALS = {
+	FrostWraith  = "Печать Ледяного Призрака",
+	FrostColossus = "Печать Ледяного Колосса",
+	SwampMother  = "Печать Матери Болот",
+	CryptWraith  = "Печать Склепного Призрака",
+	Ashlord      = "Печать Пепельного Владыки",
+	NamelessKing = "Печать Безымянного Короля",
+}
+PlayerState.Seals = SEALS
+
+STARTER_KIT = {
 	{ id = "W_Stick", equip = "weapon" },
 	{ id = "A_Rags", equip = "armor" },
 	{ id = "C_Bread", count = 3 },
@@ -4641,6 +5011,18 @@ end)
 
 -- лечение у лекаря (40 монет)
 local HEAL_PRICE = 40
+-- призыв босса по печати
+remotes[req.BossSummon].OnServerEvent:Connect(function(pl, bossId)
+	local st = PlayerState.get(pl)
+	if not st or type(bossId) ~= "string" then return end
+	local ok, err = BossService.summonBoss(st, bossId)
+	if ok then
+		PlayerState.notify(st, remotes, "Печать сработала! Босс вызван.", "boss")
+	else
+		PlayerState.notify(st, remotes, "✖ " .. (err or "не удалось"), "warn")
+	end
+end)
+
 remotes[req.Heal].OnServerEvent:Connect(function(pl)
 	local st = PlayerState.get(pl)
 	if not st then return end
@@ -5281,6 +5663,19 @@ function HUD.init()
 			ui.statsStroke.Color = inCombat and Color3.fromRGB(200, 80, 80) or Color3.fromRGB(150, 124, 66)
 		end
 	end)
+	req("Rep_BossEvent").OnClientEvent:Connect(function(d)
+		if not d then return end
+		if d.event == "world" then
+			HUD.showHint("⚔ МИРОВОЙ БОСС: " .. tostring(d.name) .. " — " .. tostring(d.title or ""), 6)
+		elseif d.event == "summon" then
+			HUD.showHint("⚔ Печать сработала: " .. tostring(d.name) .. " (призвал " .. tostring(d.by or "?") .. ")", 5)
+		elseif d.event == "phase" then
+			HUD.showHint("☠ " .. tostring(d.name) .. ": " .. tostring(d.text or "новая фаза"), 3)
+		elseif d.event == "died" then
+			HUD.showHint("Босс повержен: " .. tostring(d.name), 4)
+		end
+	end)
+
 	req("Rep_LevelUp").OnClientEvent:Connect(function(d)
 		HUD.showHint("УРОВЕНЬ " .. tostring(d.level) .. "!", 3)
 	end)

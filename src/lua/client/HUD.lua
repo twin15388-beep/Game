@@ -373,6 +373,19 @@ function HUD.init()
 			ui.statsStroke.Color = inCombat and Color3.fromRGB(200, 80, 80) or Color3.fromRGB(150, 124, 66)
 		end
 	end)
+	req("Rep_BossEvent").OnClientEvent:Connect(function(d)
+		if not d then return end
+		if d.event == "world" then
+			HUD.showHint("⚔ МИРОВОЙ БОСС: " .. tostring(d.name) .. " — " .. tostring(d.title or ""), 6)
+		elseif d.event == "summon" then
+			HUD.showHint("⚔ Печать сработала: " .. tostring(d.name) .. " (призвал " .. tostring(d.by or "?") .. ")", 5)
+		elseif d.event == "phase" then
+			HUD.showHint("☠ " .. tostring(d.name) .. ": " .. tostring(d.text or "новая фаза"), 3)
+		elseif d.event == "died" then
+			HUD.showHint("Босс повержен: " .. tostring(d.name), 4)
+		end
+	end)
+
 	req("Rep_LevelUp").OnClientEvent:Connect(function(d)
 		HUD.showHint("УРОВЕНЬ " .. tostring(d.level) .. "!", 3)
 	end)

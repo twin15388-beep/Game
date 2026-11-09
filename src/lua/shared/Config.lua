@@ -3,7 +3,7 @@
 
 local Config = {}
 
-Config.Version = "v8"
+Config.Version = "v10"
 Config.GameName = "EMBERFALL — Пепел Вечности"
 
 -- ---------------------------- уровень / опыт -------------------------------
@@ -82,6 +82,21 @@ Config.Elements = {
 		id = "Nature", name = "Природа", rune = "🌿",
 		color = Color3.fromRGB(120, 220, 120),
 		desc = "Лечение, корни, гнев леса.",
+	},
+	{
+		id = "Earth", name = "Земля", rune = "🪨",
+		color = Color3.fromRGB(196, 152, 96),
+		desc = "Каменные шипы, щит-скала, обвал. Стихия стойкости.",
+	},
+	{
+		id = "Wind", name = "Ветер", rune = "🌀",
+		color = Color3.fromRGB(190, 240, 230),
+		desc = "Быстрые лезвия, рывок, смерч. Стихия скорости.",
+	},
+	{
+		id = "Blood", name = "Кровь", rune = "🩸",
+		color = Color3.fromRGB(200, 50, 70),
+		desc = "Похищение жизни, жертва HP за урон, Кровавый пир.",
 	},
 }
 

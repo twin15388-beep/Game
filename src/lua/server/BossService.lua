@@ -366,6 +366,20 @@ end
 -- СПАВН / СМЕРТЬ
 -- ============================================================================
 local function applyBossBar()
+	if worldBoss and not worldBoss.dead and worldBoss.root and worldBoss.root.Parent then
+		-- мировой босс перекрывает аренного, если игрок рядом
+		for _, pl in ipairs(Players:GetPlayers()) do
+			local rr = pl.Character and pl.Character:FindFirstChild("HumanoidRootPart")
+			if rr and (rr.Position - worldBoss.root.Position).Magnitude < 320 then
+				broadcast(Net.Rep.BossBar, {
+					visible = true, name = worldBoss.def.name, title = worldBoss.def.title,
+					level = worldBoss.def.level, hp = worldBoss.health,
+					maxHp = worldBoss.maxHealth, phase = 1,
+				})
+				return
+			end
+		end
+	end
 	if not activeBoss or activeBoss.dead then
 		broadcast(Net.Rep.BossBar, { visible = false })
 		return
@@ -431,6 +445,72 @@ local function spawnBoss(arena, now)
 
 	arena.mob = mob
 	activeBoss = mob
+	return mob
+end
+
+
+
+-- ============================================================================
+-- МИРОВОЙ БОСС: «Пепельный Странник» — появляется сам, раз в ~12 минут
+-- ============================================================================
+local worldBoss = nil
+
+local WORLD_BOSS_DEF = {
+	id = "EmberWanderer", name = "Пепельный Странник", title = "Вестник Конца",
+	level = 45, health = 11000, damage = 88, speed = 15, xp = 9000,
+	model = "humanoid", color = Color3.fromRGB(220, 90, 40), scale = 2.1, glow = true,
+	arenaRadius = 90, respawn = 600, isWorldBoss = true,
+	phases = {
+		{ at = 1.0, abilities = { "Slam", "Volley" } },
+		{ at = 0.6, abilities = { "Slam", "Meteor", "Summon" } },
+		{ at = 0.25, abilities = { "Meteor", "FrostNova", "Volley", "Summon" }, enrage = 0.5 },
+	},
+	loot = { { item = "W_AshCleaver", chance = 0.9 }, { item = "C_Elixir", chance = 1, min = 2, max = 4 },
+	         { item = "M_AshEssence", chance = 1, min = 6, max = 10 },
+	         { item = "T_BloodCharm", chance = 0.5 } },
+}
+
+local function spawnWorldBoss()
+	local pl = Players:GetPlayers()[math.random(1, #Players:GetPlayers())]
+	local char = pl and pl.Character
+	local root = char and char:FindFirstChild("HumanoidRootPart")
+	if not root then return end
+	local angle = math.random() * math.pi * 2
+	local dist = math.random(70, 110)
+	local pos = root.Position + Vector3.new(math.cos(angle) * dist, 0, math.sin(angle) * dist)
+	local gy = deps.mobService.groundY(pos)
+	pos = Vector3.new(pos.X, gy or pos.Y, pos.Z)
+
+	deps.combat.broadcast(Net.Rep.BossEvent, {
+		event = "world", id = WORLD_BOSS_DEF.id, name = WORLD_BOSS_DEF.name,
+		title = WORLD_BOSS_DEF.title, level = WORLD_BOSS_DEF.level,
+	})
+	deps.combat.broadcast(Net.Rep.Notify, {
+		text = "МИРОВОЙ БОСС: " .. WORLD_BOSS_DEF.name .. " появился рядом с " .. pl.DisplayName .. "!",
+		kind = "boss",
+	})
+
+	local defCopy = {}
+	for k, v in pairs(WORLD_BOSS_DEF) do defCopy[k] = v end
+	defCopy.baseSpeed = WORLD_BOSS_DEF.speed
+	defCopy.isBoss = true
+
+	local mob = deps.mobService.spawnMob(defCopy, pos)
+	mob.isBoss = true
+	mob.attackInterval = 2.6
+	mob.lastAttack = os.clock()
+	local origDamaged = mob.onDamaged
+	mob.onDamaged = function(dmg, st)
+		origDamaged(dmg, st)
+		applyBossBar()
+	end
+	mob.onDeath = function()
+		mob.model:Destroy()
+		if worldBoss == mob then worldBoss = nil end
+		applyBossBar()
+	end
+	worldBoss = mob
+	applyBossBar()
 	return mob
 end
 
@@ -503,6 +583,7 @@ end
 
 function BossService.startLoop()
 	local barAcc = 0
+	local worldAcc = 0
 	local arenaAcc = 0
 	RunService.Heartbeat:Connect(function(dt)
 		local now = os.clock()
@@ -514,6 +595,19 @@ function BossService.startLoop()
 			applyBossBar()
 			if activeBoss and not activeBoss.dead then
 				bossThink(activeBoss, activeBoss.def, now)
+			end
+		end
+
+		-- мировой босс: раз в 12 минут появляется у случайного игрока
+		worldAcc = worldAcc + dt
+		if worldAcc > 720 and #Players:GetPlayers() > 0 and not worldBoss then
+			worldAcc = 0
+			spawnWorldBoss()
+		end
+		if worldBoss and (worldBoss.dead or not worldBoss.root.Parent) then
+			if worldBoss and worldBoss.dead then
+				worldBoss = nil
+				applyBossBar()
 			end
 		end
 
@@ -550,6 +644,37 @@ end
 -- доступ для автотестов
 function BossService.arenasForTest()
 	return arenas
+end
+
+-- Секретный босс по «Печати призыва»: печать требует 6 мин отката,
+-- призывает любого босса в его биоме (даже на 1 игрока).
+function BossService.summonBoss(st, bossId)
+	local def = GameData.BossById[bossId]
+	if not def then return false, "нет такого босса" end
+	if def.isWorldBoss then
+		-- мирового босса призывать нельзя
+	end
+	local now = os.clock()
+	st.data.bossSummonAt = st.data.bossSummonAt or 0
+	if now - st.data.bossSummonAt < 360 then
+		return false, "Печать ещё не восстановилась (" .. math.ceil(360 - (now - st.data.bossSummonAt)) .. "с)"
+	end
+
+	-- ищем свободную арену этого босса
+	local arena = nil
+	for _, a in ipairs(arenas) do
+		if a.def.id == bossId and not a.mob then arena = a break end
+	end
+	if not arena then
+		return false, "арена этого босса занята"
+	end
+	st.data.bossSummonAt = now
+	spawnBoss(arena, now)
+	deps.combat.broadcast(Net.Rep.BossEvent, {
+		event = "summon", id = def.id, name = def.name,
+		by = st.player.DisplayName,
+	})
+	return true
 end
 
 function BossService.getActiveBoss()

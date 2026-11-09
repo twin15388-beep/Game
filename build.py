@@ -5,7 +5,7 @@
 
 Шаги:
   1. src/lua/**  ->  gen_lua.py        (Lua в python-строки)
-  2. gen_lua.py + gen_map.py -> Emberfall_Map_v8.rbxlx
+  2. gen_lua.py + gen_map.py -> Emberfall_Map_v10.rbxlx
   3. release/Emberfall_v8.zip          (готовый архив для скачивания)
 """
 import os
@@ -14,8 +14,8 @@ import sys
 import zipfile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-RLX = "Emberfall_Map_v8.rbxlx"
-ZIP_PATH = os.path.join(ROOT, "release", "Emberfall_v8.zip")
+RLX = "Emberfall_Map_v10.rbxlx"
+ZIP_PATH = os.path.join(ROOT, "release", "Emberfall_v10.zip")
 
 
 def run(*args):

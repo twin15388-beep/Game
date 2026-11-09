@@ -140,6 +140,84 @@ GameData.Spells = {
 		damage = 112, radius = 18, range = 200, fallTime = 0.9, castTime = 0.55,
 		desc = "Древесный кулак с неба. Урон по площади.",
 	},
+	-- ---------------------------------- ЗЕМЛЯ ---------------------------------
+	{
+		id = "Earth_Stone", name = "Каменный шип", element = "Earth", icon = "🪨",
+		kind = "projectile", tier = 1, reqLevel = 1, manaCost = 12, cooldown = 1.25,
+		damage = 25, speed = 105, radius = 2.6, range = 145, castTime = 0.18,
+		desc = "Тяжёлый камень. Медленнее огня, но бьёт ощутимо.",
+	},
+	{
+		id = "Earth_Wall", name = "Каменная кожа", element = "Earth", icon = "🧱",
+		kind = "buff", tier = 1, reqLevel = 5, manaCost = 24, cooldown = 9,
+		buffType = "armor", buffValue = 28, duration = 8, castTime = 0.2,
+		desc = "+28 брони на 8 секунд.",
+	},
+	{
+		id = "Earth_Quake", name = "Землетрясение", element = "Earth", icon = "⛰",
+		kind = "area", tier = 2, reqLevel = 11, manaCost = 38, cooldown = 7,
+		damage = 48, radius = 22, castTime = 0.5,
+		slow = { mult = 0.55, duration = 2.5 },
+		desc = "Волна земли: урон и замедление вокруг.",
+	},
+	{
+		id = "Earth_Colossus", name = "Поступь колосса", element = "Earth", icon = "🗿",
+		kind = "meteor", tier = 3, reqLevel = 22, manaCost = 66, cooldown = 14,
+		damage = 140, radius = 19, range = 190, fallTime = 0.95, castTime = 0.6,
+		desc = "Гигантская скала с неба. Сокрушительный удар по площади.",
+	},
+	-- ---------------------------------- ВЕТЕР ---------------------------------
+	{
+		id = "Wind_Blade", name = "Лезвие ветра", element = "Wind", icon = "🌀",
+		kind = "projectile", tier = 1, reqLevel = 1, manaCost = 10, cooldown = 0.9,
+		damage = 17, speed = 160, radius = 1.9, range = 175, castTime = 0.1,
+		desc = "Самый быстрый снаряд в игре — почти не промахивается.",
+	},
+	{
+		id = "Wind_Dash", name = "Порыв", element = "Wind", icon = "💨",
+		kind = "dash", tier = 1, reqLevel = 4, manaCost = 16, cooldown = 4,
+		damage = 22, distance = 40, radius = 6, castTime = 0,
+		desc = "Рывок с уроном всем на пути.",
+	},
+	{
+		id = "Wind_Cyclone", name = "Смерч", element = "Wind", icon = "🌪",
+		kind = "storm", tier = 2, reqLevel = 13, manaCost = 50, cooldown = 10,
+		damage = 26, radius = 22, range = 130, strikes = 7, duration = 3.2, castTime = 0.45,
+		desc = "7 вихрей по области за 3 секунды.",
+	},
+	{
+		id = "Wind_Storm", name = "Буря клинков", element = "Wind", icon = "🌬",
+		kind = "chain", tier = 3, reqLevel = 23, manaCost = 54, cooldown = 9,
+		damage = 70, radius = 40, chainTargets = 4, range = 155, castTime = 0.35,
+		desc = "Прыгает по 4 врагам.",
+	},
+	-- ---------------------------------- КРОВЬ ---------------------------------
+	{
+		id = "Blood_Drain", name = "Кровавый струй", element = "Blood", icon = "🩸",
+		kind = "projectile", tier = 1, reqLevel = 1, manaCost = 13, cooldown = 1.2,
+		damage = 20, speed = 115, radius = 2.2, range = 150, castTime = 0.2,
+		lifesteal = 0.5,
+		desc = "Крадёт 50% урона как здоровье.",
+	},
+	{
+		id = "Blood_Sacrifice", name = "Жертвенная ярость", element = "Blood", icon = "🖤",
+		kind = "buff", tier = 2, reqLevel = 9, manaCost = 20, cooldown = 12,
+		buffType = "power", buffValue = 0.35, duration = 8, castTime = 0.25,
+		desc = "+35% урона на 8 секунд. Цена — риск.",
+	},
+	{
+		id = "Blood_Feast", name = "Кровавый пир", element = "Blood", icon = "🫀",
+		kind = "area", tier = 2, reqLevel = 17, manaCost = 44, cooldown = 9,
+		damage = 56, radius = 19, castTime = 0.5, lifesteal = 0.7,
+		desc = "Вытягивает жизнь из всех вокруг, лечит на 70% урона.",
+	},
+	{
+		id = "Blood_Exsanguinate", name = "Обескровливание", element = "Blood", icon = "💀",
+		kind = "meteor", tier = 3, reqLevel = 27, manaCost = 68, cooldown = 14,
+		damage = 118, radius = 16, range = 195, fallTime = 0.85, castTime = 0.55,
+		lifesteal = 0.4,
+		desc = "Кровавый разлом: урон по площади и лечение.",
+	},
 }
 
 GameData.SpellById = {}
@@ -207,6 +285,8 @@ GameData.Items = {
 	{ id = "M_AshEssence",  name = "Пепельная эссенция",  type = "material", rarity = "rare", price = 90, desc = "Тёплая на ощупь." },
 	{ id = "M_BoneDust",    name = "Костяная пыль",       type = "material", rarity = "rare", price = 85, desc = "Материал для ритуалов." },
 	{ id = "M_VoidShard",   name = "Осколок Бездны",      type = "material", rarity = "epic", price = 220, desc = "Смотрит в ответ." },
+	{ id = "M_Coral",       name = "Коралл",              type = "material", rarity = "uncommon", price = 60, desc = "Хрустит под ногами." },
+	{ id = "M_EmberStone",  name = "Пепельный камень",    type = "material", rarity = "rare", price = 100, desc = "Ещё тёплый." },
 }
 
 GameData.ItemById = {}
@@ -298,6 +378,36 @@ GameData.Mobs = {
 	{ id = "BoneGuardian", name = "Костяной страж", zone = "Bonefields", level = 40, health = 720, damage = 46, speed = 12, xp = 430, elite = true,
 	  model = "golem", color = Color3.fromRGB(226, 220, 198), scale = 1.45, aggro = 60, attackCooldown = 2.3,
 	  loot = { { item = "W_BoneScythe", chance = 0.12 }, { item = "A_BoneMail", chance = 0.1 }, { item = "M_BoneDust", chance = 1, min = 2, max = 4 } } },
+
+	-- ПРЕДГОРЬЯ (26-34)
+	{ id = "RockTroll", name = "Каменный тролль", zone = "Highlands", level = 28, health = 520, damage = 30, speed = 12, xp = 210, elite = true,
+	  model = "golem", color = Color3.fromRGB(126, 116, 100), scale = 1.45, aggro = 60, attackCooldown = 2.1,
+	  loot = { { item = "M_Ore", chance = 0.8, min = 1, max = 3 }, { item = "A_Chain", chance = 0.08 } } },
+	{ id = "MinerGhoul", name = "Шахтный гуль", zone = "Highlands", level = 26, health = 300, damage = 26, speed = 14, xp = 160,
+	  model = "humanoid", color = Color3.fromRGB(110, 106, 92), scale = 1.0, aggro = 55, attackCooldown = 1.6,
+	  loot = { { item = "M_Ore", chance = 0.5 }, { item = "C_HealthPotion", chance = 0.2 } } },
+	{ id = "Highwayman", name = "Горный разбойник", zone = "Highlands", level = 30, health = 380, damage = 32, speed = 15, xp = 220,
+	  model = "humanoid", color = Color3.fromRGB(98, 76, 58), scale = 1.0, aggro = 70, attackCooldown = 1.4, ranged = 65,
+	  loot = { { item = "C_Elixir", chance = 0.1 }, { item = "W_Hatchet", chance = 0.1 }, { item = "M_Ore", chance = 0.4 } } },
+
+	-- АРХИПЕЛАГ (28-40)
+	{ id = "SeaWraith", name = "Морской призрак", zone = "Archipelago", level = 32, health = 360, damage = 34, speed = 15, xp = 240,
+	  model = "floating", color = Color3.fromRGB(120, 180, 200), scale = 1.1, aggro = 70, attackCooldown = 1.9, ranged = 75,
+	  loot = { { item = "M_IceShard", chance = 0.4 }, { item = "C_ManaPotion", chance = 0.3 } } },
+	{ id = "PirateLord", name = "Пират-капитан", zone = "Archipelago", level = 36, health = 620, damage = 40, speed = 15, xp = 330, elite = true,
+	  model = "humanoid", color = Color3.fromRGB(120, 70, 60), scale = 1.2, aggro = 70, attackCooldown = 1.6,
+	  loot = { { item = "W_Sabre", chance = 0.2 }, { item = "C_Elixir", chance = 0.25 }, { item = "T_SwiftCharm", chance = 0.1 } } },
+	{ id = "FrostCrab", name = "Морозный краб", zone = "Archipelago", level = 29, health = 340, damage = 28, speed = 13, xp = 190,
+	  model = "beast", color = Color3.fromRGB(190, 210, 220), scale = 1.2, aggro = 50, attackCooldown = 1.7,
+	  loot = { { item = "M_Pelt", chance = 0.5 }, { item = "M_IceShard", chance = 0.25 } } },
+
+	-- ЮЖНЫЕ ОСТРОВА (22-32)
+	{ id = "CoralGolem", name = "Коралловый голем", zone = "SouthIsles", level = 24, health = 420, damage = 24, speed = 11, xp = 170,
+	  model = "golem", color = Color3.fromRGB(210, 140, 150), scale = 1.3, aggro = 55, attackCooldown = 2.0,
+	  loot = { { item = "M_BoneDust", chance = 0.4 }, { item = "C_HealthPotion", chance = 0.3 } } },
+	{ id = "BeachRaider", name = "Береговой налётчик", zone = "SouthIsles", level = 28, health = 320, damage = 28, speed = 16, xp = 200,
+	  model = "humanoid", color = Color3.fromRGB(100, 84, 66), scale = 1.0, aggro = 65, attackCooldown = 1.5,
+	  loot = { { item = "C_Elixir", chance = 0.08 }, { item = "M_Ore", chance = 0.35 } } },
 
 	-- ПОЛАЯ БЕЗДНА (50+)
 	{ id = "VoidStalker", name = "Теневой страж",  zone = "HollowDeep", level = 52, health = 900, damage = 58, speed = 16, xp = 620, elite = true,
@@ -405,6 +515,16 @@ GameData.Bosses = {
 		loot = { { item = "W_VoidEdge", chance = 0.5 }, { item = "A_VoidShroud", chance = 0.5 },
 		         { item = "T_BloodCharm", chance = 0.8 }, { item = "M_VoidShard", chance = 1, min = 3, max = 6 } },
 	},
+}
+
+-- «Печати призыва»: босса можно вызвать в его зоне, даже если арена пуста
+GameData.BossSummons = {
+	{ id = "FrostWraith",  seal = "P_FrostWraith",  mats = { { item = "M_IceShard", count = 4 } } },
+	{ id = "FrostColossus", seal = "P_FrostColossus", mats = { { item = "M_IceShard", count = 6 }, { item = "M_Ore", count = 4 } } },
+	{ id = "SwampMother",  seal = "P_SwampMother",  mats = { { item = "M_BoneDust", count = 5 }, { item = "M_Pelt", count = 3 } } },
+	{ id = "CryptWraith",  seal = "P_CryptWraith",  mats = { { item = "M_BoneDust", count = 6 }, { item = "M_AshEssence", count = 3 } } },
+	{ id = "Ashlord",      seal = "P_Ashlord",      mats = { { item = "M_AshEssence", count = 6 }, { item = "M_EmberStone", count = 4 } } },
+	{ id = "NamelessKing", seal = "P_NamelessKing", mats = { { item = "M_VoidShard", count = 5 }, { item = "M_BoneDust", count = 8 } } },
 }
 
 GameData.BossById = {}

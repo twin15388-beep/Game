@@ -143,6 +143,60 @@ Quests.List = {
 		rewards = { xp = 16000, coins = 5600, items = { { id = "W_BoneScythe", count = 1 } }, statPoints = 1 },
 	},
 
+	-- ============================ ПРЕДГОРЬЯ ==================================
+	{
+		id = "Q_Trolls", name = "Тролльи тропы", giver = "Highlander", minLevel = 27,
+		desc = "Горец Бран: каменные тролли раздавили торговый караван. Убей 5 троллей.",
+		objectives = { { type = "kill", target = "RockTroll", count = 5, text = "Убить каменных троллей" } },
+		rewards = { xp = 3600, coins = 1200, items = { { id = "A_AshPlate", count = 1 } } },
+	},
+	{
+		id = "Q_MineShadows", name = "Тени шахты", giver = "Miner", minLevel = 25,
+		desc = "Шахтёр Гром: из забоя лезут гули. Убей 10 шахтных гулей.",
+		objectives = { { type = "kill", target = "MinerGhoul", count = 10, text = "Убить шахтных гулей" } },
+		rewards = { xp = 3200, coins = 1100, items = { { id = "M_Ore", count = 8 } } },
+	},
+	{
+		id = "Q_Highway", name = "Горный тракт", giver = "Highlander", minLevel = 30,
+		desc = "Горные разбойники грабят предгорья. Убей 8.",
+		objectives = { { type = "kill", target = "Highwayman", count = 8, text = "Убить горных разбойников" } },
+		rewards = { xp = 4200, coins = 1500, items = { { id = "C_Elixir", count = 2 } } },
+	},
+
+	-- ============================ АРХИПЕЛАГ ==================================
+	{
+		id = "Q_PiratesBane", name = "Гибель пиратов", giver = "Pirate", minLevel = 32,
+		desc = "Кровавый Джо хочет покоя: убей 8 пиратов-капитанов.",
+		objectives = { { type = "kill", target = "PirateLord", count = 8, text = "Убить пиратских капитанов" } },
+		rewards = { xp = 6000, coins = 2200, items = { { id = "T_BloodCharm", count = 1 } } },
+	},
+	{
+		id = "Q_SeaWraiths", name = "Призраки архипелага", giver = "Pirate", minLevel = 30,
+		desc = "Морские призраки не дают рыбачить. Убей 10.",
+		objectives = { { type = "kill", target = "SeaWraith", count = 10, text = "Убить морских призраков" } },
+		rewards = { xp = 5200, coins = 1900, items = { { id = "C_ManaPotion", count = 6 } } },
+	},
+
+	-- ============================ ЮЖНЫЕ ОСТРОВА ==============================
+	{
+		id = "Q_Coral", name = "Коралловый риф", giver = "Fishmonger", minLevel = 22,
+		desc = "Рыбак просит кораллы: принеси 4.",
+		objectives = { { type = "collect", target = "M_Coral", count = 4, text = "Собрать кораллы" } },
+		rewards = { xp = 2600, coins = 900, items = { { id = "T_SwiftCharm", count = 1 } } },
+	},
+	{
+		id = "Q_BeachRaiders", name = "Налётчики", giver = "Farmer", minLevel = 24,
+		desc = "Береговые налётчики жгут дома. Убей 8.",
+		objectives = { { type = "kill", target = "BeachRaider", count = 8, text = "Убить налётчиков" } },
+		rewards = { xp = 3000, coins = 1000, items = { { id = "C_HealthPotion", count = 6 } } },
+	},
+	{
+		id = "Q_FrostWind", name = "Ветроград", giver = "Villager", minLevel = 28,
+		desc = "Житель Ветрограда просит зачистить морозных волков у стен.",
+		objectives = { { type = "kill", target = "FrostWolf", count = 12, text = "Убить морозных волков" } },
+		rewards = { xp = 4600, coins = 1600, items = { { id = "A_FrostPlate", count = 1 } } },
+	},
+
 	-- ============================ ПОЛАЯ БЕЗДНА ===============================
 	{
 		id = "Q_VoidShards", name = "Осколки Бездны", giver = "QuestKeeper", minLevel = 48,

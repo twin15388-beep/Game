@@ -23,6 +23,7 @@ Net.Req = {
 	Ping = "Req_Ping",               -- (clientTime)
 	Interact = "Req_Interact",       -- (targetInstance)
 	Heal = "Req_Heal",               -- (): лечение у лекаря
+	BossSummon = "Req_BossSummon",   -- (bossId): крафт «Печати призыва»
 }
 
 -- Server -> Client

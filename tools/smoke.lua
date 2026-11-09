@@ -199,8 +199,8 @@ Combat.setup({ remotes = remotes, playerState = PlayerState })
 QuestService.setup({ remotes = remotes, playerState = PlayerState, combat = Combat })
 
 -- ------------------------------ данные --------------------------------------
-check("Config: стихий 5", #Config.Elements == 5, #Config.Elements)
-check("GameData: заклинаний >= 20", #GameData.Spells >= 20, #GameData.Spells)
+check("Config: стихий 8", #Config.Elements == 8, #Config.Elements)
+check("GameData: заклинаний >= 30", #GameData.Spells >= 30, #GameData.Spells)
 check("GameData: все заклинания имеют id", (function()
 	local ids = {}
 	for _, s in ipairs(GameData.Spells) do
@@ -218,7 +218,8 @@ check("GameData: у каждого моба есть зона и лут", (funct
 end)())
 check("GameData: каждая зона с мобами существует в ZoneConfig-списке", (function()
 	local zones = { Gloomwood = 1, Frostpeak = 1, Ashwaste = 1, Mirefen = 1,
-		SunkenCoast = 1, Bonefields = 1, HollowDeep = 1 }
+		SunkenCoast = 1, Bonefields = 1, HollowDeep = 1, Highlands = 1,
+		Archipelago = 1, SouthIsles = 1 }
 	for _, m in ipairs(GameData.Mobs) do
 		if not zones[m.zone] then return false end
 	end
