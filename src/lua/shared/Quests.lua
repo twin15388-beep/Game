@@ -211,6 +211,95 @@ Quests.List = {
 		objectives = { { type = "boss", target = "NamelessKing", count = 1, text = "Победить Безымянного Короля" } },
 		rewards = { xp = 40000, coins = 15000, items = { { id = "W_VoidEdge", count = 1 }, { id = "A_VoidShroud", count = 1 } }, statPoints = 3 },
 	},
+
+	-- ==================== v11: НОВЫЕ ЗЕМЛИ И ПОДЗЕМЕЛЬЯ ====================
+	{
+		id = "Q_GreatGrove", name = "Великая Роща", giver = "Woodcutter", minLevel = 10,
+		desc = "Лесоруб Хват просит очистить рощу от падали, которую подняли пещерные твари. Убей 8 тварей Глумвуда.",
+		objectives = { { type = "killZone", target = "Gloomwood", count = 8, text = "Убить в Глумвуде" } },
+		rewards = { xp = 1500, coins = 420, items = { { id = "M_Ore", count = 4 } } },
+	},
+	{
+		id = "Q_DuplinoCave", name = "Пещеры Дупла", giver = "Woodcutter", minLevel = 12,
+		prereq = { "Q_GreatGrove" },
+		desc = "Спустись в Пещеры Дупла под пилорамой и вычисти первые залы. Убей 6 гоблинов.",
+		objectives = { { type = "kill", target = "GloomGoblin", count = 6, text = "Убить гоблинов" } },
+		rewards = { xp = 1900, coins = 520, items = { { id = "A_Chain", count = 1 }, { id = "C_HealthPotion", count = 3 } } },
+	},
+	{
+		id = "Q_CanyonShade", name = "Тени Красного каньона", giver = "RiceFarmer", minLevel = 28,
+		desc = "Крестьянин Тэру: с каньона приходят тени. Убей 10 любых тварей на южном вельде.",
+		objectives = { { type = "killZone", target = "Bonefields", count = 10, text = "Убить на вельде" } },
+		rewards = { xp = 4200, coins = 900, items = { { id = "C_Elixir", count = 2 } } },
+	},
+	{
+		id = "Q_MarrowTyrant", name = "Оссуария", giver = "Prospector", minLevel = 34,
+		desc = "Старатель Гриб: в Шахте Красный Камень сидит Костяной Тиран. Очисти её.",
+		objectives = { { type = "boss", target = "MarrowTyrant", count = 1, text = "Победить Костяного Тирана" } },
+		rewards = { xp = 9000, coins = 2200, items = { { id = "W_BoneScythe", count = 1 } } },
+	},
+	{
+		id = "Q_ArcanumSteps", name = "Ступени Арканума", giver = "Archmage", minLevel = 22,
+		desc = "Селена Звёздная: чтобы учиться дальше, докажи силу. Убей 12 тварей на восточных землях.",
+		objectives = { { type = "killZone", target = "SunkenCoast", count = 12, text = "Убить на востоке" } },
+		rewards = { xp = 3400, coins = 800, items = { { id = "C_ManaPotion", count = 4 } } },
+	},
+	{
+		id = "Q_TowerClimb", name = "На вершину башни", giver = "Archmage", minLevel = 26,
+		prereq = { "Q_ArcanumSteps" },
+		desc = "Поднимись по летающим платформам к вершине башни Арканума и забери гримуар.",
+		objectives = { { type = "collect", target = "T_FocusCharm", count = 1, text = "Найти фокус-амулет" } },
+		rewards = { xp = 4600, coins = 1100, items = { { id = "T_FocusCharm", count = 1 } }, statPoints = 1 },
+	},
+	{
+		id = "Q_OldMine", name = "Забытые Шахты", giver = "MineOverseer", minLevel = 36,
+		desc = "Горный мастер: шахты закрыли сорок лет назад, а Страж всё ходит. Убей Каменного Стража.",
+		objectives = { { type = "boss", target = "StoneWarden", count = 1, text = "Победить Каменного Стража" } },
+		rewards = { xp = 10000, coins = 2600, items = { { id = "A_Chain", count = 1 }, { id = "M_Ore", count = 8 } } },
+	},
+	{
+		id = "Q_WindPeak", name = "Пик Ветров", giver = "MineOverseer", minLevel = 42,
+		prereq = { "Q_OldMine" },
+		desc = "Поднимись на Пик Ветров и выстои против Архипастыря. Это проверка на выносливость.",
+		objectives = { { type = "boss", target = "WindArchon", count = 1, text = "Победить Архипастыря" } },
+		rewards = { xp = 14000, coins = 3200, items = { { id = "T_SwiftCharm", count = 1 } }, statPoints = 1 },
+	},
+	{
+		id = "Q_DrownedShip", name = "Затонувший фрегат", giver = "PirateCaptain", minLevel = 30,
+		desc = "Рыжая Мора: мой фрегат лежит у Гавани, а адмирал всё командует. Разберись с ним.",
+		objectives = { { type = "boss", target = "PirateAdmiral", count = 1, text = "Победить Адмирала-Мертвеца" } },
+		rewards = { xp = 7200, coins = 1900, items = { { id = "W_Sabre", count = 1 } } },
+	},
+	{
+		id = "Q_CoralChildren", name = "Дети Пальмового Берега", giver = "Islander", minLevel = 26,
+		desc = "Каи: Коралловая Королева забрала наших детей в грот. Освободи их.",
+		objectives = { { type = "boss", target = "CoralQueen", count = 1, text = "Победить Коралловую Королеву" } },
+		rewards = { xp = 6000, coins = 1500, items = { { id = "C_Elixir", count = 2 } } },
+	},
+	{
+		id = "Q_Forge", name = "Кузня в Жерле", giver = "AshenSmith", minLevel = 44,
+		desc = "Горн: Владыка Кузни держит вечный огонь. Забери его — и я выкую тебе оружие.",
+		objectives = { { type = "boss", target = "VolcanoForge", count = 1, text = "Победить Владыку Кузни" } },
+		rewards = { xp = 12000, coins = 3000, items = { { id = "W_AshCleaver", count = 1 }, { id = "M_EmberStone", count = 4 } } },
+	},
+	{
+		id = "Q_RotTemple", name = "Служба в затопленном храме", giver = "BogPriest", minLevel = 38,
+		desc = "Отец Мох: Гидра выросла из наших молитв. Прекрати это.",
+		objectives = { { type = "boss", target = "BogHydra", count = 1, text = "Победить Болотную Гидру" } },
+		rewards = { xp = 9500, coins = 2400, items = { { id = "A_BoneMail", count = 1 } } },
+	},
+	{
+		id = "Q_WyrmLair", name = "Логово Змея", giver = "IceScholar", minLevel = 50,
+		desc = "Ивар: Змей спит в леднике. Каждая его чешуйка — зима. Разбуди и победи.",
+		objectives = { { type = "boss", target = "GlacierWyrm", count = 1, text = "Победить Ледяного Змея" } },
+		rewards = { xp = 22000, coins = 5200, items = { { id = "A_FrostPlate", count = 1 } }, statPoints = 2 },
+	},
+	{
+		id = "Q_Kamnegorsk", name = "Крепость горняков", giver = "MineOverseer", minLevel = 32,
+		desc = "Помоги Камнегорску: прореди горных тварей, чтобы караваны шли безопасно.",
+		objectives = { { type = "killZone", target = "Highlands", count = 12, text = "Убить в Предгорьях" } },
+		rewards = { xp = 5600, coins = 1400, items = { { id = "M_Ore", count = 6 } } },
+	},
 }
 
 Quests.ById = {}

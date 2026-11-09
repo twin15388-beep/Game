@@ -416,6 +416,26 @@ GameData.Mobs = {
 	{ id = "CrystalGolem", name = "Кристальный голем", zone = "HollowDeep", level = 54, health = 1200, damage = 64, speed = 10, xp = 780, elite = true,
 	  model = "golem", color = Color3.fromRGB(120, 90, 200), scale = 1.6, aggro = 55, attackCooldown = 2.5, glow = true,
 	  loot = { { item = "M_VoidShard", chance = 0.8, min = 1, max = 2 }, { item = "A_VoidShroud", chance = 0.06 } } },
+
+	-- ===== v11: обитатели новых подземелий =====
+	{ id = "MineGhoulBoss", name = "Шахтный вурдалак", zone = "Highlands", level = 38, health = 620, damage = 40, speed = 14, xp = 380, elite = true,
+	  model = "humanoid", color = Color3.fromRGB(96, 88, 76), scale = 1.2, aggro = 70, attackCooldown = 1.5,
+	  loot = { { item = "M_Ore", chance = 0.9, min = 2, max = 4 }, { item = "C_Elixir", chance = 0.2 } } },
+	{ id = "BogHydraSpawn", name = "Болотный выродок", zone = "Mirefen", level = 42, health = 760, damage = 48, speed = 12, xp = 460, elite = true,
+	  model = "beast", color = Color3.fromRGB(78, 112, 66), scale = 1.4, aggro = 65, attackCooldown = 1.8, glow = true,
+	  loot = { { item = "M_BoneDust", chance = 0.7, min = 1, max = 3 }, { item = "C_Elixir", chance = 0.25 } } },
+	{ id = "ForgeSlave", name = "Пленный кузнец", zone = "Ashwaste", level = 46, health = 980, damage = 56, speed = 13, xp = 560, elite = true,
+	  model = "humanoid", color = Color3.fromRGB(160, 70, 40), scale = 1.3, aggro = 70, attackCooldown = 1.6, glow = true,
+	  loot = { { item = "M_AshEssence", chance = 0.8, min = 1, max = 3 }, { item = "M_EmberStone", chance = 0.3 } } },
+	{ id = "DrownedSailor", name = "Утонувший матрос", zone = "Archipelago", level = 34, health = 480, damage = 34, speed = 13, xp = 300, elite = true,
+	  model = "humanoid", color = Color3.fromRGB(70, 96, 108), scale = 1.1, aggro = 65, attackCooldown = 1.6,
+	  loot = { { item = "M_Coral", chance = 0.5 }, { item = "C_HealthPotion", chance = 0.3 } } },
+	{ id = "CoralSentinel", name = "Коралловый страж", zone = "SouthIsles", level = 30, health = 520, damage = 32, speed = 11, xp = 320, elite = true,
+	  model = "golem", color = Color3.fromRGB(220, 150, 170), scale = 1.4, aggro = 60, attackCooldown = 2.0,
+	  loot = { { item = "M_Coral", chance = 0.8, min = 1, max = 2 }, { item = "C_ManaPotion", chance = 0.4 } } },
+	{ id = "BoneScribe", name = "Костяной писарь", zone = "Bonefields", level = 36, health = 560, damage = 44, speed = 14, xp = 360, elite = true,
+	  model = "floating", color = Color3.fromRGB(196, 186, 150), scale = 1.2, aggro = 70, attackCooldown = 1.7,
+	  loot = { { item = "M_BoneDust", chance = 0.9, min = 2, max = 4 }, { item = "C_ManaPotion", chance = 0.35 } } },
 }
 
 GameData.MobById = {}
@@ -515,6 +535,111 @@ GameData.Bosses = {
 		loot = { { item = "W_VoidEdge", chance = 0.5 }, { item = "A_VoidShroud", chance = 0.5 },
 		         { item = "T_BloodCharm", chance = 0.8 }, { item = "M_VoidShard", chance = 1, min = 3, max = 6 } },
 	},
+	{
+		id = "MarrowTyrant", name = "Костяной Тиран", title = "Хозяин Оссуарии",
+		level = 42, health = 7200, damage = 66, speed = 13, xp = 3900,
+		model = "golem", color = Color3.fromRGB(206, 196, 160), scale = 2.2, glow = true,
+		arenaRadius = 58, respawn = 200,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "Summon" } },
+			{ at = 0.6, abilities = { "Slam", "Volley", "Summon" } },
+			{ at = 0.3, abilities = { "Volley", "Meteor", "Summon" }, enrage = 0.4 },
+		},
+		loot = { { item = "W_BoneScythe", chance = 0.6 }, { item = "A_BoneMail", chance = 0.55 },
+		         { item = "M_BoneDust", chance = 1, min = 6, max = 10 } },
+	},
+	{
+		id = "StoneWarden", name = "Каменный Страж", title = "Тюремщик Забытых Шахт",
+		level = 44, health = 8600, damage = 72, speed = 10, xp = 4400,
+		model = "golem", color = Color3.fromRGB(120, 118, 110), scale = 2.8, glow = true,
+		arenaRadius = 52, respawn = 210,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "Volley" } },
+			{ at = 0.55, abilities = { "Slam", "Meteor" } },
+			{ at = 0.25, abilities = { "Meteor", "Slam", "Summon" }, enrage = 0.5 },
+		},
+		loot = { { item = "W_AshCleaver", chance = 0.5 }, { item = "A_Chain", chance = 0.6 },
+		         { item = "M_Ore", chance = 1, min = 6, max = 12 }, { item = "M_EmberStone", chance = 0.5 } },
+	},
+	{
+		id = "BogHydra", name = "Болотная Гидра", title = "Утроба Затонувшего Храма",
+		level = 46, health = 9800, damage = 78, speed = 12, xp = 5100,
+		model = "beast", color = Color3.fromRGB(86, 128, 72), scale = 2.5, glow = true,
+		arenaRadius = 64, respawn = 220,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "PoisonNova" } },
+			{ at = 0.6, abilities = { "PoisonNova", "Volley", "Summon" } },
+			{ at = 0.3, abilities = { "PoisonNova", "Meteor", "Summon" }, enrage = 0.45 },
+		},
+		loot = { { item = "A_AshPlate", chance = 0.55 }, { item = "T_BloodCharm", chance = 0.45 },
+		         { item = "M_BoneDust", chance = 1, min = 5, max = 9 } },
+	},
+	{
+		id = "VolcanoForge", name = "Владыка Кузни", title = "Кузнец в Жерле",
+		level = 52, health = 11500, damage = 88, speed = 12, xp = 6600,
+		model = "humanoid", color = Color3.fromRGB(232, 96, 32), scale = 2.3, glow = true,
+		arenaRadius = 66, respawn = 230,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "Meteor" } },
+			{ at = 0.6, abilities = { "Slam", "Meteor", "Volley" } },
+			{ at = 0.3, abilities = { "Meteor", "Meteor", "Summon" }, enrage = 0.55 },
+		},
+		loot = { { item = "W_AshCleaver", chance = 0.7 }, { item = "A_AshPlate", chance = 0.7 },
+		         { item = "M_EmberStone", chance = 1, min = 4, max = 8 } },
+	},
+	{
+		id = "PirateAdmiral", name = "Адмирал-Мертвец", title = "Капитан Затонувшего Фрегата",
+		level = 48, health = 9200, damage = 80, speed = 15, xp = 5800,
+		model = "humanoid", color = Color3.fromRGB(64, 92, 118), scale = 2.1, glow = true,
+		arenaRadius = 60, respawn = 220,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "Volley" } },
+			{ at = 0.6, abilities = { "Volley", "Slam", "Summon" } },
+			{ at = 0.25, abilities = { "Volley", "Meteor", "Summon" }, enrage = 0.5 },
+		},
+		loot = { { item = "W_Sabre", chance = 0.6 }, { item = "A_VoidShroud", chance = 0.3 },
+		         { item = "M_Coral", chance = 1, min = 4, max = 8 } },
+	},
+	{
+		id = "WindArchon", name = "Ветряной Архипастырь", title = "Хозяин Пика Ветров",
+		level = 56, health = 13200, damage = 96, speed = 16, xp = 7600,
+		model = "floating", color = Color3.fromRGB(198, 226, 240), scale = 2.2, glow = true,
+		arenaRadius = 62, respawn = 240,
+		phases = {
+			{ at = 1.0, abilities = { "Volley", "Slam" } },
+			{ at = 0.65, abilities = { "Volley", "FrostNova", "Summon" } },
+			{ at = 0.3, abilities = { "FrostNova", "Meteor", "Volley" }, enrage = 0.5 },
+		},
+		loot = { { item = "W_FrostBlade", chance = 0.5 }, { item = "T_SwiftCharm", chance = 0.6 },
+		         { item = "M_IceShard", chance = 1, min = 6, max = 10 } },
+	},
+	{
+		id = "CoralQueen", name = "Коралловая Королева", title = "Мать Отмелей",
+		level = 38, health = 6400, damage = 60, speed = 12, xp = 3400,
+		model = "floating", color = Color3.fromRGB(236, 150, 178), scale = 2.0, glow = true,
+		arenaRadius = 54, respawn = 190,
+		phases = {
+			{ at = 1.0, abilities = { "Volley", "Summon" } },
+			{ at = 0.55, abilities = { "Volley", "FrostNova", "Summon" } },
+			{ at = 0.25, abilities = { "FrostNova", "Slam", "Summon" }, enrage = 0.4 },
+		},
+		loot = { { item = "T_FocusCharm", chance = 0.5 }, { item = "A_FrostPlate", chance = 0.4 },
+		         { item = "M_Coral", chance = 1, min = 5, max = 9 } },
+	},
+	{
+		id = "GlacierWyrm", name = "Ледяной Змей", title = "Древний Холод",
+		level = 58, health = 15000, damage = 104, speed = 15, xp = 9000,
+		model = "beast", color = Color3.fromRGB(176, 216, 246), scale = 2.7, glow = true,
+		arenaRadius = 70, respawn = 260,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "FrostNova" } },
+			{ at = 0.7, abilities = { "FrostNova", "Volley", "Summon" } },
+			{ at = 0.4, abilities = { "FrostNova", "Meteor", "Slam" } },
+			{ at = 0.15, abilities = { "Meteor", "FrostNova", "Volley", "Summon" }, enrage = 0.6 },
+		},
+		loot = { { item = "W_FrostBlade", chance = 0.75 }, { item = "A_FrostPlate", chance = 0.7 },
+		         { item = "T_FocusCharm", chance = 0.5 }, { item = "M_IceShard", chance = 1, min = 8, max = 14 } },
+	},
 }
 
 -- «Печати призыва»: босса можно вызвать в его зоне, даже если арена пуста
@@ -525,6 +650,14 @@ GameData.BossSummons = {
 	{ id = "CryptWraith",  seal = "P_CryptWraith",  mats = { { item = "M_BoneDust", count = 6 }, { item = "M_AshEssence", count = 3 } } },
 	{ id = "Ashlord",      seal = "P_Ashlord",      mats = { { item = "M_AshEssence", count = 6 }, { item = "M_EmberStone", count = 4 } } },
 	{ id = "NamelessKing", seal = "P_NamelessKing", mats = { { item = "M_VoidShard", count = 5 }, { item = "M_BoneDust", count = 8 } } },
+	{ id = "MarrowTyrant",  seal = "P_MarrowTyrant",  mats = { { item = "M_BoneDust", count = 8 }, { item = "M_VoidShard", count = 2 } } },
+	{ id = "StoneWarden",   seal = "P_StoneWarden",   mats = { { item = "M_Ore", count = 8 }, { item = "M_EmberStone", count = 3 } } },
+	{ id = "BogHydra",      seal = "P_BogHydra",      mats = { { item = "M_BoneDust", count = 6 }, { item = "M_Pelt", count = 5 } } },
+	{ id = "VolcanoForge",  seal = "P_VolcanoForge",  mats = { { item = "M_EmberStone", count = 6 }, { item = "M_AshEssence", count = 5 } } },
+	{ id = "PirateAdmiral", seal = "P_PirateAdmiral", mats = { { item = "M_Coral", count = 6 }, { item = "M_Ore", count = 4 } } },
+	{ id = "WindArchon",    seal = "P_WindArchon",    mats = { { item = "M_IceShard", count = 7 }, { item = "M_Ore", count = 5 } } },
+	{ id = "CoralQueen",    seal = "P_CoralQueen",    mats = { { item = "M_Coral", count = 8 }, { item = "C_ManaPotion", count = 3 } } },
+	{ id = "GlacierWyrm",   seal = "P_GlacierWyrm",   mats = { { item = "M_IceShard", count = 10 }, { item = "M_VoidShard", count = 4 } } },
 }
 
 GameData.BossById = {}

@@ -232,11 +232,9 @@ end
 
 local function abilitySummon(boss, def)
 	broadcast(Net.Rep.BossEvent, { event = "ability", id = def.id, name = "Зов слуг" })
-	local zone = nil
-	for _, z in ipairs({ "Gloomwood", "Frostpeak", "Mirefen", "Ashwaste", "SunkenCoast", "Bonefields", "HollowDeep" }) do
-		if def.name == "Ледяной Призрак" or def.name == "Ледяной Колосс" then zone = "Frostpeak" end
-	end
-	zone = zone or "Bonefields"
+	-- зона берётся из таблицы данжей (Dungeons.OfBoss), чтобы слуги были «свои»
+	local Dungeons = require(Shared:WaitForChild("Dungeons"))
+	local zone = Dungeons.OfBoss[def.id] or "Bonefields"
 	local list = GameData.MobsInZone(zone)
 	if #list == 0 then return end
 	for i = 1, 2 do
@@ -651,9 +649,7 @@ end
 function BossService.summonBoss(st, bossId)
 	local def = GameData.BossById[bossId]
 	if not def then return false, "нет такого босса" end
-	if def.isWorldBoss then
-		-- мирового босса призывать нельзя
-	end
+	if def.isWorldBoss then return false, "мирового босса нельзя призвать печатью" end
 	local now = os.clock()
 	st.data.bossSummonAt = st.data.bossSummonAt or 0
 	if now - st.data.bossSummonAt < 360 then

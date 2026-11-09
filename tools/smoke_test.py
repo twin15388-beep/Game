@@ -13,7 +13,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "src", "lua")
 HARNESS = os.path.join(ROOT, "tools", "smoke.lua")
 
-SHARED = ["Config", "GameData", "Net", "Util", "Quests", "NPCData"]
+SHARED = ["Config", "GameData", "Net", "Util", "Quests", "NPCData", "Dungeons"]
 SERVER = ["PlayerState", "Combat", "MobService", "BossService", "QuestService"]
 
 

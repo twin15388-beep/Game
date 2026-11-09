@@ -14,8 +14,8 @@ import sys
 import zipfile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-RLX = "Emberfall_Map_v10.rbxlx"
-ZIP_PATH = os.path.join(ROOT, "release", "Emberfall_v10.zip")
+RLX = "Emberfall_Map_v11.rbxlx"
+ZIP_PATH = os.path.join(ROOT, "release", "Emberfall_v11.zip")
 
 
 def run(*args):

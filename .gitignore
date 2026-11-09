@@ -1,7 +1,7 @@
 # собранный мир кладём в репозиторий, чтобы файл можно было скачать напрямую
 # (старые версии карты не храним)
 Emberfall_Map_v*.rbxlx
-!Emberfall_Map_v10.rbxlx
+!Emberfall_Map_v11.rbxlx
 *.rbxl
 __pycache__/
 *.pyc

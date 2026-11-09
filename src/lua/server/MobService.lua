@@ -28,6 +28,12 @@ local CAMP_MOB = {
 	Marauders = "Marauder",
 	Cult     = "Cultist",
 	Fishers  = "Drowned",
+	-- v11: новые лагеря
+	VeldtRaiders  = "Bandit",
+	CanyonBandits = "SkeletonArcher",
+	RidgePoachers = "Highwayman",
+	ForestCutters = "GloomGoblin",
+	DuneWreckers  = "BeachRaider",
 }
 
 function MobService.setup(d)

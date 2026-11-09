@@ -3,7 +3,7 @@
 
 local Config = {}
 
-Config.Version = "v10"
+Config.Version = "v11"
 Config.GameName = "EMBERFALL — Пепел Вечности"
 
 -- ---------------------------- уровень / опыт -------------------------------

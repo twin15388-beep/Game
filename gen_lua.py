@@ -7,7 +7,7 @@ SHARED["Config"] = """-- Emberfall | Config — все числа баланса
 
 local Config = {}
 
-Config.Version = "v10"
+Config.Version = "v11"
 Config.GameName = "EMBERFALL — Пепел Вечности"
 
 -- ---------------------------- уровень / опыт -------------------------------
@@ -540,6 +540,26 @@ GameData.Mobs = {
 	{ id = "CrystalGolem", name = "Кристальный голем", zone = "HollowDeep", level = 54, health = 1200, damage = 64, speed = 10, xp = 780, elite = true,
 	  model = "golem", color = Color3.fromRGB(120, 90, 200), scale = 1.6, aggro = 55, attackCooldown = 2.5, glow = true,
 	  loot = { { item = "M_VoidShard", chance = 0.8, min = 1, max = 2 }, { item = "A_VoidShroud", chance = 0.06 } } },
+
+	-- ===== v11: обитатели новых подземелий =====
+	{ id = "MineGhoulBoss", name = "Шахтный вурдалак", zone = "Highlands", level = 38, health = 620, damage = 40, speed = 14, xp = 380, elite = true,
+	  model = "humanoid", color = Color3.fromRGB(96, 88, 76), scale = 1.2, aggro = 70, attackCooldown = 1.5,
+	  loot = { { item = "M_Ore", chance = 0.9, min = 2, max = 4 }, { item = "C_Elixir", chance = 0.2 } } },
+	{ id = "BogHydraSpawn", name = "Болотный выродок", zone = "Mirefen", level = 42, health = 760, damage = 48, speed = 12, xp = 460, elite = true,
+	  model = "beast", color = Color3.fromRGB(78, 112, 66), scale = 1.4, aggro = 65, attackCooldown = 1.8, glow = true,
+	  loot = { { item = "M_BoneDust", chance = 0.7, min = 1, max = 3 }, { item = "C_Elixir", chance = 0.25 } } },
+	{ id = "ForgeSlave", name = "Пленный кузнец", zone = "Ashwaste", level = 46, health = 980, damage = 56, speed = 13, xp = 560, elite = true,
+	  model = "humanoid", color = Color3.fromRGB(160, 70, 40), scale = 1.3, aggro = 70, attackCooldown = 1.6, glow = true,
+	  loot = { { item = "M_AshEssence", chance = 0.8, min = 1, max = 3 }, { item = "M_EmberStone", chance = 0.3 } } },
+	{ id = "DrownedSailor", name = "Утонувший матрос", zone = "Archipelago", level = 34, health = 480, damage = 34, speed = 13, xp = 300, elite = true,
+	  model = "humanoid", color = Color3.fromRGB(70, 96, 108), scale = 1.1, aggro = 65, attackCooldown = 1.6,
+	  loot = { { item = "M_Coral", chance = 0.5 }, { item = "C_HealthPotion", chance = 0.3 } } },
+	{ id = "CoralSentinel", name = "Коралловый страж", zone = "SouthIsles", level = 30, health = 520, damage = 32, speed = 11, xp = 320, elite = true,
+	  model = "golem", color = Color3.fromRGB(220, 150, 170), scale = 1.4, aggro = 60, attackCooldown = 2.0,
+	  loot = { { item = "M_Coral", chance = 0.8, min = 1, max = 2 }, { item = "C_ManaPotion", chance = 0.4 } } },
+	{ id = "BoneScribe", name = "Костяной писарь", zone = "Bonefields", level = 36, health = 560, damage = 44, speed = 14, xp = 360, elite = true,
+	  model = "floating", color = Color3.fromRGB(196, 186, 150), scale = 1.2, aggro = 70, attackCooldown = 1.7,
+	  loot = { { item = "M_BoneDust", chance = 0.9, min = 2, max = 4 }, { item = "C_ManaPotion", chance = 0.35 } } },
 }
 
 GameData.MobById = {}
@@ -639,6 +659,111 @@ GameData.Bosses = {
 		loot = { { item = "W_VoidEdge", chance = 0.5 }, { item = "A_VoidShroud", chance = 0.5 },
 		         { item = "T_BloodCharm", chance = 0.8 }, { item = "M_VoidShard", chance = 1, min = 3, max = 6 } },
 	},
+	{
+		id = "MarrowTyrant", name = "Костяной Тиран", title = "Хозяин Оссуарии",
+		level = 42, health = 7200, damage = 66, speed = 13, xp = 3900,
+		model = "golem", color = Color3.fromRGB(206, 196, 160), scale = 2.2, glow = true,
+		arenaRadius = 58, respawn = 200,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "Summon" } },
+			{ at = 0.6, abilities = { "Slam", "Volley", "Summon" } },
+			{ at = 0.3, abilities = { "Volley", "Meteor", "Summon" }, enrage = 0.4 },
+		},
+		loot = { { item = "W_BoneScythe", chance = 0.6 }, { item = "A_BoneMail", chance = 0.55 },
+		         { item = "M_BoneDust", chance = 1, min = 6, max = 10 } },
+	},
+	{
+		id = "StoneWarden", name = "Каменный Страж", title = "Тюремщик Забытых Шахт",
+		level = 44, health = 8600, damage = 72, speed = 10, xp = 4400,
+		model = "golem", color = Color3.fromRGB(120, 118, 110), scale = 2.8, glow = true,
+		arenaRadius = 52, respawn = 210,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "Volley" } },
+			{ at = 0.55, abilities = { "Slam", "Meteor" } },
+			{ at = 0.25, abilities = { "Meteor", "Slam", "Summon" }, enrage = 0.5 },
+		},
+		loot = { { item = "W_AshCleaver", chance = 0.5 }, { item = "A_Chain", chance = 0.6 },
+		         { item = "M_Ore", chance = 1, min = 6, max = 12 }, { item = "M_EmberStone", chance = 0.5 } },
+	},
+	{
+		id = "BogHydra", name = "Болотная Гидра", title = "Утроба Затонувшего Храма",
+		level = 46, health = 9800, damage = 78, speed = 12, xp = 5100,
+		model = "beast", color = Color3.fromRGB(86, 128, 72), scale = 2.5, glow = true,
+		arenaRadius = 64, respawn = 220,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "PoisonNova" } },
+			{ at = 0.6, abilities = { "PoisonNova", "Volley", "Summon" } },
+			{ at = 0.3, abilities = { "PoisonNova", "Meteor", "Summon" }, enrage = 0.45 },
+		},
+		loot = { { item = "A_AshPlate", chance = 0.55 }, { item = "T_BloodCharm", chance = 0.45 },
+		         { item = "M_BoneDust", chance = 1, min = 5, max = 9 } },
+	},
+	{
+		id = "VolcanoForge", name = "Владыка Кузни", title = "Кузнец в Жерле",
+		level = 52, health = 11500, damage = 88, speed = 12, xp = 6600,
+		model = "humanoid", color = Color3.fromRGB(232, 96, 32), scale = 2.3, glow = true,
+		arenaRadius = 66, respawn = 230,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "Meteor" } },
+			{ at = 0.6, abilities = { "Slam", "Meteor", "Volley" } },
+			{ at = 0.3, abilities = { "Meteor", "Meteor", "Summon" }, enrage = 0.55 },
+		},
+		loot = { { item = "W_AshCleaver", chance = 0.7 }, { item = "A_AshPlate", chance = 0.7 },
+		         { item = "M_EmberStone", chance = 1, min = 4, max = 8 } },
+	},
+	{
+		id = "PirateAdmiral", name = "Адмирал-Мертвец", title = "Капитан Затонувшего Фрегата",
+		level = 48, health = 9200, damage = 80, speed = 15, xp = 5800,
+		model = "humanoid", color = Color3.fromRGB(64, 92, 118), scale = 2.1, glow = true,
+		arenaRadius = 60, respawn = 220,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "Volley" } },
+			{ at = 0.6, abilities = { "Volley", "Slam", "Summon" } },
+			{ at = 0.25, abilities = { "Volley", "Meteor", "Summon" }, enrage = 0.5 },
+		},
+		loot = { { item = "W_Sabre", chance = 0.6 }, { item = "A_VoidShroud", chance = 0.3 },
+		         { item = "M_Coral", chance = 1, min = 4, max = 8 } },
+	},
+	{
+		id = "WindArchon", name = "Ветряной Архипастырь", title = "Хозяин Пика Ветров",
+		level = 56, health = 13200, damage = 96, speed = 16, xp = 7600,
+		model = "floating", color = Color3.fromRGB(198, 226, 240), scale = 2.2, glow = true,
+		arenaRadius = 62, respawn = 240,
+		phases = {
+			{ at = 1.0, abilities = { "Volley", "Slam" } },
+			{ at = 0.65, abilities = { "Volley", "FrostNova", "Summon" } },
+			{ at = 0.3, abilities = { "FrostNova", "Meteor", "Volley" }, enrage = 0.5 },
+		},
+		loot = { { item = "W_FrostBlade", chance = 0.5 }, { item = "T_SwiftCharm", chance = 0.6 },
+		         { item = "M_IceShard", chance = 1, min = 6, max = 10 } },
+	},
+	{
+		id = "CoralQueen", name = "Коралловая Королева", title = "Мать Отмелей",
+		level = 38, health = 6400, damage = 60, speed = 12, xp = 3400,
+		model = "floating", color = Color3.fromRGB(236, 150, 178), scale = 2.0, glow = true,
+		arenaRadius = 54, respawn = 190,
+		phases = {
+			{ at = 1.0, abilities = { "Volley", "Summon" } },
+			{ at = 0.55, abilities = { "Volley", "FrostNova", "Summon" } },
+			{ at = 0.25, abilities = { "FrostNova", "Slam", "Summon" }, enrage = 0.4 },
+		},
+		loot = { { item = "T_FocusCharm", chance = 0.5 }, { item = "A_FrostPlate", chance = 0.4 },
+		         { item = "M_Coral", chance = 1, min = 5, max = 9 } },
+	},
+	{
+		id = "GlacierWyrm", name = "Ледяной Змей", title = "Древний Холод",
+		level = 58, health = 15000, damage = 104, speed = 15, xp = 9000,
+		model = "beast", color = Color3.fromRGB(176, 216, 246), scale = 2.7, glow = true,
+		arenaRadius = 70, respawn = 260,
+		phases = {
+			{ at = 1.0, abilities = { "Slam", "FrostNova" } },
+			{ at = 0.7, abilities = { "FrostNova", "Volley", "Summon" } },
+			{ at = 0.4, abilities = { "FrostNova", "Meteor", "Slam" } },
+			{ at = 0.15, abilities = { "Meteor", "FrostNova", "Volley", "Summon" }, enrage = 0.6 },
+		},
+		loot = { { item = "W_FrostBlade", chance = 0.75 }, { item = "A_FrostPlate", chance = 0.7 },
+		         { item = "T_FocusCharm", chance = 0.5 }, { item = "M_IceShard", chance = 1, min = 8, max = 14 } },
+	},
 }
 
 -- «Печати призыва»: босса можно вызвать в его зоне, даже если арена пуста
@@ -649,6 +774,14 @@ GameData.BossSummons = {
 	{ id = "CryptWraith",  seal = "P_CryptWraith",  mats = { { item = "M_BoneDust", count = 6 }, { item = "M_AshEssence", count = 3 } } },
 	{ id = "Ashlord",      seal = "P_Ashlord",      mats = { { item = "M_AshEssence", count = 6 }, { item = "M_EmberStone", count = 4 } } },
 	{ id = "NamelessKing", seal = "P_NamelessKing", mats = { { item = "M_VoidShard", count = 5 }, { item = "M_BoneDust", count = 8 } } },
+	{ id = "MarrowTyrant",  seal = "P_MarrowTyrant",  mats = { { item = "M_BoneDust", count = 8 }, { item = "M_VoidShard", count = 2 } } },
+	{ id = "StoneWarden",   seal = "P_StoneWarden",   mats = { { item = "M_Ore", count = 8 }, { item = "M_EmberStone", count = 3 } } },
+	{ id = "BogHydra",      seal = "P_BogHydra",      mats = { { item = "M_BoneDust", count = 6 }, { item = "M_Pelt", count = 5 } } },
+	{ id = "VolcanoForge",  seal = "P_VolcanoForge",  mats = { { item = "M_EmberStone", count = 6 }, { item = "M_AshEssence", count = 5 } } },
+	{ id = "PirateAdmiral", seal = "P_PirateAdmiral", mats = { { item = "M_Coral", count = 6 }, { item = "M_Ore", count = 4 } } },
+	{ id = "WindArchon",    seal = "P_WindArchon",    mats = { { item = "M_IceShard", count = 7 }, { item = "M_Ore", count = 5 } } },
+	{ id = "CoralQueen",    seal = "P_CoralQueen",    mats = { { item = "M_Coral", count = 8 }, { item = "C_ManaPotion", count = 3 } } },
+	{ id = "GlacierWyrm",   seal = "P_GlacierWyrm",   mats = { { item = "M_IceShard", count = 10 }, { item = "M_VoidShard", count = 4 } } },
 }
 
 GameData.BossById = {}
@@ -1022,6 +1155,95 @@ Quests.List = {
 		objectives = { { type = "boss", target = "NamelessKing", count = 1, text = "Победить Безымянного Короля" } },
 		rewards = { xp = 40000, coins = 15000, items = { { id = "W_VoidEdge", count = 1 }, { id = "A_VoidShroud", count = 1 } }, statPoints = 3 },
 	},
+
+	-- ==================== v11: НОВЫЕ ЗЕМЛИ И ПОДЗЕМЕЛЬЯ ====================
+	{
+		id = "Q_GreatGrove", name = "Великая Роща", giver = "Woodcutter", minLevel = 10,
+		desc = "Лесоруб Хват просит очистить рощу от падали, которую подняли пещерные твари. Убей 8 тварей Глумвуда.",
+		objectives = { { type = "killZone", target = "Gloomwood", count = 8, text = "Убить в Глумвуде" } },
+		rewards = { xp = 1500, coins = 420, items = { { id = "M_Ore", count = 4 } } },
+	},
+	{
+		id = "Q_DuplinoCave", name = "Пещеры Дупла", giver = "Woodcutter", minLevel = 12,
+		prereq = { "Q_GreatGrove" },
+		desc = "Спустись в Пещеры Дупла под пилорамой и вычисти первые залы. Убей 6 гоблинов.",
+		objectives = { { type = "kill", target = "GloomGoblin", count = 6, text = "Убить гоблинов" } },
+		rewards = { xp = 1900, coins = 520, items = { { id = "A_Chain", count = 1 }, { id = "C_HealthPotion", count = 3 } } },
+	},
+	{
+		id = "Q_CanyonShade", name = "Тени Красного каньона", giver = "RiceFarmer", minLevel = 28,
+		desc = "Крестьянин Тэру: с каньона приходят тени. Убей 10 любых тварей на южном вельде.",
+		objectives = { { type = "killZone", target = "Bonefields", count = 10, text = "Убить на вельде" } },
+		rewards = { xp = 4200, coins = 900, items = { { id = "C_Elixir", count = 2 } } },
+	},
+	{
+		id = "Q_MarrowTyrant", name = "Оссуария", giver = "Prospector", minLevel = 34,
+		desc = "Старатель Гриб: в Шахте Красный Камень сидит Костяной Тиран. Очисти её.",
+		objectives = { { type = "boss", target = "MarrowTyrant", count = 1, text = "Победить Костяного Тирана" } },
+		rewards = { xp = 9000, coins = 2200, items = { { id = "W_BoneScythe", count = 1 } } },
+	},
+	{
+		id = "Q_ArcanumSteps", name = "Ступени Арканума", giver = "Archmage", minLevel = 22,
+		desc = "Селена Звёздная: чтобы учиться дальше, докажи силу. Убей 12 тварей на восточных землях.",
+		objectives = { { type = "killZone", target = "SunkenCoast", count = 12, text = "Убить на востоке" } },
+		rewards = { xp = 3400, coins = 800, items = { { id = "C_ManaPotion", count = 4 } } },
+	},
+	{
+		id = "Q_TowerClimb", name = "На вершину башни", giver = "Archmage", minLevel = 26,
+		prereq = { "Q_ArcanumSteps" },
+		desc = "Поднимись по летающим платформам к вершине башни Арканума и забери гримуар.",
+		objectives = { { type = "collect", target = "T_FocusCharm", count = 1, text = "Найти фокус-амулет" } },
+		rewards = { xp = 4600, coins = 1100, items = { { id = "T_FocusCharm", count = 1 } }, statPoints = 1 },
+	},
+	{
+		id = "Q_OldMine", name = "Забытые Шахты", giver = "MineOverseer", minLevel = 36,
+		desc = "Горный мастер: шахты закрыли сорок лет назад, а Страж всё ходит. Убей Каменного Стража.",
+		objectives = { { type = "boss", target = "StoneWarden", count = 1, text = "Победить Каменного Стража" } },
+		rewards = { xp = 10000, coins = 2600, items = { { id = "A_Chain", count = 1 }, { id = "M_Ore", count = 8 } } },
+	},
+	{
+		id = "Q_WindPeak", name = "Пик Ветров", giver = "MineOverseer", minLevel = 42,
+		prereq = { "Q_OldMine" },
+		desc = "Поднимись на Пик Ветров и выстои против Архипастыря. Это проверка на выносливость.",
+		objectives = { { type = "boss", target = "WindArchon", count = 1, text = "Победить Архипастыря" } },
+		rewards = { xp = 14000, coins = 3200, items = { { id = "T_SwiftCharm", count = 1 } }, statPoints = 1 },
+	},
+	{
+		id = "Q_DrownedShip", name = "Затонувший фрегат", giver = "PirateCaptain", minLevel = 30,
+		desc = "Рыжая Мора: мой фрегат лежит у Гавани, а адмирал всё командует. Разберись с ним.",
+		objectives = { { type = "boss", target = "PirateAdmiral", count = 1, text = "Победить Адмирала-Мертвеца" } },
+		rewards = { xp = 7200, coins = 1900, items = { { id = "W_Sabre", count = 1 } } },
+	},
+	{
+		id = "Q_CoralChildren", name = "Дети Пальмового Берега", giver = "Islander", minLevel = 26,
+		desc = "Каи: Коралловая Королева забрала наших детей в грот. Освободи их.",
+		objectives = { { type = "boss", target = "CoralQueen", count = 1, text = "Победить Коралловую Королеву" } },
+		rewards = { xp = 6000, coins = 1500, items = { { id = "C_Elixir", count = 2 } } },
+	},
+	{
+		id = "Q_Forge", name = "Кузня в Жерле", giver = "AshenSmith", minLevel = 44,
+		desc = "Горн: Владыка Кузни держит вечный огонь. Забери его — и я выкую тебе оружие.",
+		objectives = { { type = "boss", target = "VolcanoForge", count = 1, text = "Победить Владыку Кузни" } },
+		rewards = { xp = 12000, coins = 3000, items = { { id = "W_AshCleaver", count = 1 }, { id = "M_EmberStone", count = 4 } } },
+	},
+	{
+		id = "Q_RotTemple", name = "Служба в затопленном храме", giver = "BogPriest", minLevel = 38,
+		desc = "Отец Мох: Гидра выросла из наших молитв. Прекрати это.",
+		objectives = { { type = "boss", target = "BogHydra", count = 1, text = "Победить Болотную Гидру" } },
+		rewards = { xp = 9500, coins = 2400, items = { { id = "A_BoneMail", count = 1 } } },
+	},
+	{
+		id = "Q_WyrmLair", name = "Логово Змея", giver = "IceScholar", minLevel = 50,
+		desc = "Ивар: Змей спит в леднике. Каждая его чешуйка — зима. Разбуди и победи.",
+		objectives = { { type = "boss", target = "GlacierWyrm", count = 1, text = "Победить Ледяного Змея" } },
+		rewards = { xp = 22000, coins = 5200, items = { { id = "A_FrostPlate", count = 1 } }, statPoints = 2 },
+	},
+	{
+		id = "Q_Kamnegorsk", name = "Крепость горняков", giver = "MineOverseer", minLevel = 32,
+		desc = "Помоги Камнегорску: прореди горных тварей, чтобы караваны шли безопасно.",
+		objectives = { { type = "killZone", target = "Highlands", count = 12, text = "Убить в Предгорьях" } },
+		rewards = { xp = 5600, coins = 1400, items = { { id = "M_Ore", count = 6 } } },
+	},
 }
 
 Quests.ById = {}
@@ -1166,6 +1388,89 @@ NPCData.List = {
 		},
 		role = "quests",
 	},
+	-- ===== v11: новые города и подземелья =====
+	{
+		key = "Woodcutter", name = "Лесоруб", title = "Дубовый Хват", color = Color3.fromRGB(150, 116, 80),
+		lines = {
+			"Дуплино живёт лесом — и умирает вместе с ним.",
+			"В Пещерах Дупла что-то грызёт корни. Спустись и проверь.",
+			"Пилорама за площадью, там и вход вниз.",
+		},
+		role = "quests",
+	},
+	{
+		key = "Archmage", name = "Архимаг", title = "Селена Звёздная", color = Color3.fromRGB(150, 140, 230),
+		lines = {
+			"Арканум стоит на костях семи стихий. Тебе не понять — пока.",
+			"Учись у башни: каждая ступень даёт новое заклинание.",
+			"Мой ученик ушёл в рисовые террасы и не вернулся.",
+		},
+		role = "quests",
+	},
+	{
+		key = "RiceFarmer", name = "Крестьянин", title = "Тэру", color = Color3.fromRGB(226, 200, 130),
+		lines = {
+			"Террасы держат воду, вода держит нас.",
+			"По ночам с каньона приходят тени и топчут посевы.",
+		},
+		role = "quests",
+	},
+	{
+		key = "MineOverseer", name = "Горный мастер", title = "Скала", color = Color3.fromRGB(160, 150, 130),
+		lines = {
+			"Камнегорск — не город, а крепость над шахтами.",
+			"Забытые Шахты закрыли сорок лет назад. Каменный Страж не спит.",
+		},
+		role = "quests",
+	},
+	{
+		key = "PirateCaptain", name = "Капитан вольных", title = "Рыжая Мора", color = Color3.fromRGB(220, 120, 90),
+		lines = {
+			"В Свободной Гавани нет королей — только доли.",
+			"Мой старый фрегат затонул вместе с адмиралом. Его команда до сих пор ходит по палубе.",
+		},
+		role = "quests",
+	},
+	{
+		key = "Islander", name = "Островитянин", title = "Каи", color = Color3.fromRGB(200, 226, 190),
+		lines = {
+			"Пальмовый Берег — последнее тёплое место на карте.",
+			"Коралловая Королева забрала наших детей в грот. Верни их.",
+		},
+		role = "quests",
+	},
+	{
+		key = "AshenSmith", name = "Пепельный кузнец", title = "Горн", color = Color3.fromRGB(210, 110, 60),
+		lines = {
+			"Кузня в Жерле не остыла ни на день.",
+			"Владыка Кузни держит там вечный огонь. Забери его.",
+		},
+		role = "shop",
+	},
+	{
+		key = "BogPriest", name = "Жрец гнили", title = "Отец Мох", color = Color3.fromRGB(130, 160, 100),
+		lines = {
+			"Храм затонул, но служба идёт.",
+			"Гидра выросла из наших молитв. Это наша вина.",
+		},
+		role = "quests",
+	},
+	{
+		key = "IceScholar", name = "Ледяной книжник", title = "Ивар", color = Color3.fromRGB(170, 210, 236),
+		lines = {
+			"Змей спит в леднике дольше, чем существует наш мир.",
+			"Каждая его чешуйка — отдельная зима.",
+		},
+		role = "quests",
+	},
+	{
+		key = "Prospector", name = "Старатель", title = "Гриб", color = Color3.fromRGB(200, 160, 110),
+		lines = {
+			"Красный камень в каньоне мягче золота, но дороже.",
+			"В Шахте Красный Камень сидит Костяной Тиран. Не для слабаков.",
+		},
+		role = "shop",
+	},
 }
 
 NPCData.ByKey = {}
@@ -1174,6 +1479,50 @@ for _, n in ipairs(NPCData.List) do
 end
 
 return NPCData
+"""
+
+SHARED["Dungeons"] = """-- Emberfall | Dungeons — соответствие данжей и их обитателей зонам.
+-- Нужно, чтобы мобы в данже подходили по уровню, а не брались из общего списка.
+local Dungeons = {}
+
+-- dungeon -> зона (по ней ищем мобов для волн)
+Dungeons.OfBoss = {
+	FrostWraith      = "Frostpeak",
+	FrostColossus    = "Frostpeak",
+	SwampMother      = "Mirefen",
+	CryptWraith      = "Bonefields",
+	Ashlord          = "Ashwaste",
+	NamelessKing     = "HollowDeep",
+	-- v11: новые подземелья
+	MarrowTyrant     = "Bonefields",
+	StoneWarden      = "Highlands",
+	BogHydra         = "Mirefen",
+	VolcanoForge     = "Ashwaste",
+	PirateAdmiral    = "Archipelago",
+	WindArchon       = "Frostpeak",
+	CoralQueen       = "SouthIsles",
+	GlacierWyrm      = "Frostpeak",
+}
+
+-- Подписи входов в данжи (для указателей и UI)
+Dungeons.Titles = {
+	FrostWraith   = "Ледяная Гробница",
+	FrostColossus = "Арена Ледяного Колосса",
+	SwampMother   = "Топь Матери Болот",
+	CryptWraith   = "Крипта Костяных Полей",
+	Ashlord       = "Арена Пепельного Владыки",
+	NamelessKing  = "Трон Безымянного Короля",
+	MarrowTyrant  = "Костяная Оссуария",
+	StoneWarden   = "Забытые Шахты Предгорий",
+	BogHydra      = "Затонувший Храм Гнили",
+	VolcanoForge  = "Кузня в Жерле",
+	PirateAdmiral = "Затонувший Фрегат",
+	WindArchon    = "Пик Ветров",
+	CoralQueen    = "Коралловый Грот",
+	GlacierWyrm   = "Логово Ледяного Змея",
+}
+
+return Dungeons
 """
 
 SERVER = {}
@@ -1820,6 +2169,12 @@ local CAMP_MOB = {
 	Marauders = "Marauder",
 	Cult     = "Cultist",
 	Fishers  = "Drowned",
+	-- v11: новые лагеря
+	VeldtRaiders  = "Bandit",
+	CanyonBandits = "SkeletonArcher",
+	RidgePoachers = "Highwayman",
+	ForestCutters = "GloomGoblin",
+	DuneWreckers  = "BeachRaider",
 }
 
 function MobService.setup(d)
@@ -2617,11 +2972,9 @@ end
 
 local function abilitySummon(boss, def)
 	broadcast(Net.Rep.BossEvent, { event = "ability", id = def.id, name = "Зов слуг" })
-	local zone = nil
-	for _, z in ipairs({ "Gloomwood", "Frostpeak", "Mirefen", "Ashwaste", "SunkenCoast", "Bonefields", "HollowDeep" }) do
-		if def.name == "Ледяной Призрак" or def.name == "Ледяной Колосс" then zone = "Frostpeak" end
-	end
-	zone = zone or "Bonefields"
+	-- зона берётся из таблицы данжей (Dungeons.OfBoss), чтобы слуги были «свои»
+	local Dungeons = require(Shared:WaitForChild("Dungeons"))
+	local zone = Dungeons.OfBoss[def.id] or "Bonefields"
 	local list = GameData.MobsInZone(zone)
 	if #list == 0 then return end
 	for i = 1, 2 do
@@ -3036,9 +3389,7 @@ end
 function BossService.summonBoss(st, bossId)
 	local def = GameData.BossById[bossId]
 	if not def then return false, "нет такого босса" end
-	if def.isWorldBoss then
-		-- мирового босса призывать нельзя
-	end
+	if def.isWorldBoss then return false, "мирового босса нельзя призвать печатью" end
 	local now = os.clock()
 	st.data.bossSummonAt = st.data.bossSummonAt or 0
 	if now - st.data.bossSummonAt < 360 then
@@ -4747,6 +5098,15 @@ local SEALS = {
 	CryptWraith  = "Печать Склепного Призрака",
 	Ashlord      = "Печать Пепельного Владыки",
 	NamelessKing = "Печать Безымянного Короля",
+	-- v11: подземелья новых земель
+	MarrowTyrant  = "Печать Костяного Тирана",
+	StoneWarden   = "Печать Каменного Стража",
+	BogHydra      = "Печать Болотной Гидры",
+	VolcanoForge  = "Печать Владыки Кузни",
+	PirateAdmiral = "Печать Адмирала-Мертвеца",
+	WindArchon    = "Печать Ветряного Архипастыря",
+	CoralQueen    = "Печать Коралловой Королевы",
+	GlacierWyrm   = "Печать Ледяного Змея",
 }
 PlayerState.Seals = SEALS
 

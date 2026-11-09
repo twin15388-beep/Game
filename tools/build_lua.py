@@ -14,7 +14,7 @@ SRC = os.path.join(ROOT, "src", "lua")
 OUT = os.path.join(ROOT, "gen_lua.py")
 
 # порядок важен: shared — раньше остальных
-SHARED = ["Config", "GameData", "Net", "Util", "Quests", "NPCData"]
+SHARED = ["Config", "GameData", "Net", "Util", "Quests", "NPCData", "Dungeons"]
 
 SERVER = [
     "PlayerState", "Combat", "MobService", "BossService",

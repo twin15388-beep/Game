@@ -189,6 +189,15 @@ local SEALS = {
 	CryptWraith  = "Печать Склепного Призрака",
 	Ashlord      = "Печать Пепельного Владыки",
 	NamelessKing = "Печать Безымянного Короля",
+	-- v11: подземелья новых земель
+	MarrowTyrant  = "Печать Костяного Тирана",
+	StoneWarden   = "Печать Каменного Стража",
+	BogHydra      = "Печать Болотной Гидры",
+	VolcanoForge  = "Печать Владыки Кузни",
+	PirateAdmiral = "Печать Адмирала-Мертвеца",
+	WindArchon    = "Печать Ветряного Архипастыря",
+	CoralQueen    = "Печать Коралловой Королевы",
+	GlacierWyrm   = "Печать Ледяного Змея",
 }
 PlayerState.Seals = SEALS
 

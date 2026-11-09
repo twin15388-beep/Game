@@ -242,6 +242,19 @@ check("Quests: цели ссылаются на существующих моб�
 	end
 	return ok
 end)())
+check("v11: у каждого данжа есть зона и живой босс", (function()
+	local Dungeons = require(shared:WaitForChild("Dungeons"))
+	local ok, bad = true, nil
+	for bossId, zone in pairs(Dungeons.OfBoss) do
+		local b = GameData.BossById[bossId]
+		if not b then ok, bad = false, bossId end
+		if #GameData.MobsInZone(zone) == 0 then ok, bad = false, zone end
+	end
+	return ok, bad
+end)())
+check("v11: боссов >= 14", #GameData.Bosses >= 14, #GameData.Bosses)
+check("v11: печатей призыва >= 14", #GameData.BossSummons >= 14, #GameData.BossSummons)
+check("v11: квестов >= 44", #Quests.List >= 44, #Quests.List)
 check("GameData: магазин ссылается на существующие предметы", (function()
 	for _, id in ipairs(GameData.ShopStock) do
 		if not GameData.ItemById[id] then return false end
