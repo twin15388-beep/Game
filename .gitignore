@@ -1,0 +1,5 @@
+*.rbxlx
+*.rbxl
+__pycache__/
+*.pyc
+release/
