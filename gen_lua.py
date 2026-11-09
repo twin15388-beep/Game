@@ -7,7 +7,7 @@ SHARED["Config"] = """-- Emberfall | Config — все числа баланса
 
 local Config = {}
 
-Config.Version = "v11"
+Config.Version = "v12"
 Config.GameName = "EMBERFALL — Пепел Вечности"
 
 -- ---------------------------- уровень / опыт -------------------------------

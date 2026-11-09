@@ -312,6 +312,7 @@ def arena_trigger(boss_id, x, z, y, r=75):
 # ----------------------------------------------------------------------------
 def tree_gloom(x, z, y, s=1.0):
     y = sy(x, z, y)
+    occupy(x, z, 7, "decor")
     th = rng.uniform(9, 14) * s
     part("Tree", (2 * s, th, 2 * s), (x, y + th / 2, z),
          yaw=rng.uniform(0, 360), color=(44, 36, 40), material="Wood")
@@ -325,6 +326,7 @@ def tree_gloom(x, z, y, s=1.0):
 
 def pine(x, z, y, s=1.0):
     y = sy(x, z, y)
+    occupy(x, z, 6, "decor")
     th = 7 * s
     part("Pine", (1.6 * s, th, 1.6 * s), (x, y + th / 2, z),
          color=(60, 48, 40), material="Wood")
@@ -342,6 +344,7 @@ def pine(x, z, y, s=1.0):
 
 def dead_tree(x, z, y, s=1.0):
     y = sy(x, z, y)
+    occupy(x, z, 6, "decor")
     th = rng.uniform(8, 12) * s
     part("DeadTree", (1.8 * s, th, 1.8 * s), (x, y + th / 2, z),
          yaw=rng.uniform(0, 360), pitch=rng.uniform(-6, 6), color=(52, 44, 36),
@@ -358,6 +361,7 @@ def dead_tree(x, z, y, s=1.0):
 
 def palm_dead(x, z, y, s=1.0):
     y = sy(x, z, y)
+    occupy(x, z, 6, "decor")
     th = 10 * s
     tilt = rng.uniform(8, 18)
     tyaw = rng.uniform(0, 360)
@@ -375,6 +379,7 @@ def palm_dead(x, z, y, s=1.0):
 
 def rock(x, z, y, s=1.0, mat="Rock", col=(70, 72, 78)):
     y = sy(x, z, y)
+    occupy(x, z, 5, "decor")
     r = rng.uniform(2.5, 6.5) * s
     part("Rock", (r, r, r), (x, y + r * 0.22, z), yaw=rng.uniform(0, 360),
          pitch=rng.uniform(-10, 10), roll=rng.uniform(-10, 10),
@@ -383,6 +388,7 @@ def rock(x, z, y, s=1.0, mat="Rock", col=(70, 72, 78)):
 
 def mushroom(x, z, y, s=1.0):
     y = sy(x, z, y)
+    occupy(x, z, 4, "decor")
     h = rng.uniform(2.5, 4.5) * s
     part("Mushroom_Stem", (h, 1.4 * s, 1.4 * s), (x, y + h / 2, z), roll=90,
          shape="Cylinder", color=(200, 195, 175), material="SmoothPlastic")
@@ -462,11 +468,60 @@ def lava_pool(x, z, y, r):
 # ----------------------------------------------------------------------------
 # Постройки
 # ----------------------------------------------------------------------------
+# ============================================================================
+# v12: РЕЕСТР ЗАНЯТЫХ МЕСТ — чтобы ничего не ставилось друг на друга
+# ============================================================================
+OCCUPIED = []   # (x, z, r, kind): kind = "build" | "road" | "cave"
+
+
+def occupy(x, z, r, kind="build"):
+    """Отметить место как занятое (постройки, дороги, входы в данжи)."""
+    if not OCCUPIED_ACTIVE:
+        return
+    OCCUPIED.append((float(x), float(z), float(r), kind))
+
+
+def is_free(x, z, pad=0.0, kinds=None):
+    """Свободно ли место: не пересекается с уже отмеченными объектами."""
+    for (ox, oz, orad, kind) in OCCUPIED:
+        if kinds is not None and kind not in kinds:
+            continue
+        if math.hypot(x - ox, z - oz) < orad + pad:
+            return False
+    return True
+
+
+OCCUPIED_ACTIVE = True
+# v12: запомненные места первого прохода — чтобы второй проход их тоже уважал
+OCCUPIED_PLAN = []
+OCCUPIED_REAL = []
+
+
+def occ_save():
+    global OCCUPIED_PLAN, OCCUPIED_REAL
+    del OCCUPIED[:]
+    OCCUPIED.extend(OCCUPIED_PLAN)
+
+
+def occ_done():
+    """Конец прохода: набор занятых мест накапливается (план ∪ реальный)."""
+    OCCUPIED_PLAN[:] = []
+    OCCUPIED_PLAN.extend(OCCUPIED)
+    OCCUPIED_REAL[:] = []
+    OCCUPIED_REAL.extend(OCCUPIED)
+
+
+def footprint(cx, cz, yaw, w, d):
+    """Радиус описанной окружности вокруг прямоугольного основания."""
+    return 0.5 * math.hypot(w, d)
+
+
 def house(name, cx, cz, gy, w, d, h, yaw=0.0,
           wall=(176, 168, 150), roof=(70, 50, 38),
           wall_mat="WoodPlanks", roof_mat="WoodPlanks",
           windows=True, chimney=True):
     gy = sy(cx, cz, gy)
+    occupy(cx, cz, footprint(cx, cz, yaw, w, d) + 6)
     part(name + "_Body", (w, h, d), (cx, gy + h / 2.0, cz), yaw=yaw,
          color=wall, material=wall_mat)
     rh = d * 0.42
@@ -494,6 +549,7 @@ def house(name, cx, cz, gy, w, d, h, yaw=0.0,
 
 def tavern(cx, cz, gy, yaw=0.0):
     gy = sy(cx, cz, gy)
+    occupy(cx, cz, 22)
     house("Tavern", cx, cz, gy, 24, 18, 11, yaw=yaw, wall=(94, 74, 54),
           roof=(66, 46, 34))
     px, pz = l2w(cx, cz, yaw, 0, 12.5)
@@ -511,6 +567,7 @@ def tavern(cx, cz, gy, yaw=0.0):
 
 def chapel(cx, cz, gy, yaw=0.0):
     gy = sy(cx, cz, gy)
+    occupy(cx, cz, 26)
     part("Chapel_Body", (20, 16, 34), (cx, gy + 8, cz), yaw=yaw,
          color=(150, 146, 138), material="Cobblestone")
     rh = 10
@@ -538,6 +595,7 @@ def chapel(cx, cz, gy, yaw=0.0):
 
 def smithy(cx, cz, gy, yaw=0.0):
     gy = sy(cx, cz, gy)
+    occupy(cx, cz, 18)
     house("Smithy", cx, cz, gy, 16, 13, 9, yaw=yaw, wall=(82, 78, 74),
           roof=(52, 40, 36), windows=False)
     chx, chz = l2w(cx, cz, yaw, 0, -4)
@@ -555,6 +613,7 @@ def smithy(cx, cz, gy, yaw=0.0):
 
 def well(cx, cz, gy):
     gy = sy(cx, cz, gy)
+    occupy(cx, cz, 10)
     disc("Well", cx, cz, gy + 2.2, 3.5, 2.2, (110, 106, 100), "Cobblestone")
     part("Well_PostA", (0.8, 5, 0.8), (cx - 2.8, gy + 2.5, cz), color=(70, 54, 40),
          material="Wood")
@@ -615,6 +674,7 @@ def heart_tree(cx, cz, gy):
 
 def lighthouse(cx, cz, gy):
     gy = sy(cx, cz, gy)
+    occupy(cx, cz, 22)
     v_cyl("Lighthouse_Base", cx, cz, gy, 14, 20, (200, 192, 175), "Concrete")
     v_cyl("Lighthouse_Mid", cx, cz, gy + 14, 12, 17, (140, 60, 50), "Brick")
     v_cyl("Lighthouse_Top", cx, cz, gy + 26, 10, 15, (200, 192, 175), "Concrete")
@@ -685,6 +745,7 @@ def fortress_ruins(cx, cz, gy):
 
 def crypt(cx, cz, gy):
     gy = sy(cx, cz, gy)
+    occupy(cx, cz, 34)
     """Крипта-данж: можно войти — саркофаги, факелы, босс Крипт-Призрак, сундук."""
     W, D, H = 22, 28, 12
     stone = (108, 104, 98)
@@ -813,6 +874,7 @@ def campfire(x, z, gy):
 
 
 def tent(x, z, gy, yaw=0.0, w=7, d=8, h=4.6, color=(96, 74, 58)):
+    occupy(x, z, max(w, d) * 0.8)
     gy = sy(x, z, gy)
     s = d / 2.0
     ang = math.degrees(math.atan2(h, s))
@@ -833,6 +895,7 @@ def tent(x, z, gy, yaw=0.0, w=7, d=8, h=4.6, color=(96, 74, 58)):
 
 def bandit_camp(x, z, gy, yaw=0.0, tent_cols=((96, 74, 58), (88, 66, 52)),
                 banner_col=(150, 40, 40), name="Camp", ntents=2):
+    occupy(x, z, 34)
     """Временная база: частокол из кольев, палатки, костёр, ящики, знамя."""
     r = 17
     n = 20
@@ -1038,6 +1101,179 @@ def truss(name, size, pos, color=(96, 76, 56)):
     end_item()
 
 
+# ============================================================================
+# v12: КВАДРАТНЫЕ ГОРЫ «КАК В WORLD OF MAGIC»
+# ============================================================================
+def _blocky_contour(x, z, w, d, notches, seed):
+    """Контур горы из прямоугольника с выступами (notches = [(сторона, отступ)…]).
+    Возвращает список (x0, z0, x1, z1) — набор прямоугольников, из которых
+    собирается «квадратный» ярус с рваными краями."""
+    rects = [(x - w / 2, z - d / 2, x + w / 2, z + d / 2)]
+    for (side, t, out) in notches:
+        if side in (0, 2):                      # выступ на север / юг
+            bw = w * rng.uniform(0.22, 0.42)
+            cx = x + (t * (w / 2 - bw * 0.7))
+            zz = z - d / 2 - out if side == 0 else z + d / 2 + out
+            rects.append((cx - bw / 2, zz - out, cx + bw / 2, zz + out))
+        else:                                   # выступ на запад / восток
+            bd = d * rng.uniform(0.22, 0.42)
+            cz = z + (t * (d / 2 - bd * 0.7))
+            xx = x - w / 2 - out if side == 3 else x + w / 2 + out
+            rects.append((xx - out, cz - bd / 2, xx + out, cz + bd / 2))
+    return rects
+
+
+def wom_mountain(x, z, gy, base_w=210, h=160, snow=0.66, seed=0,
+                 ledges=True, steps=True, mat="Rock", snow_mat="Snow",
+                 col=(108, 114, 124), cave=True, tag=None):
+    """ГОРА В СТИЛЕ World of Magic: не конус, а СТОПКА КВАДРАТНЫХ ЯРУСОВ.
+    Каждый ярус — прямоугольная плита; ярусы смещены друг относительно друга,
+    у части — боковые ВЫСТУПЫ-уступы. Перепад между ярусами 2.5 студа,
+    поэтому по выступам можно залезть пешком (как по ступеням)."""
+    tag = tag or "WM%d" % seed
+    add_flat(x, z, base_w * 0.72, gy, 95.0)
+    tiers = max(6, int(round(h / 2.5)))
+    tier_h = h / float(tiers)
+    w, d = base_w, base_w * rng.uniform(0.86, 1.0)
+    y = gy
+    # ---------- стопка ярусов ----------
+    for i in range(tiers):
+        t = i / float(max(1, tiers - 1))
+        # ярусы сужаются «лестницей», но с рывками — так гора выглядит блочной
+        if i and i % 3 == 0:
+            w *= rng.uniform(0.80, 0.90)
+            d *= rng.uniform(0.80, 0.90)
+        # смещение центра яруса: гора получается «пьяной», как скалы WoM
+        ox = math.sin(seed * 1.7 + i * 1.9) * base_w * 0.045
+        oz = math.cos(seed * 2.3 + i * 1.3) * base_w * 0.045
+        top_tier = (i == tiers - 1)
+        colr = col
+        matr = mat
+        if t > snow:
+            colr = (230, 236, 244)
+            matr = snow_mat
+        elif t > snow - 0.14:
+            # каменная кромка под снегом
+            colr = tuple(int(c * 0.86 + 24) for c in col)
+        # сама плита
+        part("%s_Tier%d" % (tag, i), (w, tier_h + 0.3, d),
+             (x + ox, y + tier_h / 2, z + oz), yaw=0,
+             color=colr, material=matr)
+        # ---------- боковые ВЫСТУПЫ (главная фишка) ----------
+        if ledges and i % 2 == 0 and w > 70:
+            for k in range(rng.randint(2, 4)):
+                side = rng.randint(0, 3)
+                out = rng.uniform(14, 30)
+                bw = w * rng.uniform(0.18, 0.34)
+                bd = d * rng.uniform(0.16, 0.30)
+                if side in (0, 2):
+                    bx = x + ox + rng.uniform(-w * 0.3, w * 0.3)
+                    bz = z + oz + (-d / 2 - out / 2 if side == 0 else d / 2 + out / 2)
+                    part("%s_Ledge%d_%d" % (tag, i, k), (bw, tier_h + 0.3, out + 4),
+                         (bx, y + tier_h / 2, bz), color=colr, material=matr)
+                    # «зуб» под выступом — смотрится как скальная полка
+                    part("%s_LedgeBrace%d_%d" % (tag, i, k),
+                         (bw * 0.7, tier_h * 1.6, out * 0.6),
+                         (bx, y - tier_h * 0.5, bz), color=tuple(int(c * 0.8) for c in colr),
+                         material=matr)
+                else:
+                    bz = z + oz + rng.uniform(-d * 0.3, d * 0.3)
+                    bx = x + ox + (-w / 2 - out / 2 if side == 3 else w / 2 + out / 2)
+                    part("%s_Ledge%d_%d" % (tag, i, k), (out + 4, tier_h + 0.3, bd),
+                         (bx, y + tier_h / 2, bz), color=colr, material=matr)
+                    part("%s_LedgeBrace%d_%d" % (tag, i, k),
+                         (out * 0.6, tier_h * 1.6, bd * 0.7),
+                         (bx, y - tier_h * 0.5, bz), color=tuple(int(c * 0.8) for c in colr),
+                         material=matr)
+        # ---------- «рваная» кромка: блоки по периметру ----------
+        per = max(4, int((w + d) / 26))
+        for k in range(per):
+            a = math.pi * 2 * k / per + i * 0.7 + seed
+            rx = x + ox + math.sin(a) * (w * 0.5 - 2)
+            rz = z + oz + math.cos(a) * (d * 0.5 - 2)
+            part("%s_Edge%d_%d" % (tag, i, k),
+                 (rng.uniform(10, 20), tier_h * rng.uniform(0.8, 1.25), rng.uniform(10, 20)),
+                 (rx, y + tier_h * 0.45, rz), yaw=rng.choice((0, 0, 45)),
+                 color=colr, material=matr)
+        y += tier_h
+    # ---------- вершина: плоское «плато» с камнем и сундуком ----------
+    part("%s_Summit" % tag, (w * 0.92, 1.4, d * 0.92), (x + ox, y + 0.7, z + oz),
+         color=(96, 86, 78), material="Rock")
+    for k in range(3):
+        rock(x + ox + rng.uniform(-w * 0.3, w * 0.3),
+             z + oz + rng.uniform(-d * 0.3, d * 0.3), y, rng.uniform(1.4, 2.6),
+             mat, (128, 128, 130))
+    chest_marker(x + ox, z + oz, y + 1.2, "%sSummit" % tag)
+    crystal(x + ox - 6, z + oz + 6, y + 1.2, 1.2, "cyan")
+    # ---------- ступени-выступы по спирали (чтобы точно залезть) ----------
+    if steps:
+        sn = max(8, int(h / 9))
+        for i in range(sn):
+            t = i / float(sn - 1)
+            a = t * math.pi * 4.0 + seed
+            rr = base_w * 0.62 * (1.0 - t * 0.66)
+            part("%s_Step%d" % (tag, i), (rng.uniform(12, 18), 1.2, rng.uniform(10, 14)),
+                 (x + math.sin(a) * rr, gy + t * (h - 6), z + math.cos(a) * rr),
+                 yaw=math.degrees(a) + 90, color=(122, 120, 116), material=mat)
+            if i % 5 == 0:
+                torch_wall(x + math.sin(a) * rr, z + math.cos(a) * rr,
+                           gy + t * (h - 6) + 1, 0)
+    # ---------- пещера у подножия ----------
+    if cave:
+        ca = seed * 1.9
+        cave_system("%s Cave" % tag, x + math.sin(ca) * base_w * 0.58,
+                    z + math.cos(ca) * base_w * 0.58, gy, depth=mountain_cave_depth(gy),
+                    nodes=((70, 30), (160, 110)), width=17, height=13,
+                    tag="%sCave" % tag, extra_chests=2,
+                    cap_col=tuple(int(c * 0.9) for c in col), cap_mat=mat)
+    # ---------- валуны у подножия ----------
+    for _ in range(10):
+        a = rng.uniform(0, math.pi * 2)
+        rr = base_w * rng.uniform(0.5, 0.66)
+        rock(x + math.sin(a) * rr, z + math.cos(a) * rr, gy,
+             rng.uniform(1.0, 2.2), mat, (118, 118, 124))
+    occupy(x, z, base_w * 0.6, "mountain")
+    return y
+
+
+def mountain_cave_depth(gy):
+    """Глубина пещеры: не уходим ниже уровня моря."""
+    return max(10.0, min(20.0, gy - 5.0))
+
+
+def mountain_chain(name, points, gy, base_w=200, h=160, snow=0.66, seed=0,
+                   col=(108, 114, 124), mat="Rock"):
+    """Цепь квадратных гор: вершины соединяются «сёдлами» из блоков,
+    поэтому с одной горы можно перейти на другую по гребню."""
+    res = []
+    for i, (mx, mz) in enumerate(points):
+        top = wom_mountain(mx, mz, gy, base_w=base_w * rng.uniform(0.9, 1.1),
+                           h=h * rng.uniform(0.85, 1.1), snow=snow,
+                           seed=seed + i * 3, col=col, mat=mat,
+                           tag="%s%d" % (name, i))
+        res.append((mx, mz, top))
+    # сёдла между соседними вершинами
+    for i in range(len(points) - 1):
+        ax, az = points[i]
+        bx, bz = points[i + 1]
+        dist = math.hypot(bx - ax, bz - az)
+        n = max(3, int(dist / 40))
+        yaw = math.degrees(math.atan2(bx - ax, bz - az))
+        for k in range(1, n):
+            t = k / float(n)
+            px, pz = ax + (bx - ax) * t, az + (bz - az) * t
+            hh = 2.5 + 22 * math.sin(math.pi * t)
+            bw = base_w * (0.30 + 0.16 * math.sin(math.pi * t))
+            part("%s_Saddle%d_%d" % (name, i, k), (bw, hh, bw * 0.8),
+                 (px, gy + hh / 2, pz), yaw=yaw,
+                 color=tuple(int(c * 0.9) for c in col), material=mat)
+            # ступень на седло
+            part("%s_SaddleStep%d_%d" % (name, i, k), (bw * 1.2, 1.2, 8),
+                 (px, gy + hh, pz), yaw=yaw + 90,
+                 color=(126, 124, 120), material=mat)
+    return res
+
+
 def mega_mesa(x, z, gy, base_w=140, h=110, snow=60, cell=85.0):
     """ГОРА с проходимыми ступенями: перепад между кольцами <= 2.6 студа,
     поэтому подъём берётся пешком (и запрыгивается), а не «стопка карт»."""
@@ -1102,6 +1338,7 @@ def town(name, x, z, gy, radius=95, houses=10, pal=None, wall_mat="WoodPlanks",
     wall = pal.get("wall", (152, 134, 106))
     roof = pal.get("roof", (80, 62, 46))
     add_flat(x, z, radius + 52, gy, 90.0)
+    occupy(x, z, radius + 34, "build")     # v12: всё внутри города — занято
     gyt = gy + 0.55
     # площадь и мостовая улиц
     if plaza:
@@ -1158,7 +1395,9 @@ def town(name, x, z, gy, radius=95, houses=10, pal=None, wall_mat="WoodPlanks",
         lamppost(x + math.sin(a) * radius * 0.30, z + math.cos(a) * radius * 0.30, gy)
     for i in range(6):
         a = math.pi * 2 * i / 6 + yaw0
-        lamppost(x + math.sin(a) * radius * 0.66, z + math.cos(a) * radius * 0.66, gy)
+        lx, lz = x + math.sin(a) * radius * 0.66, z + math.cos(a) * radius * 0.66
+        if is_free(lx, lz, 4):
+            lamppost(lx, lz, gy)
     # забор/частокол по кругу с проёмами у улиц
     if palisade:
         n = max(30, int(radius * 0.75))
@@ -1170,14 +1409,17 @@ def town(name, x, z, gy, radius=95, houses=10, pal=None, wall_mat="WoodPlanks",
             px, pz = x + math.sin(a) * (radius + 14), z + math.cos(a) * (radius + 14)
             part(name + "_Palisade", (1.3, 7.2, 1.3), (px, gy + 3.4, pz),
                  yaw=math.degrees(a), color=(92, 74, 56), material="Wood")
-    # деревья и клумбы внутри
+    # деревья и клумбы внутри — только на пустых местах у площади (v12)
     for i in range(8):
         a = math.pi * 2 * i / 8 + 0.9
+        px = x + math.sin(a) * radius * 0.30
+        pz = z + math.cos(a) * radius * 0.30
+        if not is_free(px, pz, 7):
+            continue
         if i % 2:
-            tree_nice(x + math.sin(a) * radius * 0.48, z + math.cos(a) * radius * 0.48,
-                      gy, rng.uniform(0.8, 1.1))
+            tree_nice(px, pz, gy, rng.uniform(0.8, 1.1))
         else:
-            bush(x + math.sin(a) * radius * 0.44, z + math.cos(a) * radius * 0.44, gy)
+            bush(px, pz, gy)
     for i in range(40):
         a = rng.uniform(0, math.pi * 2)
         rr = rng.uniform(radius * 0.36, radius * 0.9)
@@ -1198,6 +1440,7 @@ def small_village(name, x, z, gy, n_houses=5, radius=48, pal=None,
     wall = pal.get("wall", (150, 132, 106))
     roof = pal.get("roof", (78, 60, 44))
     add_flat(x, z, radius + 34, gy, 85.0)
+    occupy(x, z, radius + 26, "build")     # v12
     for i in range(n_houses):
         a = math.pi * 2 * i / max(1, n_houses) + 0.35
         hx = x + math.sin(a) * radius * rng.uniform(0.55, 0.95)
@@ -1241,6 +1484,7 @@ def hill_mound(x, z, gy, r=24, h=12, col=(96, 116, 66)):
 
 
 def watch_tower(x, z, gy, tag=""):
+    occupy(x, z, 18)
     gy = sy(x, z, gy)
     """Сторожевая башня: лезь по ферме — наверху сундук."""
     rock(x - 3, z - 3, gy, 0.9, "Rock", (96, 96, 100))
@@ -1396,6 +1640,7 @@ def statue_guardian(x, z, gy, yaw=0.0):
 
 def citadel(cx, cz, gy):
     gy = sy(cx, cz, gy)
+    occupy(cx, cz, 70)
     """ЦИТАДЕЛЬ ЛОРД-МАГИСТРА: 5 ярусов, башни, леса, знамёна, ~95 студов."""
     stone = (146, 144, 138)
     dark = (120, 118, 112)
@@ -1586,8 +1831,11 @@ CONTINENT_POLY = [
     (-800, -3700), (700, -3620), (2000, -3300), (3000, -2780),
     (3600, -1950), (3760, -950), (3660, -50), (3800, 900),
     (3620, 1900), (3280, 2800), (2500, 3380), (1450, 3620),
-    (150, 3700), (-1150, 3520), (-2200, 3120), (-3000, 2500),
-    (-3450, 1700), (-3720, 700), (-3800, -150),
+    (150, 3700), (-1150, 3520),
+    # v12: юго-западный выступ — Предгорья, Камнегорск и Квадратные Горы
+    # раньше лежали ЗА границей материка, поэтому город оказывался в воде
+    (-2300, 3480), (-3150, 3300), (-3560, 2560), (-3700, 1750),
+    (-3720, 700), (-3800, -150),
 ]
 
 ZONE_GROUND = [
@@ -1598,6 +1846,7 @@ ZONE_GROUND = [
     (650, 750, 3150, 3000, (210, 192, 144), "Sand"),         # Берег
     (-950, 750, 950, 3000, (140, 144, 94), "Ground"),        # Костяные поля
     (-3100, -950, -650, 1100, (72, 104, 62), "Ground"),      # Глумвуд
+    (-3700, 1300, -2400, 3300, (146, 140, 126), "Slate"),    # v12: Каменные предгорья
 ]
 
 
@@ -1666,6 +1915,8 @@ def scatter(n, x0, z0, x1, z1, fn, excl=(), gy=8.0):
         if not point_in_poly(x, z):
             continue
         if any(math.hypot(x - ex, z - ez) < er for ex, ez, er in excl):
+            continue
+        if not is_free(x, z, 8):
             continue
         fn(x, z, gy)
         out += 1
@@ -1773,11 +2024,14 @@ def raw_height(x, z):
     n = fbm(x, z, freq, 4, 11) - 0.5
     ridge = abs(fbm(x, z, freq * 0.55, 3, 29) - 0.5) * 2.0
     h = base + n * amp * 2.0 + (ridge - 0.62) * amp * 1.1
-    # у самой воды рельеф сползает в пляж
+    # v12: у границы материка рельеф мягко уходит в море, но БЕЗ плит-островов:
+    # процесс «пляж» растянут на 260 студов и заканчивается ровно у кромки
     ed = poly_edge_dist(x, z)
-    if ed < 430.0:
-        t = max(0.0, ed / 430.0) ** 0.75
-        h = -1.3 * (1.0 - t) + h * t
+    if ed < 260.0 and h < 18.0:
+        # топим в море только НИЗКИЕ берега: высокие предгорья у кромки
+        # остаются скалами, иначе Камнегорск и горы «уходили под воду»
+        t = max(0.0, ed / 260.0) ** 0.6
+        h = -2.2 * (1.0 - t) + h * t
     return h
 
 
@@ -2054,6 +2308,7 @@ def sand_field(x0, z0, x1, z1):
 # ------------------------- растительность ----------------------------------
 def tree_nice(x, z, y, s=1.0):
     """Пышное дерево-«помпон»: ствол + 4 сочных шара кроны (как в референсах)."""
+    occupy(x, z, 7, "decor")
     y = sy(x, z, y)
     th = rng.uniform(9, 13) * s
     part("Tree_Trunk", (2.8 * s, th, 2.8 * s), (x, y + th / 2, z),
@@ -2077,6 +2332,7 @@ def tree_nice(x, z, y, s=1.0):
 
 def bush(x, z, y, s=1.0):
     y = sy(x, z, y)
+    occupy(x, z, 4, "decor")
     w = rng.uniform(2.6, 4.2) * s
     part("Bush", (w, w * 0.7, w), (x, y + w * 0.3, z), yaw=rng.uniform(0, 90),
          color=rng.choice([(50, 76, 44), (58, 84, 48), (44, 68, 40)]),
@@ -2148,6 +2404,7 @@ def ruin_fragment(x, z, y):
 
 def glowshroom(x, z, y):
     h = rng.uniform(1.5, 3)
+    occupy(x, z, 3, "decor")
     part("GlowStem", (h, 0.9, 0.9), (x, y + h / 2, z), roll=90, shape="Cylinder",
          color=(180, 190, 170), material="SmoothPlastic")
     part("GlowCap", (1.8, 1.0, 1.8), (x, y + h + 0.3, z), shape="Ball",
@@ -2480,8 +2737,8 @@ def volcano(cx, cz, gy):
 # ============================================================================
 # v11: КАРСТОВЫЕ ГОРЫ — огромные «зубы» до 240 студов
 # ============================================================================
-def karst_massif(x, z, gy, base_w=260, h=210, snow_above=None, seed_hue=0,
-                 legs=9, spire_col=(112, 116, 124), canopy=True, tag=None):
+def karst_shard(x, z, gy, base_w=260, h=210, snow_above=None, seed_hue=0,
+                legs=9, spire_col=(112, 116, 124), canopy=True, tag=None):
     """Грандиозный карстовый массив: ярусы-основания и пучок башен-игл.
     Перепад между ярусами 2.5 студа — наверх реально залезть пешком,
     а тропа-серпантин петляет между башнями."""
@@ -2548,6 +2805,27 @@ def karst_massif(x, z, gy, base_w=260, h=210, snow_above=None, seed_hue=0,
     return top_y
 
 
+def pit_conflict(minx, minz, maxx, maxz, pad=24.0):
+    """v12: не вырезаем землю там, где уже стоят дома/города."""
+    for (ox, oz, r, kind) in OCCUPIED:
+        if kind != "build":
+            continue
+        if (minx - r - pad) < ox < (maxx + r + pad) and \
+           (minz - r - pad) < oz < (maxz + r + pad):
+            return True
+    return False
+
+
+def _pit_rect(x, z, depth, nodes, width):
+    ex0, ez0 = x, z + depth * 2.0 + 6.0
+    pts = [(ex0 + dx, ez0 + dz) for (dx, dz) in nodes]
+    pad = width * 1.6 + 36
+    return (min([x] + [px for px, _ in pts]) - pad,
+            min([z] + [pz for _, pz in pts]) - pad,
+            max([x] + [px for px, _ in pts]) + pad,
+            max([z] + [pz for _, pz in pts]) + pad)
+
+
 def reserve_cave_pit(x0, z0, x1, z1):
     if PLANNING:
         CAVE_PITS.append((float(x0), float(z0), float(x1), float(z1)))
@@ -2563,17 +2841,22 @@ def cave_system(name, x, z, gy, depth=20.0, nodes=((70, 0), (150, 60), (95, 150)
     шапкой, поэтому внутри реально темно и ничто не пересекается."""
     depth = min(depth, max(10.0, gy - 4.0))
     floor_y = gy - depth
+    # ---- v12: если проём накрывает город/дома — отодвигаем вход в данж ----
+    for attempt in range(1, 13):
+        minx, minz, maxx, maxz = _pit_rect(x, z, depth, nodes, width)
+        if not pit_conflict(minx, minz, maxx, maxz):
+            break
+        ang = attempt * 1.9
+        dist = 90.0 * attempt
+        x = x + math.sin(ang) * dist
+        z = z + math.cos(ang) * dist
+        add_flat(x, z, 70, gy, 60.0)
     # ---- начало подземелья: низ лестницы ----
     ex0, ez0 = x, z + depth * 2.0 + 6.0
     pts = [(ex0 + dx, ez0 + dz) for (dx, dz) in nodes]
-    # ---- резервируем «дыру» в рельефе (лестница + все залы) ----
-    # запас 36 студов: плитка земли 68×68 может нависать краем над проёмом
-    pad = width * 1.6 + 36
-    minx = min([x] + [p[0] for p in pts]) - pad
-    maxx = max([x] + [p[0] for p in pts]) + pad
-    minz = min([z] + [p[1] for p in pts]) - pad
-    maxz = max([z] + [p[1] for p in pts]) + pad
+    minx, minz, maxx, maxz = _pit_rect(x, z, depth, nodes, width)
     reserve_cave_pit(minx, minz, maxx, maxz)
+    occupy(x, z, 26, "cave")
     add_flat((minx + maxx) / 2.0, (minz + maxz) / 2.0,
              max(maxx - minx, maxz - minz) * 0.55 + 20, gy, 70.0)
 
@@ -2839,6 +3122,7 @@ def ancient_tree(x, z, gy, s=2.3):
 
 
 def ice_tomb(cx, cz, gy, yaw=0.0):
+    occupy(cx, cz, 50)
     """Данж-подземелье: ледяная усыпальница с коридором и залом."""
     W, D, H = 34, 48, 14
     ice, trim = (168, 196, 222), (140, 172, 205)
@@ -3037,25 +3321,36 @@ def build_continent(parent):
 
 
 def beach_ring():
-    """Песчаная кромка по периметру материка — там, где рельеф выходит к морю."""
-    n = 260
-    for i in range(n):
-        a = math.pi * 2 * i / n
-        for rr in (2740, 2820, 2900):
-            x = math.sin(a) * rr
-            z = math.cos(a) * rr
-            if point_in_poly(x, z):
-                h = height_at(x, z)
-                part("Beach", (95, 6, 95), (x, h - 3.4, z),
-                     color=(198, 182, 142), material="Sand")
-                if rng.random() < 0.25:
-                    rock(x + rng.uniform(-30, 30), z + rng.uniform(-30, 30), h,
-                         rng.uniform(0.7, 1.2), "Rock", (108, 108, 114))
-                break
+    """Песчаная кромка ВДОЛЬ НАСТОЯЩЕГО берега материка.
+    v12: раньше песок сыпался кольцом по радиусу и резал карту поперёк —
+    теперь берём точки у самой границы полигона (poly_edge_dist ≈ 0..60)."""
+    placed = 0
+    step = 46.0
+    for i in range(-3760, 3760, int(step)):
+        for j in range(-3760, 3760, int(step)):
+            if not point_in_poly(i, j):
+                continue
+            ed = poly_edge_dist(i, j)
+            if not (6.0 < ed < 52.0):
+                continue
+            if is_free(i, j, 4) is False and OCCUPIED:
+                pass
+            h = height_at(i, j)
+            if h < -1.0:
+                continue
+            part("Beach", (56, 5, 56), (i, h - 2.8, j),
+                 color=(198, 182, 142), material="Sand")
+            placed += 1
+            if rng.random() < 0.10:
+                rock(i + rng.uniform(-20, 20), j + rng.uniform(-20, 20), h,
+                     rng.uniform(0.7, 1.2), "Rock", (108, 108, 114))
+    return placed
 
 
 def road(x0, z0, x1, z1, top_y, width=9, color=(98, 94, 90), mat="Cobblestone"):
     """Дорога: земля вокруг выравнивается под полотно, сегменты идут по рельефу."""
+    occupy((x0 + x1) / 2.0, (z0 + z1) / 2.0,
+           math.hypot(x1 - x0, z1 - z0) / 2.0 + width, "road")
     dx, dz = x1 - x0, z1 - z0
     dist = math.hypot(dx, dz)
     n = max(1, int(dist // 14))
@@ -3111,6 +3406,8 @@ def forest_fill(name, x0, z0, x1, z1, density=0.55, cell=150.0,
                     if math.hypot(x - sx, z - sz) < sr:
                         skip_here = True
                         break
+                if skip_here or not is_free(x, z, 14):
+                    skip_here = True
                 if not skip_here:
                     h = height_at(x, z)
                     if h > -0.5:
@@ -3320,7 +3617,7 @@ def build_village(parent):
     tree_gloom(250, 300, GY, 1.0)
 
     # --- табличка версии у спавна (проверка что открыт правильный файл) ---
-    signpost(8, 146, GY + 0.55, 0, "EMBERFALL v11\nогромные горы, чащи, города, данжи")
+    signpost(8, 146, GY + 0.55, 0, "EMBERFALL v12\nквадратные горы, города, данжи")
 
     # --- указатели у ворот ---
     signpost(0, -214, GY, 0, "← Морозные Пики | Глумвуд ←\nПепельные Пустоши →")
@@ -3386,12 +3683,12 @@ def build_village(parent):
     signpost(-332, 262, GY, 90, "Круча Дозора ↑\n(паркур)")
 
     # --- ГОРЫ-ХРЕБТЫ на границах (перелазь по ступеням или иди в воротах) ---
-    mega_mesa(-860, -380, 14, base_w=120, h=100, snow=90)
-    mega_mesa(-880, 470, 14, base_w=130, h=112, snow=90)
-    mega_mesa(-480, 760, 8, base_w=115, h=92, snow=120)
-    mega_mesa(500, 770, 8, base_w=120, h=96, snow=120)
-    mega_mesa(200, -950, 8, base_w=105, h=85, snow=120)
-    mega_mesa(-200, -950, 8, base_w=105, h=85, snow=120)
+    wom_mountain(-860, -380, 14, base_w=120 * 1.3, h=100 * 1.45, snow=0.66, seed=39)
+    wom_mountain(-880, 470, 14, base_w=130 * 1.3, h=112 * 1.45, snow=0.66, seed=2)
+    wom_mountain(-480, 760, 8, base_w=115 * 1.3, h=92 * 1.45, snow=0.66, seed=41)
+    wom_mountain(500, 770, 8, base_w=120 * 1.3, h=96 * 1.45, snow=0.66, seed=1)
+    wom_mountain(200, -950, 8, base_w=105 * 1.3, h=85 * 1.45, snow=0.66, seed=26)
+    wom_mountain(-200, -950, 8, base_w=105 * 1.3, h=85 * 1.45, snow=0.66, seed=10)
 
     # --- холмы на равнине ---
     for (hx, hz, hr, hh) in [(180, -480, 26, 12), (-260, -420, 30, 14),
@@ -3450,9 +3747,9 @@ def build_gloomwood(parent):
     wooden_bridge(-1440, -212, GY, yaw=0, span=34, width=7)
 
     # --- скалы «Клыки» (видны от северных ворот деревни) ---
-    mega_mesa(-1000, -620, GY, base_w=72, h=62, snow=200)
-    mega_mesa(-1130, -540, GY, base_w=90, h=80, snow=200)
-    mega_mesa(-1320, -590, GY, base_w=76, h=68, snow=200)
+    wom_mountain(-1000, -620, GY, base_w=72 * 1.3, h=62 * 1.45, snow=0.66, seed=77)
+    wom_mountain(-1130, -540, GY, base_w=90 * 1.3, h=80 * 1.45, snow=0.66, seed=8)
+    wom_mountain(-1320, -590, GY, base_w=76 * 1.3, h=68 * 1.45, snow=0.66, seed=27)
 
     # --- лагеря разбойников (3 штуки) ---
     bandit_camp(-1000, 320, GY, yaw=15, name="BanditCamp")
@@ -3615,8 +3912,8 @@ def build_frostpeak(parent):
     ramp(-1600, -1550, 46, 16, 44, 16, "-Z")
 
     # горы-великаны (взбираются по ступеням-слоям)
-    mega_mesa(-2050, -2100, 20, base_w=185, h=145, snow=40)
-    mega_mesa(-1150, -2150, 20, base_w=145, h=120, snow=40)
+    wom_mountain(-2050, -2100, 20, base_w=185 * 1.3, h=145 * 1.45, snow=0.66, seed=37)
+    wom_mountain(-1150, -2150, 20, base_w=145 * 1.3, h=120 * 1.45, snow=0.66, seed=34)
 
     # замёрзшее озеро
     slab("FrozenLake", -1250, -1750, -1050, -1550, 20.5, 19.7, (150, 190, 220),
@@ -3802,8 +4099,8 @@ def build_ashwaste(parent):
              color=(255, 120, 40), material="Neon", cancollide=False)
 
     # горные кромки по краям Пустошей + ВУЛКАН с жерлом и лавопадом
-    mega_mesa(750, -2320, GY, base_w=130, h=108, snow=400)
-    mega_mesa(-560, -1220, GY, base_w=105, h=95, snow=400)
+    wom_mountain(750, -2320, GY, base_w=130 * 1.3, h=108 * 1.45, snow=0.66, seed=29)
+    wom_mountain(-560, -1220, GY, base_w=105 * 1.3, h=95 * 1.45, snow=0.66, seed=9)
     volcano(300, -2250, GY)
     signpost(52, -2130, GY, 150, "Вулкан Пепла ↑\n(паркур к жерлу)")
 
@@ -4006,7 +4303,7 @@ def build_sunken_coast(parent):
     islet(-2650, -2600, bridge_from=(-2350, -2380), tag="B")
 
     # гора-мыс, холмы и сторожевая башня
-    mega_mesa(1600, 1450, 8.4, base_w=120, h=95, snow=150)
+    wom_mountain(1600, 1450, 8.4, base_w=120 * 1.3, h=95 * 1.45, snow=0.66, seed=85)
     for (hx, hz, hr, hh) in [(1000, 1100, 26, 11), (1150, 1950, 24, 10),
                              (2050, 1450, 26, 12), (900, 2050, 24, 10),
                              (1750, 1550, 22, 9)]:
@@ -4328,9 +4625,9 @@ def build_highlands(parent):
                 banner_col=(120, 70, 30), name="HighlandBandits", ntents=3)
 
     # горы и каменные гряды
-    mega_mesa(-3250, 2350, GY, base_w=190, h=135, snow=400)
-    mega_mesa(-2650, 2900, GY, base_w=165, h=110, snow=400)
-    mega_mesa(-3450, 950, GY, base_w=150, h=98, snow=400)
+    wom_mountain(-3250, 2350, GY, base_w=190 * 1.3, h=135 * 1.45, snow=0.66, seed=56)
+    wom_mountain(-2650, 2900, GY, base_w=165 * 1.3, h=110 * 1.45, snow=0.66, seed=76)
+    wom_mountain(-3450, 950, GY, base_w=150 * 1.3, h=98 * 1.45, snow=0.66, seed=25)
     for _ in range(90):
         x, z = rng.uniform(-3500, -2300), rng.uniform(900, 3000)
         if math.hypot(x + 2900, z - 1900) < 110 or math.hypot(x + 2750, z - 2450) < 90:
@@ -4436,10 +4733,15 @@ def build_south_isles(parent):
     campfire(-880, 3400, 12.0)
     chest_marker(-870, 3410, 12.6, "FisherIsle")
 
-    # маяк-близнец
-    lighthouse(2100, 3300, 12.0)
-    lighthouse(2260, 3300, 12.0)
-    lighthouse(3100, 2400, 10.0)
+    # маяк-близнец (v12: строго на берегу, не посреди города)
+    # маяк на собственном маленьком островке, соединённом с берегом мостиком
+    add_plateau_circle(2380, 3510, 96, 12.0)
+    disc("TwinLightIslet_Sand", 2380, 3510, 5.0, 92, 8, (200, 186, 148), "Sand")
+    disc("TwinLightIslet_Ground", 2380, 3510, 12.0, 60, 16, (108, 130, 80), "Ground")
+    lighthouse(2380, 3510, 12.0)
+    for i in range(9):
+        part("TwinLight_Bridge", (12, 0.8, 14), (2280 + i * 11, 12.4, 3428 + i * 9),
+             yaw=-40, color=(96, 78, 58), material="WoodPlanks")
     for i, (x, z) in enumerate([(500, 3450), (2100, 3260), (3100, 2360)]):
         crystal(x, z, 12.0, 1.2, rng.choice(["cyan", "violet"]))
     farm_field(500, 3450, 12.55, 26, 18, yaw=20)
@@ -4470,7 +4772,8 @@ def dense_forest(name, x0, z0, x1, z1, density=0.80, cell=84.0,
                     if math.hypot(x - cx, z - cz) < cr:
                         skip_here = True
                         break
-                if not skip_here and rng.random() < density:
+                # v12: лес не сажается на дома, дороги, горы и входы в данжи
+                if not skip_here and is_free(x, z, 16) and rng.random() < density:
                     h = height_at(x, z)
                     if h > -0.5:
                         fn = funcs[rng.choice(list(trees))]
@@ -4511,6 +4814,8 @@ def dense_forest(name, x0, z0, x1, z1, density=0.80, cell=84.0,
         if not point_in_poly(gx, gz):
             continue
         if any(math.hypot(gx - cx, gz - cz) < cr + 20 for (cx, cz, cr) in clearance):
+            continue
+        if not is_free(gx, gz, 6):
             continue
         disc("ForestFloor_" + name, gx, gz, height_at(gx, gz) + 0.22,
              rng.uniform(55, 110), 0.5, floor_col, floor_mat, cancollide=False)
@@ -4630,41 +4935,49 @@ def mountain_range(name, points, gy, base_w=150, h=180, snow=0.62,
 
 
 def build_sealed_peaks(parent):
-    """ЗАПЕЧАТАННЫЕ ПИКИ: горный хребет по восточной и южной окраине."""
+    """ЗАПЕЧАТАННЫЕ ПИКИ: хребет КВАДРАТНЫХ гор (в стиле World of Magic)."""
     folder("SealedPeaks")
     GY = 18.0
-    range1 = [(-250, 3300), (350, 3320)]
-    range2 = [(2320, 1080), (2600, 1560), (2420, 2080), (2050, 2560),
-              (1560, 2980), (960, 3260)]
-    mountain_range("PeaksS", range1, GY, base_w=140, h=150, snow=0.68, seed=11)
-    tops = mountain_range("PeaksE", range2, GY, base_w=165, h=185, snow=0.60, seed=3)
-    mountain_range("PeaksN", [(2750, -1150), (3120, -380)], GY, base_w=150, h=165,
-                   snow=0.62, seed=7)
+    east = [(2320, 1080), (2620, 1560), (2440, 2060), (2060, 2540),
+            (1560, 2960), (960, 3240)]
+    north = [(2740, -1160), (3120, -390)]
+    south = [(-260, 3300), (360, 3330)]
+    res = []
+    res += mountain_chain("WM_East", east, GY, base_w=190, h=175, snow=0.60, seed=3)
+    res += mountain_chain("WM_North", north, GY, base_w=170, h=160, snow=0.62, seed=17)
+    res += mountain_chain("WM_South", south, GY, base_w=160, h=145, snow=0.68, seed=29)
+    # перевал: дорога между двумя горами
     road(2280, 900, 2400, 1300, GY, width=9, color=(110, 106, 98))
-    signpost(2300, 900, GY, 180, "ЗАПЕЧАТАННЫЕ ПИКИ\nперевал ↑")
-    for (mx, mz, ty) in tops:
-        crystal(mx - 5, mz + 5, ty + 1, 1.4, "cyan")
-    for i, (mx, mz) in enumerate(range2):
-        register_mob("Highlands", mx + 120, mz + 60, GY)
+    signpost(2300, 900, GY, 180, "ЗАПЕЧАТАННЫЕ ПИКИ\nквадратные горы · перевал")
+    for (mx, mz, ty) in res:
+        register_mob("Highlands", mx + 130, mz + 70, GY)
     endfolder()
-    return tops
 
 
 def build_gloomwood_north(parent):
-    """Северная чаща: ДУПЛИНО (деревня лесорубов) → ЭЛЬДЕРВУД (город у чёрных
-    пней) и великая роща с огромными деревьями-исполинами."""
+    """Северная чаща: ВЕЛИКАЯ РОЩА с исполинами, тропа между городами,
+    Пещеры Дупла (данж) и быт лесорубов (дома стоят из build_v12_settlements)."""
     folder("GloomNorth")
     GY = 14.0
-    add_flat(-1950, -620, 190, GY, 95.0)     # Дуплино
-    add_flat(-900, -380, 180, GY, 95.0)      # Эльдервуд
+    giants = [(-1500, -150), (-1250, -60), (-1700, -420), (-1050, -520),
+              (-1450, 140), (-760, -140), (-2050, -120), (-1600, -760),
+              (-1180, -890), (-2150, -370)]
+    for (gx, gz) in giants:
+        if not is_free(gx, gz, 30):
+            continue
+        ancient_tree(gx, gz, GY, rng.uniform(3.4, 4.6))
+        occupy(gx, gz, 34, "decor")
+        for k in range(3):
+            a = rng.uniform(0, math.pi * 2)
+            mushroom(gx + math.sin(a) * rng.uniform(18, 34),
+                     gz + math.cos(a) * rng.uniform(18, 34), GY, rng.uniform(1.2, 2.2))
+    road(-1950, -620, -900, -380, GY, width=8, color=(72, 62, 48), mat="Ground")
+    signpost(-1420, -500, GY, 60, "ВЕЛИКАЯ РОЩА\nисполины")
 
-    town("Duplino", -1950, -620, GY, radius=92, houses=11,
-         pal={"wall": (140, 116, 88), "roof": (86, 58, 42)},
-         palisade=True, tower=True, market=True,
-         sign_text="ДУПЛИНО\nдеревня лесорубов", watch=None)
-    for i in range(6):   # пилорама: штабели брёвен и пила
+    # пилорама Дуплино
+    for i in range(6):
         part("Duplino_Log", (14, 1.8, 1.8), (-1950 + rng.uniform(-40, 40),
-             -620 - 70 + i * 2.4, GY + 0.9), yaw=rng.uniform(-8, 8),
+             -690 + i * 2.4, GY + 0.9), yaw=rng.uniform(-8, 8),
              color=(96, 72, 50), material="Wood")
     part("Duplino_Sawmill", (18, 1.2, 12), (-1950, GY + 1.2, -560),
          color=(104, 78, 54), material="WoodPlanks")
@@ -4672,46 +4985,14 @@ def build_gloomwood_north(parent):
         part("Duplino_SawPost", (1.2, 8, 1.2), (-1950 + sx, GY + 4, -560),
              color=(84, 62, 44), material="Wood")
     chest_marker(-1942, -556, GY + 1.6, "Duplino")
-
-    town("Elderwood", -900, -380, GY, radius=110, houses=13,
-         pal={"wall": (120, 96, 74), "roof": (64, 44, 36)},
-         palisade=False, tower=True, market=True, chapel_=True,
-         sign_text="ЭЛЬДЕРВУД\nвольные лесорубы", watch=None)
-    # ворота из костяных стволов
+    # ворота Эльдервуда из костяных стволов
     for side in (-1, 1):
-        part("Elderwood_Gate", (3.2, 16, 3.2), (-900 + side * 13, GY + 8, -380 - 104),
+        part("Elderwood_Gate", (3.2, 16, 3.2), (-900 + side * 13, GY + 8, -484),
              yaw=10, color=(70, 54, 42), material="Wood")
-    part("Elderwood_GateLintel", (30, 2.6, 3.4), (-900, GY + 16.5, -380 - 104),
+    part("Elderwood_GateLintel", (30, 2.6, 3.4), (-900, GY + 16.5, -484),
          color=(74, 58, 44), material="Wood")
 
-    # ---- ВЕЛИКАЯ РОЩА: исполины (ствол 6-9 студов, крона ~55) ----
-    giants = [(-1500, -150), (-1250, -60), (-1700, -420), (-1050, -520),
-              (-1450, 140), (-760, -140), (-2050, -120), (-1600, -760),
-              (-1180, -890), (-2150, -370)]
-    for i, (gx, gz) in enumerate(giants):
-        ancient_tree(gx, gz, GY, rng.uniform(3.4, 4.6))
-        for k in range(3):
-            a = rng.uniform(0, math.pi * 2)
-            mushroom(gx + math.sin(a) * rng.uniform(18, 34),
-                     gz + math.cos(a) * rng.uniform(18, 34), GY,
-                     rng.uniform(1.2, 2.2))
-    # тропа между деревнями через рощу
-    road(-1950, -620, -900, -380, GY, width=8, color=(72, 62, 48), mat="Ground")
-    signpost(-1420, -500, GY, 60, "ВЕЛИКАЯ РОЩА\nисполины")
-
-    # ---- ГУСТАЯ ЧАЩА вокруг ----
-    dense_forest("GloomNorth", -2300, -900, -640, 120, density=0.80, cell=74.0,
-                 trees=("tree_gloom", "tree_gloom", "tree_nice", "pine"),
-                 scale=(1.0, 1.7), glow=True,
-                 clearance=[(-1950, -620, 150), (-900, -380, 170),
-                            (-1500, -150, 40), (-1250, -60, 40), (-1700, -420, 40),
-                            (-1050, -520, 40), (-1450, 140, 40), (-760, -140, 40),
-                            (-2050, -120, 40), (-1600, -760, 40), (-1180, -890, 40),
-                            (-2150, -370, 40), (-1130, -540, 120), (-1000, -620, 110),
-                            (-1320, -590, 110), (-1560, 100, 40), (-1150, -700, 40)])
-
-    # ---- ПОДЗЕМЕЛЬЕ: ПЕЩЕРЫ ДУПЛА (вход у пилорамы) ----
-    cave_system("Пещеры Дупла", -1950, -780, GY, depth=22.0,
+    cave_system("Пещеры Дупла", -1950, -780, GY, depth=18.0,
                 nodes=((95, 40), (185, 130), (110, 240), (230, 300)),
                 width=20, height=15, floor_mat="Slate", floor_col=(56, 52, 48),
                 tag="DuplinoCave", extra_chests=3,
@@ -4720,26 +5001,16 @@ def build_gloomwood_north(parent):
     register_mob("Gloomwood", -2030, -690, GY)
     npc_spot("Woodcutter", -1930, -600, GY)
     endfolder()
-    return GY
 
 
 def build_south_veldt(parent):
-    """Южный вельд: ЗАРЕЧЬЕ (город у слияния рек) + каньон из красного камня
-    с мостами и висячими тропами + рудник."""
+    """Южный вельд: КРАСНЫЙ КАНЬОН с висячими мостами и уступами,
+    каменный мост у Заречья и Шахта «Красный Камень» (данж)."""
     folder("SouthVeldt")
     GY = 12.0
-    add_flat(150, 2500, 200, GY, 95.0)
-    add_flat(-560, 2600, 150, GY, 90.0)
-
-    town("Zarechye", 150, 2500, GY, radius=118, houses=14,
-         pal={"wall": (166, 146, 112), "roof": (108, 70, 48)},
-         palisade=True, tower=True, market=True, chapel_=True,
-         sign_text="ЗАРЕЧЬЕ\nгород у слияния рек")
-    # каменный мост через реку
     stone_footbridge(150, 2380, GY, yaw=0, span=64, width=8)
     signpost(210, 2410, GY, -80, "КАМЕННЫЙ МОСТ\n→ Костяные Поля")
 
-    # ---- КРАСНЫЙ КАНЬОН: стены из песчаника, висячие мосты, уступы ----
     cx, cz = -560, 2620
     for i in range(26):
         t = i / 25.0
@@ -4748,6 +5019,7 @@ def build_south_veldt(parent):
             part("Veldt_CanyonWall", (60, rng.uniform(38, 58), 26),
                  (wx, GY + 24, cz + side * rng.uniform(120, 165)),
                  yaw=rng.uniform(-6, 6), color=(186, 118, 82), material="Sandstone")
+            occupy(wx, cz + side * 140, 32, "mountain")
         if i % 3 == 0:
             crystal(wx, cz - 130, GY + 40, 1.1, "violet")
     canyon_sky_bridge(cx, cz, yaw=0, span=260, width=9, deck_y=GY + 54, base_y=GY + 50)
@@ -4755,37 +5027,26 @@ def build_south_veldt(parent):
         part("Veldt_Ledge", (26, 2.4, 12),
              (cx - 220 + i * 220, GY + 30 + i * 8, cz + 60),
              color=(176, 112, 78), material="Sandstone")
-    # паркур по уступам вниз в каньон
     parkour_rocks((cx - 300, cz + 40), (cx - 120, cz - 20), GY + 46, GY + 4, 9,
                   col=(184, 122, 86), tag="Veldt")
     register_mob("Bonefields", cx - 240, cz, GY + 2)
     register_mob("Bonefields", cx + 140, cz + 40, GY + 2)
 
-    # ---- ПОДЗЕМЕЛЬЕ: ШАХТА «КРАСНЫЙ КАМЕНЬ» ----
-    cave_system("Шахта Красный Камень", 120, 2680, GY, depth=24.0,
+    cave_system("Шахта Красный Камень", 120, 2680, GY, depth=20.0,
                 nodes=((90, 30), (180, 120), (90, 200)),
                 width=19, height=14, floor_mat="Slate", floor_col=(92, 64, 50),
                 boss="MarrowTyrant", tag="RedMine", extra_chests=3,
                 cap_col=(180, 116, 80), cap_mat="Sandstone")
     npc_spot("Prospector", 120, 2620, GY)
     endfolder()
-    return GY
 
 
 def build_terraces(parent):
-    """Восточные террасы: АРКАНУМ (город-университет магии на плато) и
-    рисовые террасы-ступени до самого моря."""
+    """Восточные террасы: башня Арканума, паркур-платформы и рисовые ступени."""
     folder("Terraces")
     GY = 16.0
     add_flat(2600, 830, 230, GY, 100.0)
-    add_flat(2950, 200, 150, GY, 90.0)
-
-    town("Arcanum", 2600, 830, GY, radius=132, houses=15,
-         pal={"wall": (176, 168, 196), "roof": (86, 74, 128)},
-         wall_mat="Concrete", roof_mat="Slate",
-         palisade=False, tower=True, market=True, chapel_=True,
-         sign_text="АРКАНУМ\nгород магов", watch=None)
-    # АРКАНУМ: башня магов выше всего остального
+    # башня магов (город ставится отдельно в build_v12_settlements)
     v_cyl("Arcanum_TowerA", 2600, 900, GY, 78, 20, (168, 158, 196), "Concrete")
     for i in range(6):
         part("Arcanum_TowerRing%d" % i, (26, 1.6, 26), (2600, GY + 14 + i * 12, 900),
@@ -4795,26 +5056,16 @@ def build_terraces(parent):
          light=dict(brightness=2.2, range=90, color=(150, 120, 255)))
     part("Arcanum_TowerSpire", (1.6, 24, 1.6), (2600, GY + 104, 900),
          color=(70, 60, 110), material="Metal")
-    for i in range(4):  # боковые башни-обсерватории
-        a = math.pi * 2 * i / 4 + 0.4
-        v_cyl("Arcanum_Turret%d" % i, 2600 + math.sin(a) * 100, 830 + math.cos(a) * 100,
-              GY, 44, 12, (176, 168, 200), "Concrete")
-        crystal(2600 + math.sin(a) * 100, 830 + math.cos(a) * 100, GY + 45, 1.6, "cyan")
-    # летающие платформы для паркура к башне
+    occupy(2600, 900, 40, "build")
     for i in range(7):
         a = i * 0.9
         rr = 120 - i * 12
         part("Arcanum_Plat%d" % i, (10, 1.0, 10),
              (2600 + math.sin(a) * rr, GY + 12 + i * 11, 830 + math.cos(a) * rr),
              yaw=i * 21, color=(140, 132, 176), material="Slate")
-        if i % 2 == 0:
-            crystal(2600 + math.sin(a) * rr, 830 + math.cos(a) * rr, GY + 13 + i * 11,
-                    0.8, "violet")
     chest_marker(2600, 900, GY + 90, "Arcanum")
 
-    # ---- РИСОВЫЕ ТЕРРАСЫ до моря ----
     for i in range(16):
-        t = i / 15.0
         tx = 2980 + i * 46
         part("Terrace_Step%d" % i, (150, 2.2, 420),
              (tx, GY - i * 2.4, 1400), yaw=0,
@@ -4823,11 +5074,9 @@ def build_terraces(parent):
         part("Terrace_Water%d" % i, (140, 0.5, 400),
              (tx, GY - i * 2.4 + 1.3, 1400), color=(56, 96, 118), material="Water",
              transparency=0.25, cancollide=False)
-    # стенки террас
-    for i in range(16):
-        part("Terrace_Wall%d" % i, (3, 5, 420), (2980 + i * 46 + 75, GY - i * 2.4 - 1.2, 1400),
+        part("Terrace_Wall%d" % i, (3, 5, 420), (tx + 75, GY - i * 2.4 - 1.2, 1400),
              color=(150, 132, 100), material="Sandstone")
-    # хижины крестьян на террасах
+        occupy(tx, 1400, 90, "build")
     for i in range(6):
         house("Terrace_Farm%d" % i, 3040 + i * 88, 1560 + (i % 2) * 60,
               GY - int(i * 1.4) * 2.4, 10, 8, 6.5,
@@ -4838,116 +5087,73 @@ def build_terraces(parent):
     npc_spot("Archmage", 2540, 880, GY)
     npc_spot("RiceFarmer", 3040, 1500, GY)
     endfolder()
-    return GY
 
 
 def build_highlands_new(parent):
-    """Предгорья: КРЕПОСТЬ КАМНЕГОР (город-крепость), тропа на пик Ветров,
-    карстовые горы и Забытые Шахты (данж)."""
+    """Предгорья: КАМНЕГОРСК-крепость, квадратные горы и Забытые Шахты (данж)."""
     folder("HighlandsNew")
     GY = 26.0
     add_flat(-3150, 2600, 240, GY, 100.0)
 
-    # ---- город-крепость КАМНЕГОР ----
-    town("Kamnegorsk", -3150, 2600, GY, radius=126, houses=13,
-         pal={"wall": (150, 146, 138), "roof": (92, 76, 62)},
-         wall_mat="Cobblestone", palisade=False, tower=True, market=True,
-         chapel_=True, smithy_=True,
-         sign_text="КАМНЕГОР\nкрепость горняков")
-    # каменные стены с башнями по кругу
-    for i in range(28):
-        a = math.pi * 2 * i / 28
-        if angle_gap(a, 0) < 0.2 or angle_gap(a, math.pi) < 0.2:
-            continue
-        px, pz = -3150 + math.sin(a) * 150, 2600 + math.cos(a) * 150
-        part("Kamnegorsk_Wall", (36, 16, 5), (px, GY + 8, pz), yaw=math.degrees(a),
-             color=(142, 138, 130), material="Cobblestone")
-        part("Kamnegorsk_Merlon", (36, 2.2, 6), (px, GY + 17, pz),
-             yaw=math.degrees(a), color=(132, 128, 120), material="Cobblestone",
-             cancollide=False)
-    for i in range(6):
-        a = math.pi * 2 * i / 6 + 0.5
-        px, pz = -3150 + math.sin(a) * 150, 2600 + math.cos(a) * 150
-        v_cyl("Kamnegorsk_Tower", px, pz, GY, 30, 13, (146, 142, 134), "Cobblestone")
-        crenellate("Kamnegorsk_TowerTop", px, pz, GY + 30, 12, 12, col=(128, 124, 116))
-        chest_marker(px, pz, GY + 30, "KamnegorskTower%d" % i)
-    # ворота на юг
-    for sx in (-14, 14):
-        part("Kamnegorsk_Gate", (7, 22, 7), (-3150 + sx, GY + 11, 2600 + 152),
-             color=(150, 146, 138), material="Cobblestone")
-    part("Kamnegorsk_GateLintel", (36, 3.4, 8), (-3150, GY + 23, 2600 + 152),
-         color=(150, 146, 138), material="Cobblestone")
+    # город Камнегорск ставится первым в build_v12_settlements
 
-    # ---- карстовые горы (огромные) ----
-    karst_massif(-2700, 3000, GY, base_w=240, h=205, snow_above=150, seed_hue=1,
-                 legs=8, tag="KarstA")
-    karst_massif(-3450, 1700, GY, base_w=210, h=180, snow_above=140, seed_hue=3,
-                 legs=7, tag="KarstB")
+    # ---- КВАДРАТНЫЕ ГОРЫ Предгорий ----
+    mountain_chain("WM_HighA", [(-2700, 3000), (-2400, 2790)], GY,
+                   base_w=190, h=175, snow=0.7, seed=41)
+    mountain_chain("WM_HighB", [(-3450, 1700), (-3250, 1450)], GY,
+                   base_w=170, h=150, snow=0.72, seed=53)
 
-    # ---- тропа на ПИК ВЕТРОВ ----
+    # ---- ПИК ВЕТРОВ: отдельная квадратная гора с ареной наверху ----
     peak_x, peak_z = -2550, 2000
-    top = karst_massif(peak_x, peak_z, GY, base_w=190, h=196, snow_above=140,
-                       seed_hue=5, legs=6, spire_col=(148, 156, 168), canopy=False,
-                       tag="WindPeak")
-    part("WindPeak_Altar", (12, 2.4, 12), (peak_x, top + 1.6, peak_z),
+    top = wom_mountain(peak_x, peak_z, GY, base_w=175, h=190, snow=0.55,
+                       seed=61, col=(146, 152, 164), cave=False, tag="WindPeak")
+    part("WindPeak_Altar", (14, 2.2, 14), (peak_x, top + 1.6, peak_z),
          color=(128, 140, 156), material="Marble")
-    boss_spawn("WindArchon", peak_x, peak_z, top + 2.6)
-    arena_trigger("WindArchon", peak_x, peak_z, top + 2.6, r=70)
     for i in range(6):
         a = math.pi * 2 * i / 6
         part("WindPeak_Pillar%d" % i, (3, 12, 3),
              (peak_x + math.sin(a) * 22, top + 7, peak_z + math.cos(a) * 22),
              color=(150, 158, 172), material="Marble")
-    signpost(-2900, 2600, GY, 20, "ПИК ВЕТРОВ ↑\n(арена Архипастыря)")
-    # восхождение: каменные ступени от города к подножию
+    boss_spawn("WindArchon", peak_x, peak_z, top + 2.6)
+    arena_trigger("WindArchon", peak_x, peak_z, top + 2.6, r=70)
+    signpost(-2900, 2620, GY, 20, "ПИК ВЕТРОВ ↑\nарена Архипастыря")
     road(-3150, 2620, -2650, 2100, GY, width=10, color=(112, 106, 96))
 
-    # ---- ЗАБЫТЫЕ ШАХТЫ: большой данж с Каменным Стражем ----
-    cave_system("Забытые Шахты", -3150, 2380, GY, depth=26.0,
+    # ---- ЗАБЫТЫЕ ШАХТЫ ----
+    cave_system("Забытые Шахты", -2820, 2380, GY, depth=20.0,
                 nodes=((100, 40), (210, 120), (120, 230), (250, 300), (150, 380)),
                 width=22, height=16, floor_mat="Slate", floor_col=(86, 74, 62),
                 boss="StoneWarden", tag="OldMine", extra_chests=4,
                 cap_col=(120, 112, 100), cap_mat="Granite")
-    for i in range(10):   # вагонетки и рельсы снаружи
-        part("OldMine_Rail", (1.2, 0.5, 6), (-3150, GY + 0.5, 2350 - i * 8),
+    for i in range(10):
+        part("OldMine_Rail", (1.2, 0.5, 6), (-2820, GY + 0.5, 2350 - i * 8),
              color=(96, 96, 102), material="Metal")
-    part("OldMine_Cart", (4.4, 3, 5.4), (-3150, GY + 2.2, 2300),
+    part("OldMine_Cart", (4.4, 3, 5.4), (-2820, GY + 2.2, 2300),
          color=(90, 74, 58), material="WoodPlanks")
     register_mob("Highlands", -3000, 2500, GY)
     register_mob("Highlands", -3250, 2700, GY)
     register_mob("Highlands", -2600, 2300, GY)
     npc_spot("MineOverseer", -3110, 2340, GY)
     endfolder()
-    return GY
 
 
 def build_archipelago_new(parent):
-    """Архипелаг: ПИРАТСКИЙ ГОРОД СВОБОДНАЯ ГАВАНЬ + затонувший фрегат (данж)."""
+    """Свободная Гавань: корабли, причалы, маяк и ЗАТОНУВШИЙ ФРЕГАТ (данж)."""
     folder("ArchipelagoNew")
     GY = 14.0
-    add_flat(1650, -3300, 190, GY, 95.0)
-
-    town("FreeHarbor", 1650, -3300, GY, radius=120, houses=13,
-         pal={"wall": (140, 118, 92), "roof": (74, 58, 46)},
-         palisade=True, tower=True, market=True,
-         sign_text="СВОБОДНАЯ ГАВАНЬ\nвольные капитаны")
-    # корабли в бухте + причалы
-    for i, (sx, sz, syaw, sc) in enumerate([(1560, -3160, 12, 1.0),
-                                            (1740, -3150, -8, 0.9),
-                                            (1650, -3080, 30, 1.15)]):
+    for (sx, sz, syaw, sc) in [(1560, -3160, 12, 1.0), (1740, -3150, -8, 0.9),
+                               (1650, -3080, 30, 1.15)]:
         ship(sx, sz, 0.0, yaw=syaw, size=sc, col=(84, 66, 48))
     dock("HarborDockA", 1650, -3180, 0.0, length=110, width=13, yaw=0)
     dock("HarborDockB", 1770, -3200, 0.0, length=84, width=11, yaw=20)
     lighthouse(1520, -3400, GY)
     signpost(1650, -3420, GY, 180, "СВОБОДНАЯ ГАВАНЬ\nпиратский порт")
 
-    # ---- ЗАТОНУВШИЙ ФРЕГАТ (данж на острове пиратов) ----
-    cave_system("Затонувший Фрегат", 1860, -3120, GY, depth=20.0,
+    cave_system("Затонувший Фрегат", 1860, -3120, GY, depth=18.0,
                 nodes=((75, 30), (160, 110), (95, 190)),
                 width=20, height=15, floor_mat="WoodPlanks", floor_col=(80, 62, 46),
                 boss="PirateAdmiral", tag="DrownedShip", extra_chests=3,
                 cap_col=(56, 58, 62), cap_mat="Slate")
-    # «корпус» фрегата над данжем: торчащие мачты и палуба
     for i in range(3):
         part("DrownedShip_Mast%d" % i, (1.6, 42 + i * 8, 1.6),
              (1860 + i * 14 - 14, GY + 24, -3020), color=(70, 54, 40),
@@ -4962,27 +5168,21 @@ def build_archipelago_new(parent):
     register_mob("Archipelago", 1560, -3230, GY)
     npc_spot("PirateCaptain", 1600, -3300, GY)
     endfolder()
-    return GY
 
 
 def build_south_isles_new(parent):
-    """Южные острова: ПАЛЬМОВЫЙ БЕРЕГ (курортный городок) + Коралловый Грот."""
+    """Пальмовый Берег: пальмы, маяк и КОРАЛЛОВЫЙ ГРОТ (данж)."""
     folder("SouthIslesNew")
     GY = 12.0
-    add_flat(2100, 3300, 175, GY, 95.0)
-
-    town("PalmCoast", 2100, 3300, GY, radius=118, houses=12,
-         pal={"wall": (206, 190, 158), "roof": (86, 128, 122)},
-         roof_mat="Slate", palisade=False, tower=True, market=True,
-         sign_text="ПАЛЬМОВЫЙ БЕРЕГ\nюжные острова")
     for i in range(24):
         a = rng.uniform(0, math.pi * 2)
-        rr = rng.uniform(30, 165)
-        palm_dead(2100 + math.sin(a) * rr, 3300 + math.cos(a) * rr, GY,
-                  rng.uniform(1.0, 1.5))
-    lighthouse(2250, 3400, GY)
-    # ---- КОРАЛЛОВЫЙ ГРОТ (данж у воды) ----
-    cave_system("Коралловый Грот", 1980, 3420, GY, depth=18.0,
+        rr = rng.uniform(140, 200)
+        px, pz = 2100 + math.sin(a) * rr, 3300 + math.cos(a) * rr
+        if not is_free(px, pz, 14):
+            continue
+        palm_dead(px, pz, GY, rng.uniform(1.0, 1.5))
+        occupy(px, pz, 10, "decor")
+    cave_system("Коралловый Грот", 1980, 3420, GY, depth=16.0,
                 nodes=((80, 20), (170, 90), (100, 160)),
                 width=19, height=14, floor_mat="Sandstone", floor_col=(128, 122, 112),
                 boss="CoralQueen", tag="CoralGrotto", extra_chests=3,
@@ -4996,7 +5196,6 @@ def build_south_isles_new(parent):
     register_mob("SouthIsles", 2160, 3250, GY)
     npc_spot("Islander", 2150, 3320, GY)
     endfolder()
-    return GY
 
 
 def build_ashwaste_new(parent):
@@ -5119,6 +5318,52 @@ def build_frostpeak_new(parent):
     npc_spot("IceScholar", -2050, -1650, GY)
     endfolder()
     return GY
+
+
+def build_v12_settlements(parent):
+    """v12 «ВСЁ ПО МЕСТАМ»: все города, деревни и лагеря стоят ПЕРВЫМИ.
+    Дальше лес, горы и декор сами обходят занятые места (реестр OCCUPIED),
+    поэтому ничего не растёт сквозь дома и не висит на крышах."""
+    folder("SettlementsV12")
+    # ---- города v11 ----
+    town("Duplino", -1950, -620, 14.0, radius=92, houses=11,
+         pal={"wall": (140, 116, 88), "roof": (86, 58, 42)},
+         palisade=True, tower=True, market=True,
+         sign_text="ДУПЛИНО\nдеревня лесорубов")
+    town("Elderwood", -900, -380, 14.0, radius=110, houses=13,
+         pal={"wall": (120, 96, 74), "roof": (64, 44, 36)},
+         palisade=False, tower=True, market=True, chapel_=True,
+         sign_text="ЭЛЬДЕРВУД\nвольные лесорубы")
+    town("Zarechye", 150, 2500, 12.0, radius=118, houses=14,
+         pal={"wall": (166, 146, 112), "roof": (108, 70, 48)},
+         palisade=True, tower=True, market=True, chapel_=True,
+         sign_text="ЗАРЕЧЬЕ\nгород у слияния рек")
+    town("Arcanum", 2600, 830, 16.0, radius=132, houses=15,
+         pal={"wall": (176, 168, 196), "roof": (86, 74, 128)},
+         wall_mat="Concrete", roof_mat="Slate",
+         palisade=False, tower=True, market=True, chapel_=True,
+         sign_text="АРКАНУМ\nгород магов")
+    town("Kamnegorsk", -3150, 2600, 26.0, radius=126, houses=13,
+         pal={"wall": (150, 146, 138), "roof": (92, 76, 62)},
+         wall_mat="Cobblestone", palisade=False, tower=True, market=True,
+         chapel_=True, sign_text="КАМНЕГОРСК\nкрепость горняков")
+    town("FreeHarbor", 1650, -3300, 14.0, radius=120, houses=13,
+         pal={"wall": (140, 118, 92), "roof": (74, 58, 46)},
+         palisade=True, tower=True, market=True,
+         sign_text="СВОБОДНАЯ ГАВАНЬ\nвольные капитаны")
+    town("PalmCoast", 2100, 3300, 12.0, radius=118, houses=12,
+         pal={"wall": (206, 190, 158), "roof": (86, 128, 122)},
+         roof_mat="Slate", palisade=False, tower=True, market=True,
+         sign_text="ПАЛЬМОВЫЙ БЕРЕГ\nюжные острова")
+    # ---- лагеря разбойников (все в одном месте, с пометкой в реестре) ----
+    for (camp_name, cxx, czz, cyy, cyaw) in [
+            ("VeldtRaiders", -150, 1800, 12.0, 30),
+            ("CanyonBandits", -560, 2900, 12.0, 200),
+            ("RidgePoachers", -3000, 2300, 26.0, 75),
+            ("ForestCutters", -2300, -800, 14.0, 120),
+            ("DuneWreckers", 2250, 3150, 12.0, 250)]:
+        bandit_camp(cxx, czz, cyy, yaw=cyaw, name=camp_name, ntents=3)
+    endfolder()
 
 
 def build_trade_routes(parent):
@@ -5363,7 +5608,7 @@ local ZoneConfig = {
         { Id = "RiceTerraces",  Name = "Рисовые террасы",     Pos = {3000, 1300} },
         { Id = "Kamnegorsk",    Name = "Камнегорск",          Pos = {-3150, 2600} },
         { Id = "WindPeak",      Name = "Пик Ветров",          Pos = {-2550, 2000} },
-        { Id = "OldMine",       Name = "Забытые Шахты",       Pos = {-3150, 2380} },
+        { Id = "OldMine",       Name = "Забытые Шахты",       Pos = {-2820, 2380} },
         { Id = "FreeHarbor",    Name = "Свободная Гавань",    Pos = {1650, -3300} },
         { Id = "DrownedShip",   Name = "Затонувший Фрегат",   Pos = {1860, -3120} },
         { Id = "PalmCoast",     Name = "Пальмовый Берег",     Pos = {2100, 3300} },
@@ -5390,7 +5635,7 @@ local ZoneConfig = {
     Dungeons = {
         { Id = "DuplinoCave",  Name = "Пещеры Дупла",          Pos = {-1950, -780}, Zone = "Gloomwood" },
         { Id = "RedMine",      Name = "Шахта Красный Камень",  Pos = {120, 2680},   Zone = "Bonefields", Boss = "MarrowTyrant" },
-        { Id = "OldMine",      Name = "Забытые Шахты",         Pos = {-3150, 2380}, Zone = "Highlands",  Boss = "StoneWarden" },
+        { Id = "OldMine",      Name = "Забытые Шахты",         Pos = {-2820, 2380}, Zone = "Highlands",  Boss = "StoneWarden" },
         { Id = "DrownedShip",  Name = "Затонувший Фрегат",     Pos = {1860, -3120}, Zone = "Archipelago", Boss = "PirateAdmiral" },
         { Id = "CoralGrotto",  Name = "Коралловый Грот",       Pos = {1980, 3420},  Zone = "SouthIsles", Boss = "CoralQueen" },
         { Id = "Forge",        Name = "Кузня в Жерле",         Pos = {220, -2080},  Zone = "Ashwaste",   Boss = "VolcanoForge" },
@@ -5622,7 +5867,7 @@ local SPOTS = {
 	{ cmds = {"!террасы", "!terraces"}, pos = Vector3.new(3000, 20, 1300), name = "Рисовые террасы" },
 	{ cmds = {"!камнегорск", "!kamnegorsk"}, pos = Vector3.new(-3150, 32, 2600), name = "Камнегорск (крепость)" },
 	{ cmds = {"!пикветров", "!windpeak"}, pos = Vector3.new(-2550, 240, 2000), name = "Пик Ветров (арена)" },
-	{ cmds = {"!забытыешахты", "!oldmine"}, pos = Vector3.new(-3150, 32, 2380), name = "Забытые Шахты (данж)" },
+	{ cmds = {"!забытыешахты", "!oldmine"}, pos = Vector3.new(-2820, 32, 2380), name = "Забытые Шахты (данж)" },
 	{ cmds = {"!гавань", "!harbor"},  pos = Vector3.new(1650, 20, -3300), name = "Свободная Гавань (город)" },
 	{ cmds = {"!фрегат", "!frigate"}, pos = Vector3.new(1860, 20, -3120), name = "Затонувший Фрегат (данж)" },
 	{ cmds = {"!пальмы", "!palm"},    pos = Vector3.new(2100, 18, 3300), name = "Пальмовый Берег (город)" },
@@ -5767,7 +6012,7 @@ def build_services():
 
 
 def main():
-    out_name = "Emberfall_Map_v11.rbxlx"
+    out_name = "Emberfall_Map_v12.rbxlx"
 
     _lines.append('<?xml version="1.0" encoding="utf-8"?>')
     _lines.append('<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" '
@@ -5815,6 +6060,7 @@ def main():
     # ---- ПРОХОД 1: планировка (только рельефные "плоские пятна") ----
     global PLANNING
     PLANNING = True
+    build_v12_settlements(None)
     build_sea(None)
     build_village(None)
     build_gloomwood(None)
@@ -5842,9 +6088,12 @@ def main():
     build_islands(None)
     build_continent(None)
     PLANNING = False
+    occ_save()      # v12: план занятых мест для второго прохода
 
     # ---- ПРОХОД 2: настоящая сборка ----
+    occ_save()      # v12: второй проход начинается с плана занятости
     folder("World")
+    build_v12_settlements(None)     # v12: сначала города — потом всё остальное
     build_sea(None)
     build_continent(None)
     build_village(None)

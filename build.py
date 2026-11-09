@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Полная сборка Emberfall v8 в одну команду:
+"""Полная сборка Emberfall v12 в одну команду:
 
     python3 build.py
 
 Шаги:
   1. src/lua/**  ->  gen_lua.py        (Lua в python-строки)
-  2. gen_lua.py + gen_map.py -> Emberfall_Map_v10.rbxlx
-  3. release/Emberfall_v8.zip          (готовый архив для скачивания)
+  2. gen_lua.py + gen_map.py -> Emberfall_Map_v12.rbxlx
+  3. release/Emberfall_v12.zip        (готовый архив для скачивания)
 """
 import os
 import subprocess
@@ -14,8 +14,8 @@ import sys
 import zipfile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-RLX = "Emberfall_Map_v11.rbxlx"
-ZIP_PATH = os.path.join(ROOT, "release", "Emberfall_v11.zip")
+RLX = "Emberfall_Map_v12.rbxlx"
+ZIP_PATH = os.path.join(ROOT, "release", "Emberfall_v12.zip")
 
 
 def run(*args):
